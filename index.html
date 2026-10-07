@@ -453,6 +453,14 @@ a{color:inherit;}
 .legend-dot{ width:10px; height:10px; border-radius:3px; flex-shrink:0; }
 
 /* ===== Simulator ===== */
+.sim-picker-grid{ display:flex; flex-direction:column; gap:12px; padding:0 18px 18px; }
+.sim-picker-card{ display:flex; align-items:center; gap:14px; padding:18px 16px; border-radius:var(--radius-lg); border:1.5px solid var(--line); background:var(--paper); box-shadow:var(--shadow-sm); cursor:pointer; transition:transform .15s,box-shadow .15s,border-color .15s; }
+.sim-picker-card:active{ transform:scale(.97); }
+.sim-picker-card:hover{ border-color:var(--emerald-deep); box-shadow:var(--shadow-md); }
+.sim-picker-emoji{ font-size:34px; flex-shrink:0; }
+.sim-picker-info{ flex:1; min-width:0; }
+.sim-picker-name{ font-size:15px; font-weight:700; margin-bottom:2px; }
+.sim-picker-desc{ font-size:12px; color:var(--ink-soft); line-height:1.4; }
 .sim-hero{ text-align:center; padding:26px 22px 10px; }
 .sim-stats-row{ display:flex; gap:10px; padding:14px 18px 0; }
 .sim-stat{ flex:1; background:var(--paper); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; text-align:center; box-shadow: var(--shadow-sm); }
@@ -3358,6 +3366,15 @@ const STR = {
     simFlagInsurance:'Got supplemental insurance ✓', simFlagKeren:'Started Keren Hishtalmut ✓',
     simFlagNewJob:'Switched to higher-paying job ✓', simFlagFreelance:'Took on freelance work ✓',
     simFlagTaxRefund:'Filed taxes & got refund ✓', simFlagGym:'Joined a gym ✓',
+    simFlagNewPhone:'Got a new phone ✓', simFlagExtraShifts:'Worked extra shifts ✓',
+    simFlagStudyCourse:'Enrolled in a study course ✓', simFlagPrivateTutor:'Hired a private tutor ✓',
+    simFlagSideBusiness:'Started a side business ✓', simFlagDrivingLessons:'Started driving lessons ✓',
+    simFlagCrackedScreen:'Living with cracked screen ✓',
+    simFlagRenovated:'Renovated the kids room ✓', simFlagUpgradedPension:'Upgraded pension plan ✓',
+    simFlagPartnerStudying:'Partner started studying ✓', simFlagDelayedCarFix:'Delayed car repair ✓',
+    simFlagSummerCamp:'Booked summer camp ✓', simFlagPromoted:'Got promoted ✓',
+    simFlagRefinanced:'Refinanced mortgage ✓', simFlagKidsHealth:'Got kids health insurance ✓',
+    simFlagRealEstateInvestor:'Invested in real estate ✓', simFlagLifeInsurance:'Got life insurance ✓',
     simDentalNoteIns:'Your supplemental insurance covers 60% — you only pay ₪1,400.',
     simDentalNoteNo:'Without supplemental insurance, you pay the full ₪3,500.',
     simDentalStoryBase:'You need dental work — a crown that costs ₪3,500.',
@@ -3365,6 +3382,15 @@ const STR = {
     simMarketStoryDental:'That tooth you ignored? It infected. Emergency root canal: ₪5,200. Ouch. Meanwhile, the market is up 12%.',
     simIntroTitle:'Your Story Begins', simIntroText:'You\'re 22, just landed your first real job in Tel Aviv. Salary: ₪6,500/month. You\'ve found a small apartment for ₪2,200/month. Every month you\'ll face real financial decisions — there are no perfect answers, just trade-offs. Your choices affect both your wallet and your wellbeing.',
     simIntroBtn:'Let\'s Go',
+    simPickerTitle:'Choose Your Challenge', simPickerSub:'Pick the life stage that fits you best',
+    simScenarioSchool:'Student Life', simScenarioSchoolDesc:'You\'re 16, juggling school, allowance, and first money decisions',
+    simScenarioSchoolEmoji:'🎒',
+    simScenarioGrad:'First Job', simScenarioGradDesc:'You\'re 22, starting your first real job and living on your own',
+    simScenarioGradEmoji:'🏙️',
+    simScenarioMidlife:'Building a Life', simScenarioMidlifeDesc:'You\'re 35, managing a family, career, and bigger financial goals',
+    simScenarioMidlifeEmoji:'🏡',
+    simSchoolIntroTitle:'Your Student Budget', simSchoolIntroText:'You\'re 16, in high school. You get ₪800/month allowance from your parents and just started a part-time job earning ₪1,200/month at a local café. Every month brings choices — saving for things you want, dealing with school costs, and figuring out how money works.',
+    simMidlifeIntroTitle:'Your Family Budget', simMidlifeIntroText:'You\'re 35, married, with a 3-year-old kid. Combined household income: ₪22,000/month. Mortgage: ₪5,500/month. You\'re juggling career growth, family needs, and planning for the future. Every decision ripples through your whole family.',
     realLifeToggleLabel:'REAL LIFE', quickLearnLabel:'QUICK LEARN', homeSubRealLife:'Practical money skills for real life in Israel' },
   he: { appName:'IsraFin', tagline:'למדו איך הכסף באמת עובד בישראל — חיסכון, השקעות, בנקאות, מיסים ועוד.',
     nameLabel:'איך לקרוא לכם?', namePh:'השם שלכם', startBtn:'בואו נתחיל ללמוד',
@@ -3423,6 +3449,15 @@ const STR = {
     simFlagInsurance:'ביטוח משלים ✓', simFlagKeren:'קרן השתלמות ✓',
     simFlagNewJob:'עברו לעבודה טובה יותר ✓', simFlagFreelance:'לקחו פרילנס ✓',
     simFlagTaxRefund:'הגשת מס והחזר ✓', simFlagGym:'הצטרפו לחדר כושר ✓',
+    simFlagNewPhone:'טלפון חדש ✓', simFlagExtraShifts:'עבדו משמרות נוספות ✓',
+    simFlagStudyCourse:'נרשמו לקורס ✓', simFlagPrivateTutor:'שכרו מורה פרטי ✓',
+    simFlagSideBusiness:'התחלתם עסק צדדי ✓', simFlagDrivingLessons:'התחלתם שיעורי נהיגה ✓',
+    simFlagCrackedScreen:'חיים עם מסך סדוק ✓',
+    simFlagRenovated:'שיפצו את חדר הילדים ✓', simFlagUpgradedPension:'שדרגו פנסיה ✓',
+    simFlagPartnerStudying:'בן/בת הזוג לומד/ת ✓', simFlagDelayedCarFix:'דחו תיקון רכב ✓',
+    simFlagSummerCamp:'נרשמו לקייטנה ✓', simFlagPromoted:'קיבלו קידום ✓',
+    simFlagRefinanced:'מחזרו משכנתא ✓', simFlagKidsHealth:'ביטוח בריאות לילדים ✓',
+    simFlagRealEstateInvestor:'השקיעו בנדל"ן ✓', simFlagLifeInsurance:'ביטוח חיים ✓',
     simDentalNoteIns:'הביטוח המשלים מכסה 60% — אתם משלמים רק 1,400 ₪.',
     simDentalNoteNo:'בלי ביטוח משלים, אתם משלמים 3,500 ₪ מלאים.',
     simDentalStoryBase:'אתם צריכים טיפול שיניים — כתר שעולה 3,500 ₪.',
@@ -3430,6 +3465,15 @@ const STR = {
     simMarketStoryDental:'השן שהתעלמתם ממנה? נדבקה. טיפול שורש חירום: 5,200 ₪. אוי. בינתיים, השוק עלה 12%.',
     simIntroTitle:'הסיפור שלכם מתחיל', simIntroText:'אתם בני 22, זה עתה התחלתם עבודה ראשונה בתל אביב. משכורת: 6,500 ₪/חודש. מצאתם דירה קטנה ב-2,200 ₪/חודש. כל חודש תתמודדו עם החלטות כספיות אמיתיות — אין תשובות מושלמות, רק פשרות. הבחירות שלכם משפיעות גם על הארנק וגם על האושר.',
     simIntroBtn:'יאללה',
+    simPickerTitle:'בחרו את האתגר', simPickerSub:'בחרו את שלב החיים שמתאים לכם',
+    simScenarioSchool:'חיי תלמיד', simScenarioSchoolDesc:'אתם בני 16, מלהטטים בין לימודים, דמי כיס, והחלטות כספיות ראשונות',
+    simScenarioSchoolEmoji:'🎒',
+    simScenarioGrad:'עבודה ראשונה', simScenarioGradDesc:'אתם בני 22, מתחילים עבודה ראשונה וגרים לבד',
+    simScenarioGradEmoji:'🏙️',
+    simScenarioMidlife:'בונים חיים', simScenarioMidlifeDesc:'אתם בני 35, מנהלים משפחה, קריירה ויעדים כספיים גדולים',
+    simScenarioMidlifeEmoji:'🏡',
+    simSchoolIntroTitle:'התקציב שלכם כתלמידים', simSchoolIntroText:'אתם בני 16, לומדים בתיכון. אתם מקבלים 800 ₪ דמי כיס מההורים ומרוויחים 1,200 ₪ מעבודה חלקית בבית קפה. כל חודש מביא בחירות — חיסכון לדברים שאתם רוצים, התמודדות עם הוצאות לימודים, ולמידה איך כסף עובד.',
+    simMidlifeIntroTitle:'התקציב המשפחתי', simMidlifeIntroText:'אתם בני 35, נשואים, עם ילד/ה בן/בת 3. הכנסה משפחתית: 22,000 ₪/חודש. משכנתא: 5,500 ₪/חודש. אתם מלהטטים בין קידום בקריירה, צרכי המשפחה ותכנון לעתיד. כל החלטה משפיעה על כל המשפחה.',
     realLifeToggleLabel:'חיים אמיתיים', quickLearnLabel:'למידה מהירה', homeSubRealLife:'מיומנויות כסף מעשיות לחיים האמיתיים בישראל' },
   ar: { appName:'IsraFin', tagline:'تعلّم كيف يعمل المال فعلياً في إسرائيل — الادخار، الاستثمار، الخدمات المصرفية، الضرائب، والمزيد.',
     nameLabel:'كيف نناديك؟', namePh:'اسمك', startBtn:'ابدأ التعلم',
@@ -3488,6 +3532,15 @@ const STR = {
     simFlagInsurance:'حصلت على تأمين تكميلي ✓', simFlagKeren:'بدأت كيرن هشتلموت ✓',
     simFlagNewJob:'انتقلت لعمل بأجر أعلى ✓', simFlagFreelance:'بدأت عملاً حراً ✓',
     simFlagTaxRefund:'قدمت الضرائب وحصلت على استرداد ✓', simFlagGym:'انضممت لنادي رياضي ✓',
+    simFlagNewPhone:'حصلت على هاتف جديد ✓', simFlagExtraShifts:'عملت نوبات إضافية ✓',
+    simFlagStudyCourse:'سجلت في دورة ✓', simFlagPrivateTutor:'استأجرت معلماً خصوصياً ✓',
+    simFlagSideBusiness:'بدأت مشروعاً جانبياً ✓', simFlagDrivingLessons:'بدأت دروس القيادة ✓',
+    simFlagCrackedScreen:'تعيش مع شاشة مكسورة ✓',
+    simFlagRenovated:'جدّدت غرفة الأطفال ✓', simFlagUpgradedPension:'رقّيت خطة التقاعد ✓',
+    simFlagPartnerStudying:'الشريك/ة يدرس/تدرس ✓', simFlagDelayedCarFix:'أجّلت إصلاح السيارة ✓',
+    simFlagSummerCamp:'سجلت في المخيم الصيفي ✓', simFlagPromoted:'حصلت على ترقية ✓',
+    simFlagRefinanced:'أعدت تمويل الرهن ✓', simFlagKidsHealth:'تأمين صحي للأطفال ✓',
+    simFlagRealEstateInvestor:'استثمرت في العقارات ✓', simFlagLifeInsurance:'تأمين حياة ✓',
     simDentalNoteIns:'تأمينك التكميلي يغطي 60% — تدفع فقط 1,400 شيكل.',
     simDentalNoteNo:'بدون تأمين تكميلي، تدفع 3,500 شيكل كاملة.',
     simDentalStoryBase:'تحتاج عمل أسنان — تاج بتكلفة 3,500 شيكل.',
@@ -3495,6 +3548,15 @@ const STR = {
     simMarketStoryDental:'تلك السن التي تجاهلتها؟ التهبت. علاج عصب طارئ: 5,200 شيكل. آخ. في هذه الأثناء، السوق ارتفع 12%.',
     simIntroTitle:'قصتك تبدأ', simIntroText:'عمرك 22 سنة، حصلت للتو على أول عمل حقيقي في تل أبيب. الراتب: 6,500 شيكل/شهر. وجدت شقة صغيرة بـ2,200 شيكل/شهر. كل شهر ستواجه قرارات مالية حقيقية — لا توجد إجابات مثالية، فقط مفاضلات. خياراتك تؤثر على محفظتك وعلى سعادتك.',
     simIntroBtn:'هيا بنا',
+    simPickerTitle:'اختر تحديك', simPickerSub:'اختر مرحلة الحياة التي تناسبك',
+    simScenarioSchool:'حياة الطالب', simScenarioSchoolDesc:'عمرك 16، تتنقل بين الدراسة والمصروف وأول قرارات مالية',
+    simScenarioSchoolEmoji:'🎒',
+    simScenarioGrad:'العمل الأول', simScenarioGradDesc:'عمرك 22، تبدأ عملك الأول وتعيش بمفردك',
+    simScenarioGradEmoji:'🏙️',
+    simScenarioMidlife:'بناء حياة', simScenarioMidlifeDesc:'عمرك 35، تدير عائلة ومسيرة مهنية وأهداف مالية كبيرة',
+    simScenarioMidlifeEmoji:'🏡',
+    simSchoolIntroTitle:'ميزانيتك كطالب', simSchoolIntroText:'عمرك 16 سنة، تدرس في الثانوية. تحصل على 800 شيكل مصروف شهري من أهلك وتكسب 1,200 شيكل من عمل جزئي في مقهى. كل شهر يحمل خيارات — الادخار لأشياء تريدها، التعامل مع مصاريف الدراسة، وتعلم كيف يعمل المال.',
+    simMidlifeIntroTitle:'ميزانية العائلة', simMidlifeIntroText:'عمرك 35 سنة، متزوج/ة، ولديك طفل/ة بعمر 3 سنوات. الدخل العائلي: 22,000 شيكل/شهر. القسط الشهري: 5,500 شيكل/شهر. تتنقل بين التطور المهني واحتياجات العائلة والتخطيط للمستقبل. كل قرار يؤثر على العائلة بأكملها.',
     realLifeToggleLabel:'الحياة الواقعية', quickLearnLabel:'تعلّم سريع', homeSubRealLife:'مهارات مالية عملية للحياة الواقعية في إسرائيل' }
 };
 const LANGS = [ {code:'en', label:'English', native:'English'}, {code:'he', label:'Hebrew', native:'עברית'}, {code:'ar', label:'Arabic', native:'العربية'} ];
@@ -3594,6 +3656,188 @@ const SIM_SCENARIOS = [
      {id:'a',emoji:'🧾',label:{en:'Hire accountant + modest gifts (₪800)',he:'שכרו רו"ח + מתנות צנועות (800 ₪)',ar:'استأجر محاسب + هدايا متواضعة (800 شيكل)'},sub:{en:'Spend ₪1,200, get ₪2,800 back',he:'הוציאו 1,200 ₪, קבלו 2,800 ₪',ar:'أنفق 1,200، استرد 2,800'},effect:{savings:3700,happiness:10,spent:3400,flag:'taxRefund'}},
      {id:'b',emoji:'🎄',label:{en:'Skip accountant + generous gifts (₪2,500)',he:'בלי רו"ח + מתנות נדיבות (2,500 ₪)',ar:'بلا محاسب + هدايا سخية (2,500 شيكل)'},sub:{en:'Family joy over tax optimization',he:'שמחה משפחתית מעל מיסים',ar:'فرح العائلة فوق الضرائب'},effect:{savings:-400,happiness:20,spent:4700}},
      {id:'c',emoji:'📊',label:{en:'Accountant + invest the refund',he:'רו"ח + השקיעו את ההחזר',ar:'محاسب + استثمر المبلغ المسترد'},sub:{en:'Maximum financial efficiency',he:'יעילות כספית מקסימלית',ar:'كفاءة مالية قصوى'},effect:{savings:1500,happiness:-5,spent:2600,invested:2800,flag:'taxRefund'}}
+   ]}
+];
+
+// ===== School Scenario (16 y/o student) =====
+const SIM_SCENARIOS_SCHOOL = [
+  {month:1, salary:2000, rent:0,
+   story:{en:'Your first month managing your own money! You get ₪800 allowance + ₪1,200 from your café job. A classmate is selling concert tickets for ₪350.',he:'החודש הראשון שבו אתם מנהלים כסף בעצמכם! 800 ₪ דמי כיס + 1,200 ₪ מעבודה בקפה. חבר/ה בכיתה מוכר/ת כרטיסים להופעה ב-350 ₪.',ar:'شهرك الأول في إدارة مالك بنفسك! 800 شيكل مصروف + 1,200 شيكل من عملك في المقهى. زميل/ة يبيع تذاكر حفلة بـ350 شيكل.'},
+   choices:[
+     {id:'a',emoji:'🎵',label:{en:'Buy the concert ticket — ₪350',he:'קנו כרטיס להופעה — 350 ₪',ar:'اشترِ تذكرة الحفلة — 350 شيكل'},sub:{en:'Great memories with friends!',he:'זכרונות מדהימים עם חברים!',ar:'ذكريات رائعة مع الأصدقاء!'},effect:{savings:0,happiness:20,spent:350}},
+     {id:'b',emoji:'🏦',label:{en:'Open a savings account — deposit ₪500',he:'פתחו חשבון חיסכון — הפקידו 500 ₪',ar:'افتح حساب ادخار — أودع 500 شيكل'},sub:{en:'Start building a habit early',he:'התחילו לבנות הרגל מוקדם',ar:'ابدأ ببناء عادة مبكراً'},effect:{savings:500,happiness:0,spent:200}},
+     {id:'c',emoji:'⚖️',label:{en:'Save ₪300 + concert ticket',he:'חסכו 300 ₪ + כרטיס להופעה',ar:'ادخر 300 شيكل + تذكرة الحفلة'},sub:{en:'Balance fun and saving',he:'איזון בין כיף לחיסכון',ar:'وازن بين المرح والادخار'},effect:{savings:300,happiness:12,spent:650}}
+   ]},
+  {month:2, salary:2000, rent:0,
+   story:{en:'Your phone is getting slow and glitchy. A new one costs ₪2,400. Also, school trip to the Negev next month — ₪400.',he:'הטלפון שלכם נהיה איטי ותקול. חדש עולה 2,400 ₪. כמו כן, טיול שנתי לנגב בחודש הבא — 400 ₪.',ar:'هاتفك أصبح بطيئاً ومتعطلاً. هاتف جديد يكلف 2,400 شيكل. كذلك، رحلة مدرسية للنقب الشهر القادم — 400 شيكل.'},
+   choices:[
+     {id:'a',emoji:'📱',label:{en:'Ask parents to split the phone cost',he:'בקשו מההורים לחלוק בעלות הטלפון',ar:'اطلب من أهلك تقسيم تكلفة الهاتف'},sub:{en:'They pay ₪1,200, you pay ₪1,200',he:'הם משלמים 1,200 ₪, אתם 1,200 ₪',ar:'هم يدفعون 1,200، أنت 1,200'},effect:{savings:-400,happiness:15,spent:1600,flag:'newPhone'}},
+     {id:'b',emoji:'🔧',label:{en:'Fix the old phone (₪200) + save for trip',he:'תקנו את הטלפון (200 ₪) + חסכו לטיול',ar:'أصلح الهاتف القديم (200 شيكل) + ادخر للرحلة'},sub:{en:'Practical and budget-friendly',he:'מעשי וחסכוני',ar:'عملي وموفر'},effect:{savings:400,happiness:3,spent:600}},
+     {id:'c',emoji:'💸',label:{en:'Buy the new phone on your own — ₪2,400',he:'קנו טלפון חדש לבד — 2,400 ₪',ar:'اشترِ الهاتف بنفسك — 2,400 شيكل'},sub:{en:'Independent but expensive!',he:'עצמאי אבל יקר!',ar:'مستقل لكن غالٍ!'},effect:{savings:-1200,happiness:18,spent:2400,flag:'newPhone'}}
+   ]},
+  {month:3, salary:2000, rent:0,
+   story:{en:'School trip month! Also, your friend group is all getting matching hoodies for ₪120 each. And you need new school supplies — ₪150.',he:'חודש הטיול! כמו כן, כל החבר\'ה מזמינים קפוצ\'ונים תואמים ב-120 ₪ כל אחד. ואתם צריכים חומרי לימוד חדשים — 150 ₪.',ar:'شهر الرحلة! أيضاً، مجموعة أصدقائك يشترون هوديات متطابقة بـ120 شيكل لكل واحد. وتحتاج أدوات مدرسية جديدة — 150 شيكل.'},
+   choices:[
+     {id:'a',emoji:'🎒',label:{en:'Trip + hoodie + supplies — all in',he:'טיול + קפוצ\'ון + ציוד — הכל',ar:'الرحلة + الهودي + الأدوات — كل شيء'},sub:{en:'Full school experience — ₪670',he:'חוויית בית ספר מלאה — 670 ₪',ar:'تجربة مدرسية كاملة — 670 شيكل'},effect:{savings:200,happiness:20,spent:670}},
+     {id:'b',emoji:'🏕️',label:{en:'Trip + supplies, skip hoodie',he:'טיול + ציוד, בלי קפוצ\'ון',ar:'الرحلة + الأدوات، تخطَّ الهودي'},sub:{en:'Save ₪120, miss the group thing',he:'חסכו 120 ₪, תפספסו את הדבר הקבוצתי',ar:'وفّر 120، فوّت الشيء الجماعي'},effect:{savings:350,happiness:10,spent:550}},
+     {id:'c',emoji:'📚',label:{en:'Skip trip, get supplies + save',he:'ותרו על הטיול, ציוד + חיסכון',ar:'تخطَّ الرحلة، أدوات + ادخار'},sub:{en:'Big savings but you\'ll miss out',he:'חיסכון גדול אבל תפספסו',ar:'توفير كبير لكن ستفوّتها'},effect:{savings:1000,happiness:-15,spent:150}}
+   ]},
+  {month:4, salary:2000, rent:0,
+   story:{en:'Your café boss offers extra shifts during Pesach break — ₪800 more this month! But your friends are planning a beach trip to Herzliya.',he:'הבוס בקפה מציע משמרות נוספות בחופשת פסח — 800 ₪ נוסף החודש! אבל החברים מתכננים טיול לחוף בהרצליה.',ar:'رئيسك في المقهى يعرض نوبات إضافية في عطلة الفصح — 800 شيكل إضافية! لكن أصدقاءك يخططون لرحلة شاطئ لهرتسليا.'},
+   twist:{en:'Your backpack just ripped! 🎒💥 You need a new one before school resumes.',he:'התיק שלכם נקרע! 🎒💥 אתם צריכים חדש לפני שהלימודים חוזרים.',ar:'حقيبتك تمزقت! 🎒💥 تحتاج واحدة جديدة قبل عودة الدراسة.'},
+   choices:[
+     {id:'a',emoji:'💪',label:{en:'Work extra shifts + buy bag (₪180)',he:'עבדו משמרות נוספות + קנו תיק (180 ₪)',ar:'اعمل نوبات إضافية + اشترِ حقيبة (180 شيكل)'},sub:{en:'More money, skip the beach',he:'יותר כסף, בלי חוף',ar:'مال أكثر، تخطَّ الشاطئ'},effect:{savings:1500,happiness:-5,spent:180,flag:'extraShifts'}},
+     {id:'b',emoji:'🏖️',label:{en:'Beach trip (₪300) + cheap bag (₪80)',he:'טיול לחוף (300 ₪) + תיק זול (80 ₪)',ar:'رحلة الشاطئ (300 شيكل) + حقيبة رخيصة (80 شيكل)'},sub:{en:'Fun + practical — skip extra shifts',he:'כיף + מעשי — בלי משמרות נוספות',ar:'متعة + عملي — تخطَّ النوبات الإضافية'},effect:{savings:400,happiness:15,spent:380}},
+     {id:'c',emoji:'🤑',label:{en:'Work shifts + beach + nice bag (₪250)',he:'משמרות + חוף + תיק יפה (250 ₪)',ar:'نوبات + شاطئ + حقيبة جميلة (250 شيكل)'},sub:{en:'Do it all — exhausting but worth it?',he:'עשו הכל — מתיש אבל שווה?',ar:'افعل كل شيء — مرهق لكن يستحق؟'},effect:{savings:800,happiness:8,spent:550,flag:'extraShifts'}}
+   ]},
+  {month:5, salary:2000, rent:0,
+   story:{en:'Bagrut (matriculation exam) season is coming. Your friend offers to share their online course subscription (₪150 each) for test prep. You could also study alone for free.',he:'עונת הבגרויות מתקרבת. חבר/ה מציע/ה לחלוק מנוי לקורס אונליין (150 ₪ כל אחד). אפשר גם ללמוד לבד בחינם.',ar:'موسم البجروت (امتحانات النضج) قادم. صديق/ة يعرض مشاركة اشتراك دورة أونلاين (150 شيكل لكل واحد). يمكنك أيضاً الدراسة وحدك مجاناً.'},
+   choices:[
+     {id:'a',emoji:'💻',label:{en:'Split the course — ₪150',he:'חלקו את הקורס — 150 ₪',ar:'اقسم الدورة — 150 شيكل'},sub:{en:'Better grades = better future',he:'ציונים טובים = עתיד טוב',ar:'درجات أفضل = مستقبل أفضل'},effect:{savings:600,happiness:5,spent:150,flag:'studyCourse'}},
+     {id:'b',emoji:'📖',label:{en:'Study alone + save everything',he:'למדו לבד + חסכו הכל',ar:'ادرس وحدك + ادخر كل شيء'},sub:{en:'Free but more work',he:'חינם אבל יותר עבודה',ar:'مجاني لكن عمل أكثر'},effect:{savings:1000,happiness:-3,spent:0}},
+     {id:'c',emoji:'👩‍🏫',label:{en:'Private tutor — ₪400',he:'מורה פרטי — 400 ₪',ar:'معلم خصوصي — 400 شيكل'},sub:{en:'Best prep but pricey for a student',he:'ההכנה הטובה ביותר אבל יקר לתלמיד',ar:'أفضل إعداد لكن غالٍ لطالب'},effect:{savings:200,happiness:8,spent:400,flag:'privateTutor'}}
+   ]},
+  {month:6, salary:2000, rent:0,
+   story:{en:'Summer break starts! Your parents say you can work more hours. Also, everyone\'s planning a trip to the Kinneret — ₪500 for 3 days.',he:'חופש גדול! ההורים אומרים שאפשר לעבוד יותר שעות. כמו כן, כולם מתכננים טיול לכנרת — 500 ₪ ל-3 ימים.',ar:'بدأت العطلة الصيفية! أهلك يقولون يمكنك العمل ساعات أكثر. أيضاً، الجميع يخطط لرحلة للكنيرت — 500 شيكل لـ3 أيام.'},
+   choices:[
+     {id:'a',emoji:'☀️',label:{en:'Work full-time all summer (₪4,800/mo)',he:'עבדו משרה מלאה כל הקיץ (4,800 ₪/חודש)',ar:'اعمل دوام كامل طوال الصيف (4,800 شيكل/شهر)'},sub:{en:'Big savings, skip the trip',he:'חיסכון גדול, בלי טיול',ar:'توفير كبير، تخطَّ الرحلة'},effect:{savings:3800,happiness:-10,spent:200}},
+     {id:'b',emoji:'🏊',label:{en:'Kinneret trip + regular hours',he:'טיול לכנרת + שעות רגילות',ar:'رحلة الكنيرت + ساعات عادية'},sub:{en:'Balance work and summer fun',he:'איזון בין עבודה וכיף קיץ',ar:'وازن بين العمل ومتعة الصيف'},effect:{savings:500,happiness:20,spent:500}},
+     {id:'c',emoji:'🎯',label:{en:'Full-time + Kinneret trip',he:'משרה מלאה + טיול לכנרת',ar:'دوام كامل + رحلة الكنيرت'},sub:{en:'Earn big, play hard — one week off',he:'הרוויחו הרבה, בלו חזק — שבוע חופש',ar:'اكسب كثيراً، استمتع كثيراً — أسبوع إجازة'},effect:{savings:3000,happiness:12,spent:700}}
+   ]},
+  {month:7, salary:2000, rent:0,
+   story:{en:'You see a ₪180/month gym membership deal. Your older cousin also suggests you invest ₪500 in a savings plan (Kupat Gemel). Meanwhile, summer clothes shopping tempts you.',he:'אתם רואים מבצע מנוי חדר כושר ב-180 ₪/חודש. בן/בת דוד/ה גדול/ה גם מציע/ה להשקיע 500 ₪ בקופת גמל. בינתיים, מפתה לקנות בגדי קיץ.',ar:'ترى عرض اشتراك نادي رياضي بـ180 شيكل/شهر. ابن/ة عم/ة أكبر يقترح أيضاً أن تستثمر 500 شيكل في خطة ادخار (كوبات جيمل). في هذه الأثناء، تسوق ملابس الصيف يغريك.'},
+   choices:[
+     {id:'a',emoji:'📈',label:{en:'Start saving plan — ₪500',he:'התחילו תוכנית חיסכון — 500 ₪',ar:'ابدأ خطة ادخار — 500 شيكل'},sub:{en:'Your future self will thank you',he:'העצמי העתידי שלכם יודה לכם',ar:'نفسك المستقبلية ستشكرك'},effect:{savings:500,happiness:2,spent:500,invested:500}},
+     {id:'b',emoji:'🏋️',label:{en:'Gym membership + new clothes (₪600)',he:'מנוי חדר כושר + בגדים חדשים (600 ₪)',ar:'اشتراك نادي + ملابس جديدة (600 شيكل)'},sub:{en:'Invest in yourself now',he:'השקיעו בעצמכם עכשיו',ar:'استثمر في نفسك الآن'},effect:{savings:0,happiness:18,spent:600,flag:'hasGym',recurring:-180}},
+     {id:'c',emoji:'🧠',label:{en:'Saving plan + gym, skip clothes',he:'תוכנית חיסכון + חדר כושר, בלי בגדים',ar:'خطة ادخار + نادي، تخطَّ الملابس'},sub:{en:'Smart combo but tight month',he:'שילוב חכם אבל חודש צפוף',ar:'مزيج ذكي لكن شهر ضيق'},effect:{savings:200,happiness:5,spent:680,invested:500,flag:'hasGym',recurring:-180}}
+   ]},
+  {month:8, salary:2000, rent:0,
+   story:{en:'Back to school! Textbook list costs ₪450. Some kids buy second-hand. Also, a friend wants to start a small business selling phone cases — ₪300 to join in.',he:'חזרה ללימודים! רשימת ספרי לימוד עולה 450 ₪. יש שקונים יד שנייה. חבר/ה גם רוצה להתחיל עסק קטן למכירת כיסויי טלפון — 300 ₪ להצטרף.',ar:'العودة للمدرسة! قائمة الكتب تكلف 450 شيكل. بعض الطلاب يشترون مستعملة. أيضاً، صديق يريد بدء مشروع صغير لبيع أغطية هواتف — 300 شيكل للانضمام.'},
+   twist:{en:'School demands ₪200 for a lab fee nobody mentioned! 🧪💸',he:'בית הספר דורש 200 ₪ דמי מעבדה שאף אחד לא הזכיר! 🧪💸',ar:'المدرسة تطلب 200 شيكل رسوم مختبر لم يذكرها أحد! 🧪💸'},
+   choices:[
+     {id:'a',emoji:'📚',label:{en:'Second-hand books (₪200) + lab fee + skip business',he:'ספרים יד שנייה (200 ₪) + דמי מעבדה + בלי עסק',ar:'كتب مستعملة (200 شيكل) + رسوم مختبر + تخطَّ المشروع'},sub:{en:'Smart spending, play it safe',he:'הוצאות חכמות, שחקו בטוח',ar:'إنفاق ذكي، العب بأمان'},effect:{savings:600,happiness:2,spent:400}},
+     {id:'b',emoji:'💼',label:{en:'New books + lab fee + join business',he:'ספרים חדשים + מעבדה + הצטרפו לעסק',ar:'كتب جديدة + مختبر + انضم للمشروع'},sub:{en:'All in — ₪950 total',he:'הכל — 950 ₪ סה"כ',ar:'كل شيء — 950 شيكل إجمالاً'},effect:{savings:-200,happiness:15,spent:950,flag:'sideBusiness'}},
+     {id:'c',emoji:'🤝',label:{en:'Second-hand books + join business',he:'ספרים יד שנייה + הצטרפו לעסק',ar:'كتب مستعملة + انضم للمشروع'},sub:{en:'Save on books, invest in the hustle',he:'חסכו על ספרים, השקיעו בהאסל',ar:'وفّر على الكتب، استثمر في المشروع'},effect:{savings:100,happiness:12,spent:700,flag:'sideBusiness'}}
+   ]},
+  {month:9, salary:2000, rent:0,
+   story:{en:'Your birthday is coming! Friends plan a party for you — you need to chip in ₪300 for the venue. Your parents offer ₪500 birthday money.',he:'יום ההולדת שלכם מתקרב! חברים מתכננים מסיבה — צריך להשתתף ב-300 ₪ למקום. ההורים מציעים 500 ₪ מתנת יום הולדת.',ar:'عيد ميلادك قادم! أصدقاؤك يخططون لحفلة — تحتاج للمساهمة بـ300 شيكل للمكان. أهلك يعرضون 500 شيكل هدية عيد ميلاد.'},
+   choices:[
+     {id:'a',emoji:'🎂',label:{en:'Epic party (₪300) + save birthday money',he:'מסיבה אפית (300 ₪) + חסכו כסף יום הולדת',ar:'حفلة رائعة (300 شيكل) + ادخر هدية العيد'},sub:{en:'Celebrate but bank the gift',he:'חגגו אבל שמרו את המתנה',ar:'احتفل لكن ادخر الهدية'},effect:{savings:700,happiness:15,spent:300}},
+     {id:'b',emoji:'🎮',label:{en:'Small hangout + buy something you want (₪400)',he:'מפגש קטן + קנו משהו שרציתם (400 ₪)',ar:'لقاء صغير + اشترِ شيئاً تريده (400 شيكل)'},sub:{en:'Skip the big party, treat yourself',he:'דלגו על מסיבה גדולה, פנקו עצמכם',ar:'تخطَّ الحفلة الكبيرة، دلّل نفسك'},effect:{savings:400,happiness:12,spent:400}},
+     {id:'c',emoji:'💰',label:{en:'Save everything — party at home',he:'חסכו הכל — מסיבה בבית',ar:'ادخر كل شيء — حفلة في البيت'},sub:{en:'Max savings, minimal celebration',he:'חיסכון מקסימלי, חגיגה מינימלית',ar:'أقصى ادخار، احتفال بسيط'},effect:{savings:1300,happiness:-5,spent:0}}
+   ]},
+  {month:10, salary:2000, rent:0,
+   story:{en:'Your class is organizing a charity fundraiser. Also, Black Friday sales are coming — your dream sneakers are 40% off (₪350 instead of ₪580).',he:'הכיתה מארגנת מכירה צדקה. כמו כן, מבצעי בלאק פריידיי מגיעים — הנעליים שחלמתם עליהן ב-40% הנחה (350 ₪ במקום 580 ₪).',ar:'صفك ينظم حملة خيرية. أيضاً، تخفيضات الجمعة السوداء قادمة — حذاءك المفضل بخصم 40% (350 شيكل بدلاً من 580).'},
+   twist:{en:'Your phone screen cracked! 📱💥 Repair costs ₪280.',he:'מסך הטלפון נסדק! 📱💥 תיקון עולה 280 ₪.',ar:'شاشة هاتفك تكسرت! 📱💥 الإصلاح يكلف 280 شيكل.'},
+   choices:[
+     {id:'a',emoji:'👟',label:{en:'Fix phone (₪280) + buy sneakers (₪350)',he:'תקנו טלפון (280 ₪) + קנו נעליים (350 ₪)',ar:'أصلح الهاتف (280 شيكل) + اشترِ الحذاء (350 شيكل)'},sub:{en:'₪630 total — deal is too good to miss',he:'630 ₪ סה"כ — המבצע טוב מדי',ar:'630 شيكل إجمالاً — العرض أفضل من أن يفوت'},effect:{savings:0,happiness:18,spent:630}},
+     {id:'b',emoji:'🔧',label:{en:'Fix phone only + donate ₪50 to fundraiser',he:'תקנו טלפון + תרמו 50 ₪ למכירת צדקה',ar:'أصلح الهاتف فقط + تبرع 50 شيكل'},sub:{en:'Practical + giving back',he:'מעשי + נתינה',ar:'عملي + عطاء'},effect:{savings:400,happiness:5,spent:330}},
+     {id:'c',emoji:'📱',label:{en:'Live with cracked screen, skip sales, save',he:'חיו עם מסך סדוק, דלגו על מבצעים, חסכו',ar:'عش مع شاشة مكسورة، تخطَّ التخفيضات، ادخر'},sub:{en:'Maximum discipline',he:'משמעת מקסימלית',ar:'أقصى انضباط'},effect:{savings:1000,happiness:-8,spent:0,flag:'crackedScreen'}}
+   ]},
+  {month:11, salary:2000, rent:0,
+   story:{en:'A driving school offers a package deal: start lessons now for ₪2,800 (normally ₪3,500). You need your license eventually — sooner is cheaper.',he:'בית ספר לנהיגה מציע מבצע: התחילו שיעורים עכשיו ב-2,800 ₪ (רגיל 3,500 ₪). תצטרכו רישיון מתישהו — מוקדם יותר זול יותר.',ar:'مدرسة قيادة تعرض صفقة: ابدأ الدروس الآن بـ2,800 شيكل (عادةً 3,500). ستحتاج الرخصة في النهاية — الأبكر أرخص.'},
+   choices:[
+     {id:'a',emoji:'🚗',label:{en:'Start driving lessons — ₪2,800',he:'התחילו שיעורי נהיגה — 2,800 ₪',ar:'ابدأ دروس القيادة — 2,800 شيكل'},sub:{en:'Invest in independence',he:'השקיעו בעצמאות',ar:'استثمر في الاستقلالية'},effect:{savings:-1500,happiness:10,spent:2800,flag:'drivingLessons'}},
+     {id:'b',emoji:'⏰',label:{en:'Wait — save up and pay full price later',he:'חכו — חסכו ושלמו מחיר מלא אחר כך',ar:'انتظر — ادخر وادفع السعر الكامل لاحقاً'},sub:{en:'Keep saving, license can wait',he:'המשיכו לחסוך, הרישיון יחכה',ar:'واصل الادخار، الرخصة تنتظر'},effect:{savings:1000,happiness:0,spent:0}},
+     {id:'c',emoji:'🤝',label:{en:'Ask parents to help — you pay ₪1,400',he:'בקשו מההורים — אתם משלמים 1,400 ₪',ar:'اطلب مساعدة الأهل — تدفع 1,400 شيكل'},sub:{en:'Split cost, start sooner',he:'חלקו עלות, התחילו מוקדם',ar:'قسّم التكلفة، ابدأ أبكر'},effect:{savings:-200,happiness:8,spent:1400,flag:'drivingLessons'}}
+   ]},
+  {month:12, salary:2000, rent:0,
+   story:{en:'End of year! Your savings account earned ₪25 in interest. You want to buy holiday gifts for family (₪200-₪600). Your café boss also offers a ₪400 year-end bonus.',he:'סוף שנה! חשבון החיסכון הרוויח 25 ₪ ריבית. אתם רוצים לקנות מתנות חג למשפחה (200-600 ₪). הבוס בקפה גם מציע בונוס סוף שנה 400 ₪.',ar:'نهاية السنة! حساب الادخار كسب 25 شيكل فائدة. تريد شراء هدايا عيد للعائلة (200-600 شيكل). رئيسك في المقهى يعرض أيضاً مكافأة نهاية العام 400 شيكل.'},
+   choices:[
+     {id:'a',emoji:'🎁',label:{en:'Generous gifts (₪600) + save bonus',he:'מתנות נדיבות (600 ₪) + חסכו בונוס',ar:'هدايا سخية (600 شيكل) + ادخر المكافأة'},sub:{en:'Give back to family, bank the rest',he:'תנו למשפחה, שמרו את השאר',ar:'أعطِ العائلة، ادخر الباقي'},effect:{savings:600,happiness:18,spent:600}},
+     {id:'b',emoji:'💝',label:{en:'Modest gifts (₪200) + save everything',he:'מתנות צנועות (200 ₪) + חסכו הכל',ar:'هدايا متواضعة (200 شيكل) + ادخر كل شيء'},sub:{en:'Thoughtful, not expensive',he:'מתחשב, לא יקר',ar:'مدروس، ليس غالياً'},effect:{savings:1200,happiness:8,spent:200}},
+     {id:'c',emoji:'🎉',label:{en:'Gifts + treat yourself + end-of-year party',he:'מתנות + פינוק + מסיבת סוף שנה',ar:'هدايا + دلّل نفسك + حفلة نهاية العام'},sub:{en:'₪1,100 — go out with a bang!',he:'1,100 ₪ — תסיימו בסטייל!',ar:'1,100 شيكل — اختتم بأسلوب!'},effect:{savings:0,happiness:25,spent:1100}}
+   ]}
+];
+
+// ===== Mid-Life Scenario (35 y/o family) =====
+const SIM_SCENARIOS_MIDLIFE = [
+  {month:1, salary:22000, rent:5500,
+   story:{en:'New year, new budget. After mortgage (₪5,500), you have ₪16,500 left. Your kid needs to start gan (preschool) — ₪2,800/month. Groceries, bills, and basics run about ₪5,000.',he:'שנה חדשה, תקציב חדש. אחרי משכנתא (5,500 ₪) נשארו 16,500 ₪. הילד/ה צריך/ה להתחיל גן — 2,800 ₪/חודש. מזון, חשבונות ודברים בסיסיים: כ-5,000 ₪.',ar:'سنة جديدة، ميزانية جديدة. بعد القسط (5,500 شيكل)، تبقى 16,500 شيكل. طفلك يحتاج لبدء الروضة — 2,800 شيكل/شهر. البقالة والفواتير والأساسيات حوالي 5,000 شيكل.'},
+   choices:[
+     {id:'a',emoji:'🏦',label:{en:'Save ₪4,000 + basic living',he:'חסכו 4,000 ₪ + מחייה בסיסית',ar:'ادخر 4,000 شيكل + معيشة أساسية'},sub:{en:'Tight but building security',he:'צפוף אבל בונים ביטחון',ar:'ضيق لكن تبني أماناً'},effect:{savings:4000,happiness:-3,spent:12500}},
+     {id:'b',emoji:'🛋️',label:{en:'Renovate the kids room — ₪8,000',he:'שפצו את חדר הילדים — 8,000 ₪',ar:'جدّد غرفة الأطفال — 8,000 شيكل'},sub:{en:'Create a nice space for the family',he:'צרו מרחב נחמד למשפחה',ar:'اصنع مساحة جميلة للعائلة'},effect:{savings:0,happiness:15,spent:16500,flag:'renovated'}},
+     {id:'c',emoji:'📊',label:{en:'Save ₪2,000 + invest ₪2,000 in index fund',he:'חסכו 2,000 ₪ + השקיעו 2,000 ₪ בקרן מחקה',ar:'ادخر 2,000 + استثمر 2,000 في صندوق مؤشرات'},sub:{en:'Split between safety and growth',he:'חלקו בין ביטחון לצמיחה',ar:'قسّم بين الأمان والنمو'},effect:{savings:2000,happiness:3,spent:12500,invested:2000}}
+   ]},
+  {month:2, salary:22000, rent:5500,
+   story:{en:'Your company offers to upgrade your pension plan — bump your contribution from 6% to 7% (₪70/mo more from you, employer matches). Also, car insurance renewal: ₪3,200/year or switch providers for ₪2,600.',he:'החברה מציעה לשדרג את הפנסיה — העלו הפקדה מ-6% ל-7% (70 ₪ נוסף/חודש, המעסיק מכפיל). חידוש ביטוח רכב: 3,200 ₪/שנה או החלפת חברה ב-2,600 ₪.',ar:'شركتك تعرض ترقية خطة التقاعد — ارفع مساهمتك من 6% لـ7% (70 شيكل/شهر إضافية، صاحب العمل يطابق). تجديد تأمين السيارة: 3,200 شيكل/سنة أو تبديل لـ2,600 شيكل.'},
+   choices:[
+     {id:'a',emoji:'📈',label:{en:'Upgrade pension + switch insurance',he:'שדרגו פנסיה + החליפו ביטוח',ar:'رقِّ التقاعد + بدّل التأمين'},sub:{en:'Optimize both — save ₪600/yr on insurance',he:'מטבו שניהם — חסכו 600 ₪/שנה',ar:'حسّن كليهما — وفّر 600 شيكل/سنة'},effect:{savings:3500,happiness:5,spent:11000,flag:'upgradedPension',recurring:-70}},
+     {id:'b',emoji:'🔄',label:{en:'Keep current pension + switch insurance',he:'שמרו על פנסיה + החליפו ביטוח',ar:'ابقِ التقاعد الحالي + بدّل التأمين'},sub:{en:'Don\'t change too much at once',he:'אל תשנו יותר מדי בבת אחת',ar:'لا تغيّر كثيراً مرة واحدة'},effect:{savings:4000,happiness:2,spent:10800}},
+     {id:'c',emoji:'🤷',label:{en:'Renew everything as-is',he:'חדשו הכל כמו שזה',ar:'جدّد كل شيء كما هو'},sub:{en:'No hassle, slightly more expensive',he:'בלי טרחה, קצת יותר יקר',ar:'بلا متاعب، أغلى قليلاً'},effect:{savings:3200,happiness:0,spent:11500}}
+   ]},
+  {month:3, salary:22000, rent:5500,
+   story:{en:'Your partner wants to go back to school for a professional certificate — ₪12,000 total, but it could mean a ₪4,000/month salary bump in a year.',he:'בן/בת הזוג רוצה ללמוד לתעודה מקצועית — 12,000 ₪ סה"כ, אבל זה יכול להביא העלאה של 4,000 ₪/חודש בעוד שנה.',ar:'شريك/ة حياتك يريد/تريد العودة للدراسة لشهادة مهنية — 12,000 شيكل إجمالاً، لكن قد تعني زيادة 4,000 شيكل/شهر بعد سنة.'},
+   choices:[
+     {id:'a',emoji:'🎓',label:{en:'Pay for course upfront — ₪12,000',he:'שלמו את הקורס מראש — 12,000 ₪',ar:'ادفع ثمن الدورة مقدماً — 12,000 شيكل'},sub:{en:'Big investment in your family\'s future',he:'השקעה גדולה בעתיד המשפחה',ar:'استثمار كبير في مستقبل العائلة'},effect:{savings:-6000,happiness:8,spent:18500,flag:'partnerStudying'}},
+     {id:'b',emoji:'💳',label:{en:'Student loan — ₪1,200/month for 12 months',he:'הלוואת סטודנט — 1,200 ₪/חודש ל-12 חודשים',ar:'قرض طلابي — 1,200 شيكل/شهر لـ12 شهراً'},sub:{en:'Spread the cost, slight interest',he:'פרסו את העלות, מעט ריבית',ar:'وزّع التكلفة، فائدة بسيطة'},effect:{savings:2000,happiness:5,spent:9700,flag:'partnerStudying',recurring:-1200}},
+     {id:'c',emoji:'⏰',label:{en:'Postpone — not the right time financially',he:'דחו — לא הזמן הנכון כלכלית',ar:'أجّل — ليس الوقت المناسب مالياً'},sub:{en:'Safe choice, missed opportunity?',he:'בחירה בטוחה, הזדמנות שהוחמצה?',ar:'خيار آمن، فرصة ضائعة؟'},effect:{savings:4500,happiness:-5,spent:8000}}
+   ]},
+  {month:4, salary:22000, rent:5500,
+   twist:{en:'Your car needs new tires + alignment — ₪2,800! 🚗💨',he:'הרכב צריך צמיגים חדשים + איזון — 2,800 ₪! 🚗💨',ar:'سيارتك تحتاج إطارات جديدة + موازنة — 2,800 شيكل! 🚗💨'},
+   story:{en:'Pesach is coming. Family Seder at your place this year — hosting 15 people. Shopping and cooking supplies add up.',he:'פסח מתקרב. ליל הסדר אצלכם השנה — 15 אורחים. קניות ובישול מצטברים.',ar:'الفصح قادم. سيدر العائلة عندكم هذا العام — 15 ضيفاً. التسوق والطبخ يتراكمان.'},
+   choices:[
+     {id:'a',emoji:'🍷',label:{en:'Big Seder (₪2,000) + fix car now',he:'סדר גדול (2,000 ₪) + תקנו רכב עכשיו',ar:'سيدر كبير (2,000 شيكل) + أصلح السيارة الآن'},sub:{en:'₪4,800 total — family comes first',he:'4,800 ₪ סה"כ — המשפחה קודמת',ar:'4,800 شيكل إجمالاً — العائلة أولاً'},effect:{savings:-1500,happiness:15,spent:13300}},
+     {id:'b',emoji:'🥗',label:{en:'Potluck Seder + fix car',he:'סדר שיתופי + תקנו רכב',ar:'سيدر تشاركي + أصلح السيارة'},sub:{en:'Everyone brings a dish — save on food',he:'כל אחד מביא מנה — חסכו על אוכל',ar:'كل واحد يحضر طبقاً — وفّر على الطعام'},effect:{savings:1000,happiness:8,spent:11500}},
+     {id:'c',emoji:'🔧',label:{en:'Modest Seder + delay car repair',he:'סדר צנוע + דחו תיקון רכב',ar:'سيدر متواضع + أجّل إصلاح السيارة'},sub:{en:'Risky tires but save now',he:'צמיגים מסוכנים אבל חסכו',ar:'إطارات خطرة لكن وفّر الآن'},effect:{savings:3000,happiness:-2,spent:9500,flag:'delayedCarFix'}}
+   ]},
+  {month:5, salary:22000, rent:5500,
+   story:{en:'Your kid is turning 4 — birthday party time! Also, summer camps are opening enrollment (₪3,500 for the month). Without camp, one of you stays home.',he:'הילד/ה מתבגר/ת — הגיע זמן מסיבת יום הולדת! כמו כן, קייטנות פותחות הרשמה (3,500 ₪ לחודש). בלי קייטנה, אחד מכם נשאר בבית.',ar:'طفلك سيبلغ 4 سنوات — حان وقت حفلة العيد! أيضاً، المخيمات الصيفية تفتح التسجيل (3,500 شيكل للشهر). بدون مخيم، أحدكما يبقى بالبيت.'},
+   choices:[
+     {id:'a',emoji:'🎈',label:{en:'Party (₪1,500) + book summer camp',he:'מסיבה (1,500 ₪) + הרשמו לקייטנה',ar:'حفلة (1,500 شيكل) + سجّل بالمخيم'},sub:{en:'₪5,000 — full family mode',he:'5,000 ₪ — מצב משפחתי מלא',ar:'5,000 شيكل — الوضع العائلي الكامل'},effect:{savings:-1500,happiness:18,spent:13500,flag:'summerCamp'}},
+     {id:'b',emoji:'🏠',label:{en:'Home party (₪400) + camp',he:'מסיבה בבית (400 ₪) + קייטנה',ar:'حفلة بالبيت (400 شيكل) + مخيم'},sub:{en:'Save on party, still cover camp',he:'חסכו על המסיבה, עדיין עם קייטנה',ar:'وفّر على الحفلة، المخيم مغطى'},effect:{savings:1100,happiness:12,spent:12400,flag:'summerCamp'}},
+     {id:'c',emoji:'👨‍👩‍👧',label:{en:'Home party + skip camp (parent stays home)',he:'מסיבה בבית + בלי קייטנה (הורה בבית)',ar:'حفلة بالبيت + بلا مخيم (أحد الوالدين يبقى)'},sub:{en:'Save big but lose income',he:'חסכו הרבה אבל תפסידו הכנסה',ar:'وفّر كثيراً لكن تخسر دخلاً'},effect:{savings:2500,happiness:5,spent:8900}}
+   ]},
+  {month:6, salary:22000, rent:5500,
+   story:{en:'Your boss offers a promotion — 15% raise to ₪25,300/mo, but it means longer hours and more travel. Your partner is concerned about family time.',he:'הבוס מציע קידום — העלאה של 15% ל-25,300 ₪/חודש, אבל שעות ארוכות יותר ועוד נסיעות. בן/בת הזוג מודאג/ת לגבי זמן משפחתי.',ar:'رئيسك يعرض ترقية — زيادة 15% لـ25,300 شيكل/شهر، لكن ساعات أطول وسفر أكثر. شريكك قلق/ة بشأن وقت العائلة.'},
+   choices:[
+     {id:'a',emoji:'🚀',label:{en:'Take the promotion',he:'קחו את הקידום',ar:'اقبل الترقية'},sub:{en:'More money, less family time',he:'יותר כסף, פחות זמן משפחתי',ar:'مال أكثر، وقت عائلة أقل'},effect:{savings:5000,happiness:-8,spent:8500,salaryChange:3300,flag:'promoted'}},
+     {id:'b',emoji:'⚖️',label:{en:'Negotiate — promotion with boundaries',he:'נהלו מו"מ — קידום עם גבולות',ar:'تفاوض — ترقية مع حدود'},sub:{en:'Ask for 10% raise, flexible hours',he:'בקשו 10% העלאה, שעות גמישות',ar:'اطلب 10% زيادة، ساعات مرنة'},effect:{savings:3500,happiness:5,spent:8500,salaryRoll:2200}},
+     {id:'c',emoji:'👨‍👩‍👧',label:{en:'Decline — family time is priceless',he:'סרבו — זמן משפחתי לא יסולא בפז',ar:'ارفض — وقت العائلة لا يُقدّر بثمن'},sub:{en:'Keep work-life balance',he:'שמרו על איזון עבודה-חיים',ar:'حافظ على التوازن بين العمل والحياة'},effect:{savings:3000,happiness:10,spent:8500}}
+   ]},
+  {month:7, salary:22000, rent:5500,
+   story:{en:'Summer vacation! Your family wants to travel. Options range from a week in Eilat (₪6,000) to a quick trip to Cyprus (₪12,000). Or stay home and do day trips.',he:'חופשת קיץ! המשפחה רוצה לטייל. אפשרויות: שבוע באילת (6,000 ₪), טיסה קצרה לקפריסין (12,000 ₪), או טיולי יום מהבית.',ar:'عطلة الصيف! عائلتك تريد السفر. الخيارات: أسبوع في إيلات (6,000 شيكل)، رحلة قصيرة لقبرص (12,000 شيكل)، أو رحلات يومية من البيت.'},
+   choices:[
+     {id:'a',emoji:'✈️',label:{en:'Cyprus family trip — ₪12,000',he:'טיול משפחתי לקפריסין — 12,000 ₪',ar:'رحلة عائلية لقبرص — 12,000 شيكل'},sub:{en:'Create lasting family memories',he:'צרו זכרונות משפחתיים',ar:'اصنع ذكريات عائلية تدوم'},effect:{savings:-5000,happiness:25,spent:18500}},
+     {id:'b',emoji:'🏖️',label:{en:'Eilat — ₪6,000',he:'אילת — 6,000 ₪',ar:'إيلات — 6,000 شيكل'},sub:{en:'Great trip without flying',he:'טיול מעולה בלי טיסה',ar:'رحلة رائعة بلا طيران'},effect:{savings:0,happiness:18,spent:14500}},
+     {id:'c',emoji:'🧺',label:{en:'Staycation — day trips (₪1,500)',he:'חופשה בבית — טיולי יום (1,500 ₪)',ar:'إجازة في البلد — رحلات يومية (1,500 شيكل)'},sub:{en:'Budget-friendly family time',he:'זמן משפחתי חסכוני',ar:'وقت عائلي اقتصادي'},effect:{savings:3500,happiness:8,spent:10000}}
+   ]},
+  {month:8, salary:22000, rent:5500,
+   story:{en:'Back from summer! Your landlord — er, bank — reminds you that your mortgage rate resets next month. You can refinance now for ₪3,000 in fees but lock in a lower rate, saving ₪350/month.',he:'חזרתם מהקיץ! הבנק מזכיר שריבית המשכנתא מתאפסת בחודש הבא. אפשר למחזר עכשיו ב-3,000 ₪ עמלה ולנעול ריבית נמוכה יותר, חיסכון 350 ₪/חודש.',ar:'عدتم من الصيف! البنك يذكّرك أن سعر فائدة القسط يُعاد ضبطه الشهر القادم. يمكنك إعادة التمويل الآن بـ3,000 شيكل رسوم وتثبيت سعر أقل، توفير 350 شيكل/شهر.'},
+   twist:{en:'The washing machine died! 🫧💥 A new one costs ₪2,500.',he:'מכונת הכביסה נגמרה! 🫧💥 חדשה עולה 2,500 ₪.',ar:'غسالة الملابس توقفت! 🫧💥 واحدة جديدة تكلف 2,500 شيكل.'},
+   choices:[
+     {id:'a',emoji:'🏦',label:{en:'Refinance + buy washer (₪5,500)',he:'מחזרו + קנו מכונת כביסה (5,500 ₪)',ar:'أعد التمويل + اشترِ غسالة (5,500 شيكل)'},sub:{en:'Smart long-term, tight short-term',he:'חכם לטווח ארוך, צפוף לטווח קצר',ar:'ذكي طويل المدى، ضيق قصير المدى'},effect:{savings:-2000,happiness:5,spent:14000,flag:'refinanced',rentChange:-350}},
+     {id:'b',emoji:'🔧',label:{en:'Buy washer only, skip refinance',he:'קנו מכונת כביסה בלבד',ar:'اشترِ الغسالة فقط، تخطَّ إعادة التمويل'},sub:{en:'Fix the urgent problem first',he:'תקנו את הבעיה הדחופה קודם',ar:'أصلح المشكلة العاجلة أولاً'},effect:{savings:1000,happiness:2,spent:11000}},
+     {id:'c',emoji:'💡',label:{en:'Refinance + used washer (₪800)',he:'מחזרו + מכונה יד שנייה (800 ₪)',ar:'أعد التمويل + غسالة مستعملة (800 شيكل)'},sub:{en:'Save where you can',he:'חסכו איפה שאפשר',ar:'وفّر حيث تستطيع'},effect:{savings:200,happiness:0,spent:12300,flag:'refinanced',rentChange:-350}}
+   ]},
+  {month:9, salary:22000, rent:5500,
+   story:{en:'Your kid\'s gan needs a volunteer parent committee — costs ₪500 for supplies if you lead it. Also, open enrollment for kids\' health fund upgrade (₪280/mo for dental + optical).',he:'גן הילדים צריך ועד הורים מתנדב — 500 ₪ עלות אם אתם מובילים. וגם, הרשמה פתוחה לשדרוג קופת חולים (280 ₪/חודש לשיניים + עיניים).',ar:'روضة طفلك تحتاج لجنة أهالي متطوعة — 500 شيكل للمستلزمات إذا ترأستها. أيضاً، التسجيل مفتوح لترقية صندوق صحة الأطفال (280 شيكل/شهر أسنان + نظر).'},
+   choices:[
+     {id:'a',emoji:'🏥',label:{en:'Health upgrade + volunteer (₪780)',he:'שדרגו בריאות + התנדבו (780 ₪)',ar:'ترقية صحية + تطوع (780 شيكل)'},sub:{en:'Cover the kid, help the community',he:'כסו את הילד/ה, עזרו לקהילה',ar:'غطِّ الطفل، ساعد المجتمع'},effect:{savings:2000,happiness:10,spent:9780,flag:'kidsHealth',recurring:-280}},
+     {id:'b',emoji:'👶',label:{en:'Health upgrade only',he:'שדרגו בריאות בלבד',ar:'ترقية صحية فقط'},sub:{en:'Kids\' health is priority',he:'בריאות הילדים עדיפה',ar:'صحة الأطفال أولوية'},effect:{savings:3000,happiness:5,spent:8780,flag:'kidsHealth',recurring:-280}},
+     {id:'c',emoji:'⏭️',label:{en:'Skip both — current coverage is fine',he:'דלגו על שניהם — הכיסוי הנוכחי מספיק',ar:'تخطَّ كليهما — التغطية الحالية كافية'},sub:{en:'Save now, hope for the best',he:'חסכו עכשיו, קוו לטוב',ar:'وفّر الآن، أتمنَّ الأفضل'},effect:{savings:4500,happiness:0,spent:8000}}
+   ]},
+  {month:10, salary:22000, rent:5500,
+   story:{en:'A friend pitches a real estate investment — ₪50,000 down for a small apartment in Be\'er Sheva to rent out. You have savings but it would mean borrowing too.',he:'חבר/ה מציע/ה השקעה בנדל"ן — 50,000 ₪ מקדמה לדירה קטנה בבאר שבע להשכרה. יש לכם חיסכונות אבל תצטרכו גם ללוות.',ar:'صديق يعرض استثماراً عقارياً — 50,000 شيكل دفعة أولى لشقة صغيرة في بئر السبع للإيجار. لديك مدخرات لكن ستحتاج للاقتراض أيضاً.'},
+   twist:{en:'Your kid needs glasses! 👓 ₪600 for a child\'s pair.',he:'הילד/ה צריך/ה משקפיים! 👓 600 ₪ לזוג ילדים.',ar:'طفلك يحتاج نظارات! 👓 600 شيكل لنظارة أطفال.'},
+   choices:[
+     {id:'a',emoji:'🏢',label:{en:'Invest in apartment + glasses',he:'השקיעו בדירה + משקפיים',ar:'استثمر بالشقة + نظارات'},sub:{en:'Take the plunge — long-term wealth builder',he:'קפצו למים — בניית עושר לטווח ארוך',ar:'خذ الخطوة — بناء ثروة طويل المدى'},effect:{savings:-15000,happiness:5,spent:9100,invested:20000,flag:'realEstateInvestor'}},
+     {id:'b',emoji:'📈',label:{en:'Invest ₪5,000 in stocks + glasses',he:'השקיעו 5,000 ₪ במניות + משקפיים',ar:'استثمر 5,000 في أسهم + نظارات'},sub:{en:'Lower risk, still growing wealth',he:'סיכון נמוך, עדיין מגדילים עושר',ar:'مخاطر أقل، لا تزال تنمي الثروة'},effect:{savings:0,happiness:3,spent:9100,invested:5000}},
+     {id:'c',emoji:'🛡️',label:{en:'Just the glasses — save everything else',he:'רק משקפיים — חסכו את השאר',ar:'النظارات فقط — ادخر الباقي'},sub:{en:'Play it safe with a young family',he:'שחקו בטוח עם משפחה צעירה',ar:'العب بأمان مع عائلة صغيرة'},effect:{savings:4400,happiness:-2,spent:9100}}
+   ]},
+  {month:11, salary:22000, rent:5500,
+   story:{en:'Life insurance agent calls — term life policy for ₪350/month would protect your family if something happens. Also, your parents are getting older and hint they need help with ₪1,000/month.',he:'סוכן ביטוח חיים מתקשר — פוליסת ריסק ב-350 ₪/חודש תגן על המשפחה. כמו כן, ההורים שלכם מבוגרים ומרמזים שהם צריכים עזרה של 1,000 ₪/חודש.',ar:'وكيل تأمين حياة يتصل — بوليصة تأمين لأجل بـ350 شيكل/شهر تحمي عائلتك. أيضاً، أهلك يكبرون ويلمحون أنهم يحتاجون مساعدة 1,000 شيكل/شهر.'},
+   choices:[
+     {id:'a',emoji:'🛡️',label:{en:'Life insurance + help parents',he:'ביטוח חיים + עזרו להורים',ar:'تأمين حياة + ساعد الأهل'},sub:{en:'Protect everyone — tight but right',he:'הגנו על כולם — צפוף אבל נכון',ar:'احمِ الجميع — ضيق لكن صحيح'},effect:{savings:500,happiness:8,spent:9850,flag:'lifeInsurance',recurring:-1350}},
+     {id:'b',emoji:'👨‍👩‍👧',label:{en:'Help parents only — insurance can wait',he:'עזרו להורים — ביטוח יחכה',ar:'ساعد الأهل فقط — التأمين ينتظر'},sub:{en:'Family obligation first',he:'חובה משפחתית קודמת',ar:'واجب عائلي أولاً'},effect:{savings:2000,happiness:3,spent:9500,recurring:-1000}},
+     {id:'c',emoji:'📊',label:{en:'Insurance only — parents have pension',he:'ביטוח בלבד — להורים יש פנסיה',ar:'التأمين فقط — الأهل عندهم تقاعد'},sub:{en:'Protect your own family first',he:'הגנו על המשפחה שלכם קודם',ar:'احمِ عائلتك أولاً'},effect:{savings:3000,happiness:-5,spent:8850,flag:'lifeInsurance',recurring:-350}}
+   ]},
+  {month:12, salary:22000, rent:5500,
+   story:{en:'Year-end! Tax season — filing jointly could get you ₪4,500 back if you use an accountant (₪800). Your kid\'s gan end-of-year show needs costumes + gift for the teacher.',he:'סוף שנה! עונת מיסים — הגשה משותפת יכולה להחזיר 4,500 ₪ עם רו"ח (800 ₪). מופע הגן דורש תחפושות + מתנה לגננת.',ar:'نهاية السنة! موسم الضرائب — تقديم مشترك قد يعيد 4,500 شيكل مع محاسب (800 شيكل). حفلة نهاية السنة بالروضة تحتاج أزياء + هدية للمعلمة.'},
+   choices:[
+     {id:'a',emoji:'🧾',label:{en:'Accountant (₪800) + nice gifts (₪500)',he:'רו"ח (800 ₪) + מתנות יפות (500 ₪)',ar:'محاسب (800 شيكل) + هدايا لطيفة (500 شيكل)'},sub:{en:'Get ₪4,500 back, celebrate the year',he:'קבלו 4,500 ₪ בחזרה, חגגו את השנה',ar:'استرد 4,500 شيكل، احتفل بالسنة'},effect:{savings:6700,happiness:12,spent:9800,flag:'taxRefund'}},
+     {id:'b',emoji:'📊',label:{en:'Accountant + invest the refund',he:'רו"ח + השקיעו את ההחזר',ar:'محاسب + استثمر المبلغ المسترد'},sub:{en:'Put the windfall to work',he:'שימו את הזכייה לעבוד',ar:'استثمر العائد'},effect:{savings:2500,happiness:5,spent:9300,invested:4500,flag:'taxRefund'}},
+     {id:'c',emoji:'🎄',label:{en:'Skip accountant + big family celebration',he:'בלי רו"ח + חגיגה משפחתית גדולה',ar:'بلا محاسب + احتفال عائلي كبير'},sub:{en:'Enjoy the holidays, miss the refund',he:'תהנו מהחגים, תחמיצו החזר',ar:'استمتع بالعطلات، فوّت الاسترداد'},effect:{savings:500,happiness:20,spent:10000}}
    ]}
 ];
 
@@ -4808,15 +5052,37 @@ function renderCalcPaycheck(){
 }
 
 // ===== Budget simulator (mini-game) =====
+const SIM_SCENARIO_MAP = {
+  school: { scenarios: SIM_SCENARIOS_SCHOOL, salary:2000, rent:0 },
+  grad:   { scenarios: SIM_SCENARIOS, salary:6500, rent:2200 },
+  midlife:{ scenarios: SIM_SCENARIOS_MIDLIFE, salary:22000, rent:5500 }
+};
+
 function startSimulator(){
-  state.sim = { round:0, savings:0, invested:0, happiness:50, phase:'intro',
+  state.sim = { round:0, savings:0, invested:0, happiness:50, phase:'pick',
     flags:{}, totalSpent:0, totalEarned:0, salary:6500, rent:2200,
-    choices:[], lastChoice:null, xpGained:0 };
+    choices:[], lastChoice:null, xpGained:0, scenarioType:null };
   goto('simulator');
 }
 
+function pickSimScenario(type){
+  const cfg = SIM_SCENARIO_MAP[type];
+  if(!cfg) return;
+  state.sim.scenarioType = type;
+  state.sim.salary = cfg.salary;
+  state.sim.rent = cfg.rent;
+  state.sim.phase = 'intro';
+  render();
+  window.scrollTo(0,0);
+}
+
+function getActiveScenarios(){
+  const type = state.sim.scenarioType || 'grad';
+  return SIM_SCENARIO_MAP[type].scenarios;
+}
+
 function getSimScenario(idx){
-  const sc = SIM_SCENARIOS[idx];
+  const sc = getActiveScenarios()[idx];
   if(!sc) return null;
   const s = state.sim;
   // Dynamic scenarios that depend on flags
@@ -4898,7 +5164,7 @@ function chooseSimAction(choiceId){
 
 function continueSim(){
   const s = state.sim;
-  if(s.round < SIM_SCENARIOS.length-1){
+  if(s.round < getActiveScenarios().length-1){
     s.round++;
     s.phase = 'choice';
     s._twistSeen = false;
@@ -4914,7 +5180,8 @@ function continueSim(){
 
 function renderSimulator(){
   const s = state.sim;
-  const total = SIM_SCENARIOS.length;
+  const scenarios = getActiveScenarios();
+  const total = scenarios.length;
   const happyEmoji = s.happiness>=70?'😄':s.happiness>=40?'😐':'😟';
   const happyColor = s.happiness>=70?'#16A34A':s.happiness>=40?'#D97706':'#DC2626';
   const statsRow = `
@@ -4923,32 +5190,67 @@ function renderSimulator(){
       <div class="sim-stat"><div class="sim-stat-num">₪${s.invested.toLocaleString()}</div><div class="sim-stat-lbl">${t('simInvestedLbl')}</div></div>
       <div class="sim-stat"><div class="sim-stat-num" style="color:${happyColor}">${happyEmoji} ${s.happiness}%</div><div class="sim-stat-lbl">${t('simHappinessLbl')}</div></div>
     </div>`;
-  const dots = SIM_SCENARIOS.map((_,i)=>`<div class="quiz-dot ${i<s.round?'filled':i===s.round?'filled current':''}"></div>`).join('');
+  const dots = scenarios.map((_,i)=>`<div class="quiz-dot ${i<s.round?'filled':i===s.round?'filled current':''}"></div>`).join('');
 
-  if(s.phase==='intro'){
+  if(s.phase==='pick'){
+    const cards = [
+      {type:'school', emoji:t('simScenarioSchoolEmoji'), name:t('simScenarioSchool'), desc:t('simScenarioSchoolDesc')},
+      {type:'grad',   emoji:t('simScenarioGradEmoji'),   name:t('simScenarioGrad'),   desc:t('simScenarioGradDesc')},
+      {type:'midlife', emoji:t('simScenarioMidlifeEmoji'), name:t('simScenarioMidlife'), desc:t('simScenarioMidlifeDesc')}
+    ];
     return `
     <div class="screen active" style="--accent:#6B4A8522; --accent-deep:#6B4A85;">
       ${renderTopbar()}
       <div class="sim-hero" style="padding-top:40px;">
-        <div style="font-size:52px;">🏙️</div>
-        <div class="cat-title" style="font-size:22px; margin-top:10px;">${t('simIntroTitle')}</div>
+        <div style="font-size:52px;">🎮</div>
+        <div class="cat-title" style="font-size:22px; margin-top:10px;">${t('simPickerTitle')}</div>
+        <div style="font-size:13.5px; color:var(--ink-soft); margin-top:6px;">${t('simPickerSub')}</div>
+      </div>
+      <div class="sim-picker-grid">
+        ${cards.map(c=>`
+        <button class="sim-picker-card" data-sim-type="${c.type}">
+          <div class="sim-picker-emoji">${c.emoji}</div>
+          <div class="sim-picker-info">
+            <div class="sim-picker-name">${c.name}</div>
+            <div class="sim-picker-desc">${c.desc}</div>
+          </div>
+          <div style="font-size:18px; color:var(--ink-soft); flex-shrink:0;">${dirFor(state.lang)==='rtl'?'‹':'›'}</div>
+        </button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  if(s.phase==='intro'){
+    const sType = s.scenarioType||'grad';
+    const introTitleKey = sType==='school'?'simSchoolIntroTitle':sType==='midlife'?'simMidlifeIntroTitle':'simIntroTitle';
+    const introTextKey = sType==='school'?'simSchoolIntroText':sType==='midlife'?'simMidlifeIntroText':'simIntroText';
+    const introEmoji = sType==='school'?'🎒':sType==='midlife'?'🏡':'🏙️';
+    const salaryLabel = state.lang==='he'?(sType==='school'?'הכנסה חודשית':'משכורת חודשית'):state.lang==='ar'?(sType==='school'?'الدخل الشهري':'الراتب الشهري'):(sType==='school'?'Monthly income':'Monthly salary');
+    const rentLabel = state.lang==='he'?(sType==='midlife'?'משכנתא':'שכירות'):state.lang==='ar'?(sType==='midlife'?'القسط الشهري':'الإيجار'):(sType==='midlife'?'Mortgage':'Rent');
+    const rentEmoji = sType==='midlife'?'🏦':'🏠';
+    return `
+    <div class="screen active" style="--accent:#6B4A8522; --accent-deep:#6B4A85;">
+      ${renderTopbar()}
+      <div class="sim-hero" style="padding-top:40px;">
+        <div style="font-size:52px;">${introEmoji}</div>
+        <div class="cat-title" style="font-size:22px; margin-top:10px;">${t(introTitleKey)}</div>
       </div>
       <div class="sim-round-card" style="text-align:start;">
-        <div style="font-size:14.5px; line-height:1.7; color:var(--ink);">${t('simIntroText')}</div>
+        <div style="font-size:14.5px; line-height:1.7; color:var(--ink);">${t(introTextKey)}</div>
         <div style="display:flex; gap:12px; margin-top:20px; flex-wrap:wrap;">
           <div style="flex:1; min-width:120px; background:var(--bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
             <div style="font-size:22px;">💰</div>
-            <div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">₪6,500</div>
-            <div style="font-size:11px; color:var(--ink-soft);">${state.lang==='he'?'משכורת חודשית':state.lang==='ar'?'الراتب الشهري':'Monthly salary'}</div>
+            <div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">₪${s.salary.toLocaleString()}</div>
+            <div style="font-size:11px; color:var(--ink-soft);">${salaryLabel}</div>
           </div>
-          <div style="flex:1; min-width:120px; background:var(--bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
-            <div style="font-size:22px;">🏠</div>
-            <div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">₪2,200</div>
-            <div style="font-size:11px; color:var(--ink-soft);">${state.lang==='he'?'שכירות':state.lang==='ar'?'الإيجار':'Rent'}</div>
-          </div>
+          ${s.rent>0?`<div style="flex:1; min-width:120px; background:var(--bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
+            <div style="font-size:22px;">${rentEmoji}</div>
+            <div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">₪${s.rent.toLocaleString()}</div>
+            <div style="font-size:11px; color:var(--ink-soft);">${rentLabel}</div>
+          </div>`:''}
           <div style="flex:1; min-width:120px; background:var(--bg); border-radius:var(--radius-sm); padding:12px; text-align:center;">
             <div style="font-size:22px;">📅</div>
-            <div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">12</div>
+            <div style="font-family:var(--font-mono); font-weight:800; font-size:16px;">${total}</div>
             <div style="font-size:11px; color:var(--ink-soft);">${state.lang==='he'?'חודשים':state.lang==='ar'?'شهراً':'Months'}</div>
           </div>
         </div>
@@ -5035,16 +5337,32 @@ function renderSimulator(){
   } else {
     // Summary phase
     const netWorth = s.savings + s.invested;
-    // Calculate star rating (1-5)
+    // Calculate star rating (1-5) — thresholds vary by scenario type
+    const sType = s.scenarioType||'grad';
     let stars = 1;
-    if(netWorth>=5000) stars++;
-    if(netWorth>=15000) stars++;
-    if(s.happiness>=50) stars++;
-    if(s.happiness>=70 && netWorth>=10000) stars++;
+    if(sType==='school'){
+      if(netWorth>=1500) stars++;
+      if(netWorth>=5000) stars++;
+      if(s.happiness>=50) stars++;
+      if(s.happiness>=70 && netWorth>=3000) stars++;
+    } else if(sType==='midlife'){
+      if(netWorth>=15000) stars++;
+      if(netWorth>=40000) stars++;
+      if(s.happiness>=50) stars++;
+      if(s.happiness>=70 && netWorth>=25000) stars++;
+    } else {
+      if(netWorth>=5000) stars++;
+      if(netWorth>=15000) stars++;
+      if(s.happiness>=50) stars++;
+      if(s.happiness>=70 && netWorth>=10000) stars++;
+    }
     const starStr = '⭐'.repeat(stars) + '☆'.repeat(5-stars);
     const summaryKey = stars>=5?'simSummaryGreat':stars>=4?'simSummaryGood':stars>=3?'simSummaryOk':'simSummaryRough';
-    // Flags earned
-    const flagMap = {hasInsurance:'simFlagInsurance',hasKeren:'simFlagKeren',newJob:'simFlagNewJob',freelance:'simFlagFreelance',taxRefund:'simFlagTaxRefund',hasGym:'simFlagGym'};
+    // Flags earned — vary by scenario type
+    const gradFlagMap = {hasInsurance:'simFlagInsurance',hasKeren:'simFlagKeren',newJob:'simFlagNewJob',freelance:'simFlagFreelance',taxRefund:'simFlagTaxRefund',hasGym:'simFlagGym'};
+    const schoolFlagMap = {newPhone:'simFlagNewPhone',extraShifts:'simFlagExtraShifts',studyCourse:'simFlagStudyCourse',privateTutor:'simFlagPrivateTutor',sideBusiness:'simFlagSideBusiness',drivingLessons:'simFlagDrivingLessons',hasGym:'simFlagGym',crackedScreen:'simFlagCrackedScreen'};
+    const midlifeFlagMap = {renovated:'simFlagRenovated',upgradedPension:'simFlagUpgradedPension',partnerStudying:'simFlagPartnerStudying',summerCamp:'simFlagSummerCamp',promoted:'simFlagPromoted',refinanced:'simFlagRefinanced',kidsHealth:'simFlagKidsHealth',realEstateInvestor:'simFlagRealEstateInvestor',lifeInsurance:'simFlagLifeInsurance',taxRefund:'simFlagTaxRefund'};
+    const flagMap = sType==='school'?schoolFlagMap:sType==='midlife'?midlifeFlagMap:gradFlagMap;
     const earnedFlags = Object.keys(flagMap).filter(f=>s.flags[f]);
     return `
     <div class="screen active" style="--accent:#6B4A8522; --accent-deep:#6B4A85;">
@@ -5382,6 +5700,10 @@ function attachEvents(){
   // Simulator screen
   const backHomeFromSim = document.getElementById('backHomeFromSim');
   if(backHomeFromSim) backHomeFromSim.addEventListener('click', ()=> goto('home'));
+  // Scenario picker cards
+  document.querySelectorAll('.sim-picker-card').forEach(el=>{
+    el.addEventListener('click', ()=> pickSimScenario(el.dataset.simType));
+  });
   const simIntroBtn = document.getElementById('simIntroBtn');
   if(simIntroBtn) simIntroBtn.addEventListener('click', ()=>{ state.sim.phase='choice'; state.sim._twistSeen=false; render(); window.scrollTo(0,0); });
   // Plot twist popup — delayed entrance then auto-dismiss
@@ -5409,7 +5731,7 @@ function attachEvents(){
   const simContinueBtn = document.getElementById('simContinueBtn');
   if(simContinueBtn) simContinueBtn.addEventListener('click', continueSim);
   const simPlayAgainBtn = document.getElementById('simPlayAgainBtn');
-  if(simPlayAgainBtn) simPlayAgainBtn.addEventListener('click', startSimulator);
+  if(simPlayAgainBtn) simPlayAgainBtn.addEventListener('click', ()=> startSimulator());
   const simBackToolsBtn = document.getElementById('simBackToolsBtn');
   if(simBackToolsBtn) simBackToolsBtn.addEventListener('click', ()=> goto('home'));
 }
