@@ -377,6 +377,78 @@ a{color:inherit;}
 .subsection-name-row .subsection-name{ margin-bottom:0; flex:1; }
 .quiz-gate-note{ font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:12px; line-height:1.5; }
 
+/* ===== Guided Learning Mode (Duolingo-style) ===== */
+.guided-progress-wrap{ padding:16px 18px 0; display:flex; align-items:center; gap:10px; }
+.guided-progress-bar{ flex:1; height:12px; background:var(--line); border-radius:99px; overflow:hidden; }
+.guided-progress-fill{ height:100%; background:var(--accent-deep); border-radius:99px; transition:width .4s ease; }
+.guided-progress-pct{ font-size:12px; font-weight:700; color:var(--ink-soft); font-family:var(--font-mono); min-width:40px; text-align:end; }
+.guided-step{ animation:guidedIn .3s ease; }
+@keyframes guidedIn{ from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.guided-badge{
+  display:inline-block; font-size:11px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  padding:4px 10px; border-radius:99px; margin-bottom:12px; font-family:var(--font-mono);
+}
+.guided-badge.concept{ background: color-mix(in srgb, var(--accent-deep) 14%, var(--paper)); color: var(--accent-deep); }
+.guided-badge.question{ background: #FEF3C7; color:#92400E; }
+.guided-concept-emoji{ font-size:40px; margin-bottom:8px; display:block; }
+.guided-concept-text{ font-size:16.5px; line-height:1.75; color:var(--ink); }
+.guided-question-text{ font-family:var(--font-display); font-weight:800; font-size:19px; line-height:1.4; margin-bottom:18px; }
+.guided-opts{ display:flex; flex-direction:column; gap:10px; }
+.guided-opt{
+  text-align:start; padding:14px 16px; border-radius:var(--radius-sm); border:1.5px solid var(--line);
+  background:var(--bg); font-size:14.5px; font-weight:500; line-height:1.4; display:flex; align-items:center; gap:12px;
+  font-family:inherit; cursor:pointer; transition: border-color .12s, background .12s, transform .1s;
+}
+.guided-opt:hover:not(.locked){ border-color:var(--accent-deep); }
+.guided-opt-letter{
+  width:26px; height:26px; border-radius:50%; border:1.5px solid var(--line); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; font-family:var(--font-mono); background:var(--paper);
+}
+.guided-opt.selected{ border-color: var(--accent-deep); background: color-mix(in srgb, var(--accent-deep) 10%, var(--paper)); }
+.guided-opt.selected .guided-opt-letter{ background: var(--accent-deep); color:#fff; border-color:var(--accent-deep); }
+.guided-opt.correct{ border-color: var(--emerald); background: #E4F1EB; }
+.guided-opt.correct .guided-opt-letter{ background: var(--emerald); color:#fff; border-color:var(--emerald); }
+.guided-opt.wrong{ border-color: var(--brick); background: #FBEAE7; }
+.guided-opt.wrong .guided-opt-letter{ background: var(--brick); color:#fff; border-color:var(--brick); }
+.guided-opt.locked{ cursor:default; }
+.guided-opt.locked:not(.correct):not(.wrong):not(.selected){ opacity:.55; }
+.guided-feedback{
+  margin-top:16px; padding:14px 16px; border-radius:12px; font-size:14px; line-height:1.55;
+  animation: guidedIn .22s ease; border:1.5px solid;
+}
+.guided-feedback.correct{ background:#E4F1EB; color: var(--emerald-deep); border-color:var(--emerald); }
+.guided-feedback.wrong{ background:#FBEAE7; color:#991B1B; border-color:var(--brick); }
+.guided-feedback strong{ display:block; margin-bottom:4px; font-size:15px; }
+.guided-cta-row{ padding:16px 18px 8px; }
+.guided-cta{
+  width:100%; padding:16px; border-radius:14px; border:none; font-weight:800; font-size:15.5px;
+  font-family:inherit; cursor:pointer; letter-spacing:.02em; transition: filter .12s, transform .1s;
+  box-shadow: var(--shadow-sm);
+}
+.guided-cta:hover:not(:disabled){ filter:brightness(1.06); }
+.guided-cta:active:not(:disabled){ transform: translateY(1px); }
+.guided-cta:disabled{ opacity:.35; cursor:not-allowed; }
+.guided-cta.primary{ background: var(--accent-deep); color:#fff; }
+.guided-cta.correct{ background: var(--emerald); color:#fff; }
+.guided-cta.wrong{ background: var(--brick); color:#fff; }
+.guided-summary{ text-align:center; padding:28px 20px 10px; }
+.guided-summary-emoji{ font-size:72px; margin-bottom:12px; display:block; animation: pop .35s ease; }
+@keyframes pop{ from{transform:scale(.6);opacity:0} to{transform:scale(1);opacity:1} }
+.guided-summary-title{ font-family:var(--font-display); font-weight:800; font-size:26px; margin-bottom:6px; }
+.guided-summary-sub{ font-size:14px; color:var(--ink-soft); margin-bottom:22px; }
+.guided-summary-stats{ display:flex; gap:12px; margin:0 auto 24px; max-width:360px; }
+.guided-stat{
+  flex:1; background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px 6px;
+  box-shadow: var(--shadow-sm);
+}
+.guided-stat-val{ font-family:var(--font-display); font-weight:800; font-size:24px; color:var(--accent-deep); }
+.guided-stat-lbl{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em; margin-top:4px; }
+.guided-summary-msg{ font-size:14px; color:var(--ink); margin-bottom:20px; padding:0 10px; line-height:1.5; }
+.guided-topic-title{
+  font-family:var(--font-display); font-weight:800; font-size:17px; letter-spacing:-0.01em;
+  margin-bottom:14px; color:var(--ink);
+}
+
 /* ===== XP / Levels / Badges ===== */
 .xp-toast{
   position:fixed; bottom:24px; left:50%; transform: translateX(-50%) translateY(20px);
@@ -3391,7 +3463,16 @@ const STR = {
     simScenarioMidlifeEmoji:'🏡',
     simSchoolIntroTitle:'Your Student Budget', simSchoolIntroText:'You\'re 16, in high school. You get ₪800/month allowance from your parents and just started a part-time job earning ₪1,200/month at a local café. Every month brings choices — saving for things you want, dealing with school costs, and figuring out how money works.',
     simMidlifeIntroTitle:'Your Family Budget', simMidlifeIntroText:'You\'re 35, married, with a 3-year-old kid. Combined household income: ₪22,000/month. Mortgage: ₪5,500/month. You\'re juggling career growth, family needs, and planning for the future. Every decision ripples through your whole family.',
-    realLifeToggleLabel:'REAL LIFE', quickLearnLabel:'QUICK LEARN', homeSubRealLife:'Practical money skills for real life in Israel' },
+    realLifeToggleLabel:'REAL LIFE', quickLearnLabel:'QUICK LEARN', homeSubRealLife:'Practical money skills for real life in Israel',
+    guidedModeLabel:'GUIDED LEARNING', guidedModeDesc:'Learn step by step with quick checks along the way',
+    guidedCheck:'Check', guidedContinue:'Continue', guidedCorrectHdr:'Correct!', guidedWrongHdr:'Not quite',
+    guidedConceptBadge:'Learn', guidedQuestionBadge:'Quick Check',
+    guidedCompleteTitle:'Lesson Complete!', guidedCompleteSub:'You\'ve learned {topic}',
+    guidedQuestionsScore:'{score}/{total} questions correct',
+    guidedKeepGoing:'Keep Going', guidedBackToTopics:'Back to Topics', guidedRetakeLesson:'Try Again',
+    guidedPerfect:'Perfect! You got every question right.', guidedGreat:'Great work! You\'ve got the hang of it.',
+    guidedOk:'Nice try. Review and try again if you want to lock it in.',
+    guidedExitConfirm:'Leave lesson? Your progress on this attempt will be lost.' },
   he: { appName:'IsraFin', tagline:'למדו איך הכסף באמת עובד בישראל — חיסכון, השקעות, בנקאות, מיסים ועוד.',
     nameLabel:'איך לקרוא לכם?', namePh:'השם שלכם', startBtn:'בואו נתחיל ללמוד',
     loginNote:'זוהי כניסה לדוגמה — השם שלכם נשמר רק לביקור הזה ומתאפס אם טוענים את האפליקציה מחדש.',
@@ -3474,7 +3555,16 @@ const STR = {
     simScenarioMidlifeEmoji:'🏡',
     simSchoolIntroTitle:'התקציב שלכם כתלמידים', simSchoolIntroText:'אתם בני 16, לומדים בתיכון. אתם מקבלים 800 ₪ דמי כיס מההורים ומרוויחים 1,200 ₪ מעבודה חלקית בבית קפה. כל חודש מביא בחירות — חיסכון לדברים שאתם רוצים, התמודדות עם הוצאות לימודים, ולמידה איך כסף עובד.',
     simMidlifeIntroTitle:'התקציב המשפחתי', simMidlifeIntroText:'אתם בני 35, נשואים, עם ילד/ה בן/בת 3. הכנסה משפחתית: 22,000 ₪/חודש. משכנתא: 5,500 ₪/חודש. אתם מלהטטים בין קידום בקריירה, צרכי המשפחה ותכנון לעתיד. כל החלטה משפיעה על כל המשפחה.',
-    realLifeToggleLabel:'חיים אמיתיים', quickLearnLabel:'למידה מהירה', homeSubRealLife:'מיומנויות כסף מעשיות לחיים האמיתיים בישראל' },
+    realLifeToggleLabel:'חיים אמיתיים', quickLearnLabel:'למידה מהירה', homeSubRealLife:'מיומנויות כסף מעשיות לחיים האמיתיים בישראל',
+    guidedModeLabel:'למידה מודרכת', guidedModeDesc:'למדו שלב-אחר-שלב עם בדיקות קצרות בדרך',
+    guidedCheck:'בדיקה', guidedContinue:'המשך', guidedCorrectHdr:'נכון!', guidedWrongHdr:'לא ממש',
+    guidedConceptBadge:'ללמוד', guidedQuestionBadge:'בדיקה מהירה',
+    guidedCompleteTitle:'השיעור הושלם!', guidedCompleteSub:'למדתם על {topic}',
+    guidedQuestionsScore:'{score}/{total} שאלות נכונות',
+    guidedKeepGoing:'ממשיכים', guidedBackToTopics:'חזרה לנושאים', guidedRetakeLesson:'לנסות שוב',
+    guidedPerfect:'מושלם! עניתם נכון על כל השאלות.', guidedGreat:'עבודה מצוינת! יש לכם את זה.',
+    guidedOk:'ניסיון יפה. אפשר לחזור ולנסות שוב כדי להטמיע את החומר.',
+    guidedExitConfirm:'לצאת מהשיעור? ההתקדמות בניסיון הזה תאבד.' },
   ar: { appName:'IsraFin', tagline:'تعلّم كيف يعمل المال فعلياً في إسرائيل — الادخار، الاستثمار، الخدمات المصرفية، الضرائب، والمزيد.',
     nameLabel:'كيف نناديك؟', namePh:'اسمك', startBtn:'ابدأ التعلم',
     loginNote:'هذا تسجيل دخول تجريبي — يُحفظ اسمك فقط لهذه الزيارة ويُعاد ضبطه عند إعادة تحميل التطبيق.',
@@ -3557,7 +3647,16 @@ const STR = {
     simScenarioMidlifeEmoji:'🏡',
     simSchoolIntroTitle:'ميزانيتك كطالب', simSchoolIntroText:'عمرك 16 سنة، تدرس في الثانوية. تحصل على 800 شيكل مصروف شهري من أهلك وتكسب 1,200 شيكل من عمل جزئي في مقهى. كل شهر يحمل خيارات — الادخار لأشياء تريدها، التعامل مع مصاريف الدراسة، وتعلم كيف يعمل المال.',
     simMidlifeIntroTitle:'ميزانية العائلة', simMidlifeIntroText:'عمرك 35 سنة، متزوج/ة، ولديك طفل/ة بعمر 3 سنوات. الدخل العائلي: 22,000 شيكل/شهر. القسط الشهري: 5,500 شيكل/شهر. تتنقل بين التطور المهني واحتياجات العائلة والتخطيط للمستقبل. كل قرار يؤثر على العائلة بأكملها.',
-    realLifeToggleLabel:'الحياة الواقعية', quickLearnLabel:'تعلّم سريع', homeSubRealLife:'مهارات مالية عملية للحياة الواقعية في إسرائيل' }
+    realLifeToggleLabel:'الحياة الواقعية', quickLearnLabel:'تعلّم سريع', homeSubRealLife:'مهارات مالية عملية للحياة الواقعية في إسرائيل',
+    guidedModeLabel:'تعلّم موجّه', guidedModeDesc:'تعلّم خطوة بخطوة مع فحوصات سريعة أثناء الطريق',
+    guidedCheck:'تحقق', guidedContinue:'متابعة', guidedCorrectHdr:'صحيح!', guidedWrongHdr:'ليس تماماً',
+    guidedConceptBadge:'تعلّم', guidedQuestionBadge:'فحص سريع',
+    guidedCompleteTitle:'اكتمل الدرس!', guidedCompleteSub:'تعلّمت عن {topic}',
+    guidedQuestionsScore:'{score}/{total} أسئلة صحيحة',
+    guidedKeepGoing:'استمر', guidedBackToTopics:'العودة للمواضيع', guidedRetakeLesson:'حاول مجدداً',
+    guidedPerfect:'ممتاز! أجبت على جميع الأسئلة بشكل صحيح.', guidedGreat:'عمل رائع! لقد أتقنت الموضوع.',
+    guidedOk:'محاولة جيدة. راجع وحاول مجدداً إذا أردت ترسيخ المادة.',
+    guidedExitConfirm:'مغادرة الدرس؟ ستفقد تقدمك في هذه المحاولة.' }
 };
 const LANGS = [ {code:'en', label:'English', native:'English'}, {code:'he', label:'Hebrew', native:'עברית'}, {code:'ar', label:'Arabic', native:'العربية'} ];
 
@@ -3862,6 +3961,8 @@ let state = {
   sim: null, // { round, savings, invested, happiness, phase:'intro'|'choice'|'result'|'summary', flags, choices, lastChoice }
   realLifeMode: false,
   quickLearn: false,
+  guidedMode: true, // Duolingo-style interleaved concept + question flow (new default)
+  guided: null, // { stepIdx, selectedOpt, answered, correctCount, totalQuestions, finished } — populated when guided lesson opens
   lessonCard: 0,
   confirmModal: null, // { message, action } | null
   goal: null, // current selected goal key
@@ -4224,7 +4325,7 @@ function setLang(code){
 
 function goto(screen, extra){
   if(screen === 'home') state.factIndex = Math.floor(Math.random()*FINANCIAL_FACTS.en.length);
-  if(screen === 'lesson') state.lessonCard = 0;
+  if(screen === 'lesson'){ state.lessonCard = 0; state.guided = null; } // clear guided state so initGuidedLesson rebuilds for this topic
   state.screen = screen;
   if(extra) Object.assign(state, extra);
   render();
@@ -4260,7 +4361,7 @@ function renderConfirmModal(){
 // ===== Local persistence (per-profile, by name) =====
 const PROFILES_KEY = 'israfin2:profiles';
 const LAST_USER_KEY = 'israfin2:lastUser';
-const PROFILE_FIELDS = ['userName','avatar','lang','xp','progress','badges','bestStreak','answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode','quickLearn'];
+const PROFILE_FIELDS = ['userName','avatar','lang','xp','progress','badges','bestStreak','answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode','quickLearn','guidedMode'];
 
 function storageAvailable(){
   try{
@@ -4613,6 +4714,10 @@ function flatTopicList(cat){
 }
 
 function renderLesson(){
+  // Guided mode is the new default — fully interleaved concepts + questions.
+  // Falls through to classic/quickLearn flow if the user turned guided off.
+  if(state.guidedMode) return renderGuidedLesson();
+
   const cat = findCategory(state.activeTopic.catId);
   const flat = flatTopicList(cat);
   const curFlatIdx = flat.findIndex(f=>f.sIdx===state.activeTopic.subIdx && f.tIdx===state.activeTopic.topicIdx);
@@ -4696,6 +4801,240 @@ function splitLessonCards(text, lang){
   return parts;
 }
 
+// ===== Guided Learning Mode =====
+// Interleave lesson sentences and quiz questions into one step-by-step flow.
+// Rhythm: show a few concept cards, then one question, then a few more, then another, etc.
+// If there's no quiz for the topic, this is just the concept cards + a mastery screen.
+const GUIDED_EMOJIS = ['📖','💡','🔑','✨','🧩','🎯','🌱'];
+
+function buildGuidedSteps(cards, questions){
+  const steps = [];
+  const C = cards.length, Q = questions.length;
+  if(C === 0 && Q === 0) return steps;
+  // How many concepts to show before each question. We want questions evenly spaced,
+  // with concepts always leading (first step is always a concept if any exist).
+  const perQ = Q > 0 ? Math.max(1, Math.ceil(C / Q)) : C;
+  let ci = 0, qi = 0;
+  // First pass: show concepts in groups of `perQ`, then a question — until we exhaust one of them.
+  while(ci < C || qi < Q){
+    // Add up to perQ concept cards (if any left)
+    const stopAt = Math.min(C, ci + perQ);
+    while(ci < stopAt){ steps.push({ type:'concept', text: cards[ci], idx: ci }); ci++; }
+    // Add one question (if any left)
+    if(qi < Q){ steps.push({ type:'question', q: questions[qi], qIdx: qi }); qi++; }
+    // Safety: if neither moved, break (shouldn't happen)
+    if(ci >= C && qi >= Q) break;
+  }
+  return steps;
+}
+
+function initGuidedLesson(){
+  // Called when state.screen becomes 'lesson' in guided mode — fresh state.
+  const cat = findCategory(state.activeTopic.catId);
+  const sub = cat.subs[state.activeTopic.subIdx];
+  const tp = sub.topics[state.activeTopic.topicIdx];
+  const bodyText = tp[state.lang].b;
+  const cards = splitLessonCards(bodyText, state.lang);
+  const questions = (QUIZDATA.topics[tp.id] && QUIZDATA.topics[tp.id][state.lang]) || [];
+  const steps = buildGuidedSteps(cards, questions);
+  state.guided = {
+    stepIdx: 0,
+    selectedOpt: null,
+    answered: false,
+    correctCount: 0,
+    totalQuestions: questions.length,
+    finished: false,
+    steps,
+    xpGained: 0,
+    topicId: tp.id
+  };
+}
+
+function renderGuidedLesson(){
+  const cat = findCategory(state.activeTopic.catId);
+  const flat = flatTopicList(cat);
+  const curFlatIdx = flat.findIndex(f=>f.sIdx===state.activeTopic.subIdx && f.tIdx===state.activeTopic.topicIdx);
+  const cur = flat[curFlatIdx];
+  const tp = cur.topic;
+  const sub = cat.subs[cur.sIdx];
+  const g = state.guided;
+  // Guard — ensure state is initialized (first render after goto)
+  if(!g || g.topicId !== tp.id){ initGuidedLesson(); return renderGuidedLesson(); }
+
+  const header = `
+    ${renderTopbar()}
+    <div class="subhead">
+      <button class="back-btn icon-flip" id="backCatGuided" aria-label="${t('backAria')}">${dirFor(state.lang)==='rtl'?'›':'‹'}</button>
+      <div class="cat-title-row">
+        <div class="cat-title-icon" style="background:${cat.color}22; font-size:16px;">${cat.icon}</div>
+        <div>
+          <div class="cat-title" style="font-size:15.5px;">${cat.name[state.lang]}</div>
+          <div class="cat-sub-count">${sub.name[state.lang]}</div>
+        </div>
+      </div>
+    </div>`;
+
+  // Summary screen
+  if(g.finished){
+    const score = g.correctCount, total = g.totalQuestions;
+    const pct = total > 0 ? Math.round((score/total)*100) : 100;
+    const emoji = pct===100 && total>0 ? '🏆' : pct>=60 ? '⭐' : total===0 ? '✨' : '💪';
+    const msg = total===0 ? t('guidedGreat') : pct===100 ? t('guidedPerfect') : pct>=60 ? t('guidedGreat') : t('guidedOk');
+    const scoreRow = total > 0 ? `
+      <div class="guided-summary-stats">
+        <div class="guided-stat"><div class="guided-stat-val">${g.xpGained}</div><div class="guided-stat-lbl">XP</div></div>
+        <div class="guided-stat"><div class="guided-stat-val">${score}/${total}</div><div class="guided-stat-lbl">${state.lang==='he'?'תשובות':state.lang==='ar'?'إجابات':'Correct'}</div></div>
+        <div class="guided-stat"><div class="guided-stat-val">${pct}%</div><div class="guided-stat-lbl">${state.lang==='he'?'ציון':state.lang==='ar'?'النتيجة':'Score'}</div></div>
+      </div>` : `
+      <div class="guided-summary-stats" style="max-width:200px;">
+        <div class="guided-stat"><div class="guided-stat-val">+${g.xpGained}</div><div class="guided-stat-lbl">XP</div></div>
+      </div>`;
+    return `<div class="screen active" style="--accent:${cat.color}22; --accent-deep:${cat.color};">${header}
+      <div class="guided-summary">
+        <span class="guided-summary-emoji">${emoji}</span>
+        <div class="guided-summary-title">${t('guidedCompleteTitle')}</div>
+        <div class="guided-summary-sub">${t('guidedCompleteSub', {topic: tp[state.lang].t})}</div>
+        ${scoreRow}
+        <div class="guided-summary-msg">${msg}</div>
+        <div class="quiz-cta-row" style="padding:0 20px;">
+          <button class="btn-primary" id="guidedNextTopicBtn">${curFlatIdx < flat.length-1 ? t('guidedKeepGoing') : t('guidedBackToTopics')}</button>
+          <button class="btn-ghost" id="guidedRetakeBtn">${t('guidedRetakeLesson')}</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // Running flow
+  const totalSteps = g.steps.length;
+  const safeTotal = Math.max(1, totalSteps);
+  const progress = Math.round((g.stepIdx / safeTotal) * 100);
+  const step = g.steps[g.stepIdx];
+  if(!step){ // Should not happen — defensively finish
+    g.finished = true;
+    return renderGuidedLesson();
+  }
+
+  let body = '';
+  if(step.type === 'concept'){
+    const emoji = GUIDED_EMOJIS[step.idx % GUIDED_EMOJIS.length];
+    body = `
+      <div class="lesson-card guided-step">
+        <span class="guided-badge concept">${t('guidedConceptBadge')}</span>
+        <div class="guided-topic-title">${tp[state.lang].t}</div>
+        <span class="guided-concept-emoji">${emoji}</span>
+        <div class="guided-concept-text">${highlightTerms(step.text, state.lang)}</div>
+      </div>`;
+  } else {
+    const q = step.q;
+    const letters = LETTERS;
+    const opts = q.o.map((opt,i)=>{
+      let cls = 'guided-opt';
+      if(g.answered){
+        cls += ' locked';
+        if(i === q.c) cls += ' correct';
+        else if(i === g.selectedOpt && i !== q.c) cls += ' wrong';
+      } else if(i === g.selectedOpt){
+        cls += ' selected';
+      }
+      return `<button class="${cls}" data-gopt="${i}">
+        <div class="guided-opt-letter">${letters[i]}</div>
+        <div>${opt}</div>
+      </button>`;
+    }).join('');
+    const feedback = g.answered ? `
+      <div class="guided-feedback ${g.selectedOpt===q.c?'correct':'wrong'}">
+        <strong>${g.selectedOpt===q.c ? '✓ ' + t('guidedCorrectHdr') : '✗ ' + t('guidedWrongHdr')}</strong>
+        ${q.e}
+      </div>` : '';
+    body = `
+      <div class="quiz-card guided-step">
+        <span class="guided-badge question">${t('guidedQuestionBadge')}</span>
+        <div class="guided-question-text">${q.q}</div>
+        <div class="guided-opts">${opts}</div>
+        ${feedback}
+      </div>`;
+  }
+
+  // Bottom CTA
+  let cta = '';
+  if(step.type === 'concept'){
+    cta = `<button class="guided-cta primary" id="guidedCtaBtn">${t('guidedContinue')}</button>`;
+  } else if(!g.answered){
+    const canCheck = g.selectedOpt !== null;
+    cta = `<button class="guided-cta primary" id="guidedCtaBtn" ${canCheck?'':'disabled'}>${t('guidedCheck')}</button>`;
+  } else {
+    const correct = g.selectedOpt === step.q.c;
+    cta = `<button class="guided-cta ${correct?'correct':'wrong'}" id="guidedCtaBtn">${t('guidedContinue')}</button>`;
+  }
+
+  return `<div class="screen active" style="--accent:${cat.color}22; --accent-deep:${cat.color};">${header}
+    <div class="guided-progress-wrap">
+      <div class="guided-progress-bar"><div class="guided-progress-fill" style="width:${progress}%"></div></div>
+      <div class="guided-progress-pct">${g.stepIdx+1}/${totalSteps}</div>
+    </div>
+    <div style="padding-top:4px;">${body}</div>
+    <div class="guided-cta-row">${cta}</div>
+  </div>`;
+}
+
+// Advance to the next step. On a question, check answer first (if not yet answered).
+function guidedCta(){
+  const g = state.guided;
+  const step = g.steps[g.stepIdx];
+  if(step.type === 'question' && !g.answered){
+    if(g.selectedOpt === null) return;
+    g.answered = true;
+    const correct = g.selectedOpt === step.q.c;
+    if(correct){
+      g.correctCount++;
+      state.answerStreak++;
+      state.bestStreak = Math.max(state.bestStreak, state.answerStreak);
+    } else {
+      state.answerStreak = 0;
+    }
+    render();
+    return;
+  }
+  // Advance
+  g.stepIdx++;
+  g.selectedOpt = null;
+  g.answered = false;
+  if(g.stepIdx >= g.steps.length){
+    // Finish: award XP and mark complete (if score threshold met)
+    finishGuidedLesson();
+  }
+  render();
+}
+
+function finishGuidedLesson(){
+  const g = state.guided;
+  const cat = findCategory(state.activeTopic.catId);
+  const tp = cat.subs[state.activeTopic.subIdx].topics[state.activeTopic.topicIdx];
+  const wasAlreadyDone = !!state.progress[tp.id];
+  // XP: 2 per correct answer + 15 bonus for perfect (same scaling as classic quiz)
+  //     + 10 for completing the lesson (mark-complete bonus)
+  let xpGain = g.correctCount * 2;
+  if(g.totalQuestions > 0 && g.correctCount === g.totalQuestions){
+    xpGain += 15;
+    state.hadPerfectQuiz = true;
+  }
+  // Pass threshold: at least half right (or no questions at all). On pass, mark done + grant lesson XP.
+  const passed = g.totalQuestions === 0 || (g.correctCount / g.totalQuestions) >= 0.5;
+  if(passed){
+    if(!wasAlreadyDone){ xpGain += 10; }
+    state.progress[tp.id] = true;
+    // Real Life goal visit check (mirrors the classic quizMarkComplete path)
+    if(state.goalGlow['real-life'] && state.activeTopic.catId === 'real-life'){
+      const rlCat = REALLIFE[0];
+      if(catTopicIds(rlCat).every(id => state.progress[id])) state.goalVisited['real-life'] = true;
+    }
+  }
+  addXP(xpGain);
+  g.xpGained = xpGain;
+  g.finished = true;
+  checkBadges();
+}
+
 // ===== FAQ System =====
 let faqOpen = false;
 let faqExpanded = null;
@@ -4745,11 +5084,16 @@ function renderModesModal(){
         <button class="ai-close" id="modesCloseBtn">&times;</button>
       </div>
       <div class="modes-body">
+        <button class="quicklearn-toggle ${state.guidedMode?'active':''}" id="guidedModeToggle" style="margin-bottom:4px;">
+          <span class="reallife-toggle-label">🎓 ${t('guidedModeLabel')}</span>
+          <span class="reallife-switch"><span class="reallife-switch-thumb"></span></span>
+        </button>
+        <div style="font-size:12px; color:var(--ink-soft); line-height:1.45; padding:0 4px 10px; margin-top:-2px;">${t('guidedModeDesc')}</div>
         <button class="reallife-toggle ${state.realLifeMode?'active':''}${(state.goalGlow['real-life'] && !state.goalVisited['real-life'])?' glow':''}" id="realLifeToggle">
           <span class="reallife-toggle-label">🇮🇱 ${t('realLifeToggleLabel')}</span>
           <span class="reallife-switch"><span class="reallife-switch-thumb"></span></span>
         </button>
-        <button class="quicklearn-toggle ${state.quickLearn?'active':''}" id="quickLearnToggle">
+        <button class="quicklearn-toggle ${state.quickLearn?'active':''}" id="quickLearnToggle" ${state.guidedMode?'disabled style="opacity:.45; cursor:not-allowed;"':''}>
           <span class="reallife-toggle-label">⚡ ${t('quickLearnLabel')}</span>
           <span class="reallife-switch"><span class="reallife-switch-thumb"></span></span>
         </button>
@@ -5509,8 +5853,15 @@ function attachEvents(){
     render();
   });
   const quickLearnToggle = document.getElementById('quickLearnToggle');
-  if(quickLearnToggle) quickLearnToggle.addEventListener('click', ()=>{
+  if(quickLearnToggle && !quickLearnToggle.disabled) quickLearnToggle.addEventListener('click', ()=>{
     state.quickLearn = !state.quickLearn;
+    modesOpen = false;
+    render();
+  });
+  const guidedModeToggle = document.getElementById('guidedModeToggle');
+  if(guidedModeToggle) guidedModeToggle.addEventListener('click', ()=>{
+    state.guidedMode = !state.guidedMode;
+    state.guided = null; // reset per-lesson guided state when switching modes
     modesOpen = false;
     render();
   });
@@ -5579,7 +5930,46 @@ function attachEvents(){
       document.addEventListener('click',()=>tip.remove(),{once:true});
     });
   });
-  // Lesson screen
+  // Lesson screen — Guided mode handlers
+  const backCatGuided = document.getElementById('backCatGuided');
+  if(backCatGuided) backCatGuided.addEventListener('click', ()=>{
+    const g = state.guided;
+    // If answered any question and not finished, confirm; otherwise just leave.
+    if(g && !g.finished && g.stepIdx > 0){
+      showConfirm(t('guidedExitConfirm'), ()=> goto('category', {activeCategory: state.activeTopic.catId}));
+    } else {
+      goto('category', {activeCategory: state.activeTopic.catId});
+    }
+  });
+  document.querySelectorAll('.guided-opt').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const g = state.guided;
+      if(!g || g.answered) return;
+      g.selectedOpt = parseInt(el.dataset.gopt);
+      render();
+    });
+  });
+  const guidedCtaBtn = document.getElementById('guidedCtaBtn');
+  if(guidedCtaBtn) guidedCtaBtn.addEventListener('click', guidedCta);
+  const guidedRetakeBtn = document.getElementById('guidedRetakeBtn');
+  if(guidedRetakeBtn) guidedRetakeBtn.addEventListener('click', ()=>{
+    state.guided = null;
+    render();
+  });
+  const guidedNextTopicBtn = document.getElementById('guidedNextTopicBtn');
+  if(guidedNextTopicBtn) guidedNextTopicBtn.addEventListener('click', ()=>{
+    const cat = findCategory(state.activeTopic.catId);
+    const flat = flatTopicList(cat);
+    const curIdx = flat.findIndex(f=>f.sIdx===state.activeTopic.subIdx && f.tIdx===state.activeTopic.topicIdx);
+    if(curIdx < flat.length-1){
+      const n = flat[curIdx+1];
+      goto('lesson', {activeTopic:{catId:cat.id, subIdx:n.sIdx, topicIdx:n.tIdx}});
+    } else {
+      goto('category', {activeCategory: state.activeTopic.catId});
+    }
+  });
+
+  // Lesson screen — Classic / Quick-Learn handlers
   const backCat = document.getElementById('backCat');
   if(backCat) backCat.addEventListener('click', ()=> goto('category', {activeCategory: state.activeTopic.catId}));
   // Step card navigation
@@ -5752,7 +6142,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=32').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=34').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
