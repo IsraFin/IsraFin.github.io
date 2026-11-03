@@ -6073,13 +6073,6 @@ function attachEvents(){
   if(faqCloseBtn) faqCloseBtn.addEventListener('click', ()=>{ faqOpen=false; render(); });
   const faqOverlay = document.getElementById('faqOverlay');
   if(faqOverlay) faqOverlay.addEventListener('click', (e)=>{ if(e.target===faqOverlay){ faqOpen=false; render(); } });
-  document.querySelectorAll('.faq-q').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      const idx = parseInt(el.dataset.faq);
-      faqExpanded = faqExpanded===idx ? null : idx;
-      render();
-    });
-  });
   const openProfileChip = document.getElementById('openProfileChip');
   if(openProfileChip) openProfileChip.addEventListener('click', ()=> goto('profile'));
   document.querySelectorAll('.tool-card').forEach(el=>{
@@ -6330,11 +6323,34 @@ function exitQuizToOrigin(){
 const __lastUser = getLastUser();
 if(__lastUser) state.userName = __lastUser;
 
+// FAQ toggle — delegated once so scroll position is preserved
+document.addEventListener('click', (e)=>{
+  const faqQ = e.target.closest('.faq-q');
+  if(!faqQ) return;
+  const idx = parseInt(faqQ.dataset.faq);
+  if(isNaN(idx)) return;
+  e.stopImmediatePropagation();
+  faqExpanded = faqExpanded===idx ? null : idx;
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const ii = parseInt(item.dataset.faq);
+    const isOpen = faqExpanded === ii;
+    const faq = FAQ_DATA[ii];
+    const catLabel = FAQ_CATS[faq.cat]?.[state.lang] || faq.cat;
+    item.className = 'faq-item' + (isOpen?' open':'');
+    item.innerHTML = `<div class="faq-q" data-faq="${ii}">
+      <span class="faq-cat-tag">${catLabel}</span>
+      <span class="faq-q-text">${faq.q[state.lang]}</span>
+      <span class="faq-arrow">${isOpen?'▲':'▼'}</span>
+    </div>
+    ${isOpen?`<div class="faq-a">${faq.a[state.lang]}</div>`:''}`;
+  });
+});
+
 render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=34').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=35').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
