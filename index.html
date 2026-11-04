@@ -4563,22 +4563,66 @@ const TTS = {
     tmp.innerHTML = html;
     return (tmp.textContent || tmp.innerText || '').replace(/\s+/g,' ').trim();
   },
+  // Score a voice by how natural/human it is likely to sound.
+  // Higher score = better. Based on signals in the voice name/metadata
+  // that modern browsers expose. Network/neural voices score highest.
+  scoreVoice(v){
+    if(!v) return -Infinity;
+    let score = 0;
+    const name = (v.name || '').toLowerCase();
+    // Explicit quality markers in voice names — these are the giveaway
+    // for modern neural/cloud voices on every major platform.
+    if(/natural/.test(name)) score += 60;
+    if(/neural/.test(name)) score += 60;
+    if(/online/.test(name)) score += 50;
+    if(/premium/.test(name)) score += 40;
+    if(/enhanced/.test(name)) score += 40;
+    if(/\bhd\b|high quality/.test(name)) score += 30;
+    if(/siri/.test(name)) score += 50; // Apple Siri voices are very natural
+    if(/google/.test(name)) score += 30; // Google voices are decent neural
+    if(/microsoft/.test(name) && /\b(aria|jenny|guy|davis|jason|tony|sara|libby)\b/.test(name)) score += 40;
+    // Known natural-sounding voice names across platforms
+    if(/\b(samantha|ava|allison|susan|karen|moira|tessa|daniel|fiona|serena|zira|hazel)\b/.test(name)) score += 15;
+    // localService === false usually means a cloud/network voice (higher quality)
+    if(v.localService === false) score += 25;
+    // Novelty/fun voices score low — avoid them
+    if(/\b(fred|albert|bells|bahh|zarvox|whisper|cellos|organ|good news|bad news|bubbles|boing|pipe|deranged|hysterical|trinoids|jester|princess|kathy|ralph|junior|google.*uk.*male)\b/.test(name)) score -= 50;
+    // Basic/robotic engines
+    if(/espeak|festival|flite|pico/.test(name)) score -= 40;
+    // Default voice gets a small nudge (likely the user's preferred)
+    if(v.default) score += 3;
+    return score;
+  },
   // Pick the best available voice for a given lang code, trying several locales.
   // Returns {voice, lang} — voice may be null if none match; lang is the actual tag used.
+  // Among matching voices, we pick the most natural-sounding one by scoreVoice().
   pickVoiceForLang(lang){
     if(!this.supported) return { voice:null, lang:'en-US' };
     const voices = window.speechSynthesis.getVoices() || [];
     const targets = this.langTargets[lang] || [this.langTargets.en[0]];
-    // Try exact match first for each target locale in order
-    for(const target of targets){
-      const exact = voices.find(v=> v.lang && v.lang.toLowerCase() === target.toLowerCase());
-      if(exact) return { voice:exact, lang:exact.lang };
-    }
-    // Then any voice whose lang prefix matches (e.g. any ar-*)
     const prefix = (targets[0] || 'en').split('-')[0].toLowerCase();
-    const partial = voices.find(v=> v.lang && v.lang.toLowerCase().startsWith(prefix));
-    if(partial) return { voice:partial, lang:partial.lang };
-    return { voice:null, lang:targets[0] };
+    // Build candidate pool: any voice whose lang matches our targets or prefix.
+    // Exact-locale matches get a locale bonus based on target order.
+    const candidates = [];
+    for(const v of voices){
+      if(!v.lang) continue;
+      const vl = v.lang.toLowerCase();
+      let localeBonus = 0;
+      const exactIdx = targets.findIndex(t => t.toLowerCase() === vl);
+      if(exactIdx >= 0){
+        // Earlier target locale = bigger bonus (ar-SA > ar-EG > ... for Arabic)
+        localeBonus = 20 - exactIdx * 1.5;
+      } else if(vl.startsWith(prefix + '-') || vl === prefix){
+        localeBonus = 1;
+      } else {
+        continue; // not this language
+      }
+      candidates.push({ v, score: this.scoreVoice(v) + localeBonus });
+    }
+    if(!candidates.length) return { voice:null, lang:targets[0] };
+    candidates.sort((a,b)=> b.score - a.score);
+    const best = candidates[0].v;
+    return { voice:best, lang:best.lang };
   },
   stop(){
     if(!this.supported) return;
@@ -4626,8 +4670,9 @@ const TTS = {
         const u = new SpeechSynthesisUtterance(chunks[i++]);
         u.lang = resolvedLang;
         u.voice = voice;
-        u.rate = 0.95;
+        u.rate = 1.0;
         u.pitch = 1.0;
+        u.volume = 1.0;
         u.onend = speakNext;
         u.onerror = (ev)=>{
           // Ignore benign 'interrupted'/'canceled' errors from stop()/navigation
@@ -5327,15 +5372,22 @@ function renderGuidedLesson(){
   let body = '';
   if(step.type === 'concept'){
     const emoji = GUIDED_EMOJIS[step.idx % GUIDED_EMOJIS.length];
+    // Always pull the concept text from the current-language source so a
+    // mid-lesson language switch updates the body too, not just the title.
+    const liveCards = splitLessonCards(tp[state.lang].b, state.lang);
+    const conceptText = liveCards[step.idx] != null ? liveCards[step.idx] : step.text;
     body = `
       <div class="lesson-card guided-step">
         <span class="guided-badge concept">${t('guidedConceptBadge')}</span>
         <div class="guided-topic-title">${tp[state.lang].t}</div>
         <span class="guided-concept-emoji">${emoji}</span>
-        <div class="guided-concept-text">${highlightTerms(step.text, state.lang)}</div>
+        <div class="guided-concept-text">${highlightTerms(conceptText, state.lang)}</div>
       </div>`;
   } else {
-    const q = step.q;
+    // Pull the question from the current-language quiz data (keyed by qIdx)
+    // so switching language mid-lesson translates the question + options + explanation.
+    const liveQs = (QUIZDATA.topics[tp.id] && QUIZDATA.topics[tp.id][state.lang]) || [];
+    const q = liveQs[step.qIdx] || step.q;
     const letters = LETTERS;
     const opts = q.o.map((opt,i)=>{
       let cls = 'guided-opt';
@@ -6582,7 +6634,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=37').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=38').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
