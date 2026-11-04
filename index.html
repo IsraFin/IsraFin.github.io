@@ -4820,44 +4820,83 @@ const TTS = {
         u.volume = 1.0;
 
         // --- Word highlighting ---
-        // Strategy: ALWAYS run a time-based estimator so highlighting shows up
-        // on any voice (including cloud/neural ones that don't fire
-        // onboundary). When real boundary events DO fire, they override the
-        // estimator's position for precise sync.
+        // Strategy:
+        // 1) Highlight first word of chunk right away so user sees SOMETHING.
+        // 2) Wait for onstart (or ~700ms fallback) to actually begin advancing,
+        //    so we don't race ahead of audio that hasn't started yet.
+        // 3) Advance by CHARACTER position (not word count) — long words hold
+        //    the voice longer, so char-based pacing matches real speech better.
+        // 4) When real boundary events fire, use them authoritatively AND
+        //    recalibrate the estimator to match their actual timing so we
+        //    stay in sync even if voice is faster/slower than expected.
         const wordsInChunk = this.wordsInRange(chunkStart, chunkStart + chunkText.length);
+        const chunkEnd = chunkStart + chunkText.length;
+        const chunkChars = chunkText.length;
         let estTimer = null;
-        let estStart = Date.now();
+        let estStart = 0;              // ms when audio actually began
+        let started = false;
+        let charsPerSec;               // calibrated chars/sec; starts at an estimate, updated on boundary events
+        let lastBoundaryTime = 0;
+        let lastBoundaryChar = 0;
         this._activeTimer = null;
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
 
-        // Highlight the first word of this chunk immediately so the user sees
-        // SOMETHING even if the engine takes a while to start speaking.
+        // Initial pacing guess per language (chars/sec at rate 1.0).
+        // Intentionally a little slow so highlight lags slightly rather than
+        // racing ahead of audio — easier to follow and less jarring.
+        const baseCps = (lang === 'ar' ? 11 : lang === 'he' ? 12 : 13.5) * (u.rate || 1.0);
+        charsPerSec = baseCps;
+
+        // Highlight the first word immediately so the user has visual confirmation.
         if(wordsInChunk.length) this.setActiveWordAt(wordsInChunk[0].start);
+
+        const beginEstimator = ()=>{
+          if(started) return;
+          started = true;
+          estStart = Date.now();
+          lastBoundaryTime = estStart;
+          lastBoundaryChar = 0;
+          estTimer = setInterval(()=>{
+            if(!this.speaking){ stopEstimator(); return; }
+            const elapsedMs = Date.now() - lastBoundaryTime;
+            const absPos = chunkStart + lastBoundaryChar + (elapsedMs / 1000) * charsPerSec;
+            // Clamp to this chunk's range so we don't bleed into the next.
+            const clamped = Math.min(chunkEnd - 1, Math.max(chunkStart, absPos));
+            this.setActiveWordAt(clamped);
+          }, 100);
+          this._activeTimer = estTimer;
+        };
+
+        // Begin the estimator the moment audio actually starts. If onstart
+        // never fires (some engines skip it), begin anyway after 700ms so
+        // the highlight doesn't just sit on the first word.
+        u.onstart = ()=> beginEstimator();
+        setTimeout(()=>{ if(this.speaking) beginEstimator(); }, 700);
 
         u.onboundary = (ev)=>{
           if(!this.speaking) return;
           if(ev.name && ev.name !== 'word') return;
-          const absPos = chunkStart + (ev.charIndex || 0);
-          // Reset the estimator's clock to this real timestamp so it
-          // continues tracking from here if boundary events stop.
-          estStart = Date.now();
-          const found = this.setActiveWordAt(absPos);
-          // If the engine's charIndex sits before our first word in the chunk,
-          // the estimator will catch up; no harm done.
-        };
-
-        // Start the estimator right away (don't wait for onstart — some
-        // engines never fire it reliably).
-        const wps = (lang === 'ar' || lang === 'he' ? 2.0 : 2.3) * (u.rate || 1.0);
-        estTimer = setInterval(()=>{
-          if(!this.speaking){ stopEstimator(); return; }
-          const elapsed = (Date.now() - estStart) / 1000;
-          const target = Math.min(wordsInChunk.length - 1, Math.floor(elapsed * wps));
-          if(target >= 0 && wordsInChunk[target]){
-            this.setActiveWordAt(wordsInChunk[target].start);
+          const relChar = ev.charIndex || 0;
+          const absPos = chunkStart + relChar;
+          // Recalibrate: compute actual chars/sec based on observed progress
+          // since the last boundary event (or chunk start).
+          const now = Date.now();
+          if(started){
+            const dt = (now - lastBoundaryTime) / 1000;
+            const dc = relChar - lastBoundaryChar;
+            if(dt > 0.05 && dc > 0){
+              // Blend measured rate into the running estimate (70/30) so a
+              // single outlier doesn't jerk the timing around.
+              charsPerSec = 0.3 * charsPerSec + 0.7 * (dc / dt);
+            }
+          } else {
+            // First boundary before onstart — treat this as the real start.
+            beginEstimator();
           }
-        }, 120);
-        this._activeTimer = estTimer;
+          lastBoundaryTime = now;
+          lastBoundaryChar = relChar;
+          this.setActiveWordAt(absPos);
+        };
 
         u.onend = ()=>{ stopEstimator(); speakNext(); };
         u.onerror = (ev)=>{
@@ -6787,7 +6826,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=42').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=43').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
