@@ -263,6 +263,21 @@ a{color:inherit;}
   width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--paper);
   display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
 }
+.speak-btn{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--paper);
+  display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; cursor:pointer;
+  margin-inline-start:auto; transition: background 0.15s, border-color 0.15s;
+}
+.speak-btn:active{ transform: scale(0.95); }
+.speak-btn.speaking{
+  background: var(--brand); color:#fff; border-color: var(--brand);
+  animation: speakPulse 1.4s ease-in-out infinite;
+}
+@keyframes speakPulse{
+  0%,100%{ box-shadow: 0 0 0 0 rgba(99,102,241,0.5); }
+  50%    { box-shadow: 0 0 0 6px rgba(99,102,241,0); }
+}
+.speak-btn.unsupported{ opacity:0.5; }
 .cat-title-row{ display:flex; align-items:center; gap:10px; }
 .cat-title-icon{ width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; background:var(--accent); }
 .cat-title{ font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-0.01em; }
@@ -3578,6 +3593,7 @@ const STR = {
     loginNote:'This is a demo login — your name is remembered only for this visit and resets if you reload the app.',
     hiThere:'Hi, {name} 👋', homeSub:'Pick a topic to start learning', topicsDone:'{done}/{total} lessons done',
     overallLbl:'Overall progress', topics:'topics', backAria:'Back', markedDone:'Read ✓',
+    speakStart:'Read lesson aloud', speakStop:'Stop reading', speakUnavailable:'Your browser does not support reading this lesson aloud.',
     prev:'Previous', next:'Next', footnote:'Figures like tax brackets, minimum wage, and interest rates change periodically — always check official sources (Tax Authority, Bank of Israel, National Insurance) for current numbers. This app is for learning, not professional financial advice.',
     changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? Your current progress, XP, and badges will be lost (this demo doesn\'t save between users).',
     modalCancel:'Cancel', modalConfirm:'OK',
@@ -3670,6 +3686,7 @@ const STR = {
     loginNote:'זוהי כניסה לדוגמה — השם שלכם נשמר רק לביקור הזה ומתאפס אם טוענים את האפליקציה מחדש.',
     hiThere:'היי, {name} 👋', homeSub:'בחרו נושא כדי להתחיל ללמוד', topicsDone:'{done}/{total} שיעורים הושלמו',
     overallLbl:'התקדמות כוללת', topics:'נושאים', backAria:'חזרה', markedDone:'נקרא ✓',
+    speakStart:'הקראת השיעור', speakStop:'עצירת ההקראה', speakUnavailable:'הדפדפן שלכם לא תומך בהקראת השיעור בקול.',
     prev:'הקודם', next:'הבא', footnote:'נתונים כמו מדרגות מס, שכר מינימום וריביות משתנים מעת לעת — תמיד כדאי לבדוק מקורות רשמיים (רשות המסים, בנק ישראל, הביטוח הלאומי) לנתונים עדכניים. אפליקציה זו נועדה ללמידה בלבד ואינה ייעוץ פיננסי מקצועי.',
     changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? ההתקדמות, נקודות הניסיון והתגים הנוכחיים יאבדו (הדוגמה הזו לא שומרת בין משתמשים).',
     modalCancel:'ביטול', modalConfirm:'אישור',
@@ -3762,6 +3779,7 @@ const STR = {
     loginNote:'هذا تسجيل دخول تجريبي — يُحفظ اسمك فقط لهذه الزيارة ويُعاد ضبطه عند إعادة تحميل التطبيق.',
     hiThere:'مرحباً، {name} 👋', homeSub:'اختر موضوعاً لتبدأ التعلم', topicsDone:'{done}/{total} دروس مكتملة',
     overallLbl:'التقدم الإجمالي', topics:'مواضيع', backAria:'رجوع', markedDone:'تمت القراءة ✓',
+    speakStart:'قراءة الدرس بصوت عالٍ', speakStop:'إيقاف القراءة', speakUnavailable:'متصفحك لا يدعم قراءة هذا الدرس بصوت عالٍ.',
     prev:'السابق', next:'التالي', footnote:'أرقام مثل الشرائح الضريبية والحد الأدنى للأجور وأسعار الفائدة تتغير دورياً — تحقق دائماً من المصادر الرسمية (سلطة الضرائب، بنك إسرائيل، التأمين الوطني) للحصول على أحدث الأرقام. هذا التطبيق مخصص للتعلم فقط وليس استشارة مالية مهنية.',
     changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ ستُفقد تقدمك ونقاط خبرتك وأوسمتك الحالية (هذا العرض التجريبي لا يحفظ البيانات بين المستخدمين).',
     modalCancel:'إلغاء', modalConfirm:'موافق',
@@ -4509,13 +4527,160 @@ function checkBadges(){
 }
 
 function setLang(code){
+  if(typeof TTS !== 'undefined' && TTS.speaking) TTS.stop();
   state.lang = code; state.langMenuOpen = false;
   document.documentElement.setAttribute('lang', code);
   document.documentElement.setAttribute('dir', dirFor(code));
   render();
 }
 
+// ===== Text-to-Speech (reads lessons aloud in the active language) =====
+const TTS = {
+  supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
+  speaking: false,
+  voicesLoaded: false,
+  // Map our app's lang code to BCP-47 tags the Web Speech API understands
+  langMap: { en:'en-US', he:'he-IL', ar:'ar-SA' },
+  // Strip HTML tags / glossary term markup so the engine reads clean prose
+  cleanText(html){
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    return (tmp.textContent || tmp.innerText || '').replace(/\s+/g,' ').trim();
+  },
+  // Pick the best available voice for a given BCP-47 tag (falls back to default)
+  pickVoice(targetLang){
+    if(!this.supported) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if(!voices.length) return null;
+    const exact = voices.find(v=> v.lang && v.lang.toLowerCase() === targetLang.toLowerCase());
+    if(exact) return exact;
+    const prefix = targetLang.split('-')[0].toLowerCase();
+    const partial = voices.find(v=> v.lang && v.lang.toLowerCase().startsWith(prefix));
+    return partial || null;
+  },
+  stop(){
+    if(!this.supported) return;
+    try { window.speechSynthesis.cancel(); } catch(e){}
+    this.speaking = false;
+    this.updateButton();
+  },
+  speak(text, lang){
+    if(!this.supported || !text) return;
+    this.stop();
+    const target = this.langMap[lang] || 'en-US';
+    // Chunk long text into sentences — some engines cut off after ~200 chars
+    const chunks = this.chunkText(text, lang);
+    let i = 0;
+    this.speaking = true;
+    this.updateButton();
+    const speakNext = ()=>{
+      if(!this.speaking || i >= chunks.length){
+        this.speaking = false;
+        this.updateButton();
+        return;
+      }
+      const u = new SpeechSynthesisUtterance(chunks[i++]);
+      u.lang = target;
+      const v = this.pickVoice(target);
+      if(v) u.voice = v;
+      u.rate = 0.95;
+      u.pitch = 1.0;
+      u.onend = speakNext;
+      u.onerror = ()=>{ this.speaking = false; this.updateButton(); };
+      try { window.speechSynthesis.speak(u); } catch(e){ this.speaking = false; this.updateButton(); }
+    };
+    speakNext();
+  },
+  chunkText(text, lang){
+    // Keep each chunk under ~200 chars; split on sentence boundaries
+    const sep = lang === 'ar' ? /(?<=[.؟!])\s+/ : /(?<=[.?!])\s+/;
+    const parts = text.split(sep).filter(Boolean);
+    const out = [];
+    let cur = '';
+    for(const p of parts){
+      if((cur + ' ' + p).trim().length > 200 && cur){
+        out.push(cur.trim());
+        cur = p;
+      } else {
+        cur = cur ? cur + ' ' + p : p;
+      }
+    }
+    if(cur.trim()) out.push(cur.trim());
+    return out.length ? out : [text];
+  },
+  toggle(text, lang){
+    if(this.speaking) this.stop();
+    else this.speak(text, lang);
+  },
+  updateButton(){
+    const btn = document.getElementById('speakBtn');
+    if(!btn) return;
+    btn.classList.toggle('speaking', this.speaking);
+    btn.textContent = this.speaking ? '⏹' : '🔊';
+    const label = this.speaking ? t('speakStop') : t('speakStart');
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+};
+// Preload voices (some browsers populate the list asynchronously)
+if(TTS.supported){
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.addEventListener?.('voiceschanged', ()=>{ TTS.voicesLoaded = true; });
+}
+
+function renderSpeakBtn(){
+  if(!TTS.supported) return '';
+  return `<button class="speak-btn" id="speakBtn" aria-label="${t('speakStart')}" title="${t('speakStart')}">🔊</button>`;
+}
+
+// Build the text that should be spoken for the current lesson screen.
+// Always rebuilds from the live current-language content, so switching
+// language mid-lesson still speaks the right text.
+function getLessonSpeechText(){
+  if(state.screen !== 'lesson' || !state.activeTopic) return '';
+  const cat = findCategory(state.activeTopic.catId);
+  if(!cat) return '';
+  const sub = cat.subs[state.activeTopic.subIdx];
+  if(!sub) return '';
+  const tp = sub.topics[state.activeTopic.topicIdx];
+  if(!tp || !tp[state.lang]) return '';
+  const lang = state.lang;
+  // Guided mode: read the current step's content in the current language
+  if(state.guidedMode && state.guided && !state.guided.finished){
+    const step = state.guided.steps[state.guided.stepIdx];
+    if(!step) return TTS.cleanText(tp[lang].t + '. ' + tp[lang].b);
+    if(step.type === 'concept'){
+      // Rebuild cards in the current language and look up the same index
+      const cards = splitLessonCards(tp[lang].b, lang);
+      const text = cards[step.idx] != null ? cards[step.idx] : step.text;
+      return TTS.cleanText(tp[lang].t + '. ' + text);
+    }
+    // Question step: use the current-language quiz data if available
+    const liveQs = (QUIZDATA.topics[tp.id] && QUIZDATA.topics[tp.id][lang]) || [];
+    const q = liveQs[step.qIdx] || step.q;
+    const letters = LETTERS;
+    let out = q.q + '. ';
+    q.o.forEach((opt,i)=>{ out += letters[i] + ': ' + opt + '. '; });
+    if(state.guided.answered){
+      out += (state.guided.selectedOpt === q.c ? t('guidedCorrectHdr') : t('guidedWrongHdr')) + '. ' + q.e;
+    }
+    return TTS.cleanText(out);
+  }
+  // Quick-Learn (step cards): read the current card only
+  if(state.quickLearn){
+    const bodyText = tp[lang].b;
+    const cards = splitLessonCards(bodyText, lang);
+    const ci = state.lessonCard || 0;
+    if(ci >= cards.length) return TTS.cleanText(tp[lang].t);
+    return TTS.cleanText(tp[lang].t + '. ' + cards[ci]);
+  }
+  // Classic mode: full title + body
+  return TTS.cleanText(tp[lang].t + '. ' + tp[lang].b);
+}
+
 function goto(screen, extra){
+  // Always stop any active narration when leaving a screen
+  if(TTS.speaking) TTS.stop();
   if(screen === 'home') state.factIndex = Math.floor(Math.random()*FINANCIAL_FACTS.en.length);
   if(screen === 'lesson'){ state.lessonCard = 0; state.guided = null; } // clear guided state so initGuidedLesson rebuilds for this topic
   state.screen = screen;
@@ -4930,6 +5095,7 @@ function renderLesson(){
           <div class="cat-sub-count">${sub.name[state.lang]}</div>
         </div>
       </div>
+      ${renderSpeakBtn()}
     </div>`;
 
   const footer = `
@@ -5064,6 +5230,7 @@ function renderGuidedLesson(){
           <div class="cat-sub-count">${sub.name[state.lang]}</div>
         </div>
       </div>
+      ${renderSpeakBtn()}
     </div>`;
 
   // Summary screen
@@ -5952,6 +6119,7 @@ function render(){
   else if(state.screen==='simulator') html = renderSimulator();
   document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderModesModal();
   attachEvents();
+  if(typeof TTS !== 'undefined') TTS.updateButton();
   saveCurrentProfile();
 }
 
@@ -6346,11 +6514,24 @@ document.addEventListener('click', (e)=>{
   });
 });
 
+// Speak button — delegated once; toggles TTS for the current lesson in the active language
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('#speakBtn');
+  if(!btn) return;
+  e.stopImmediatePropagation();
+  const text = getLessonSpeechText();
+  if(!text){ return; }
+  TTS.toggle(text, state.lang);
+});
+
+// If the user changes language or navigates, cancel any speech
+window.addEventListener('beforeunload', ()=>{ TTS.stop(); });
+
 render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=35').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=36').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
