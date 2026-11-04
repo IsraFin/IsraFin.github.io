@@ -279,10 +279,11 @@ a{color:inherit;}
 }
 .speak-btn.unsupported{ opacity:0.5; }
 /* TTS word-by-word highlighting — invisible until the engine reports we're on that word */
-.tts-word{ transition: background 0.12s ease, border-color 0.12s ease; border-radius:3px; padding:1px 1px; }
+.tts-word{ transition: background 0.1s ease, box-shadow 0.1s ease; border-radius:4px; }
 .tts-word.active{
-  background: rgba(96,165,250,0.22);
-  box-shadow: inset 0 -2px 0 0 #60a5fa;
+  background: rgba(96,165,250,0.35);
+  box-shadow: inset 0 -3px 0 0 #3b82f6;
+  color: #0b3b86;
 }
 .cat-title-row{ display:flex; align-items:center; gap:10px; }
 .cat-title-icon{ width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; background:var(--accent); }
@@ -4633,10 +4634,16 @@ const TTS = {
   stop(){
     if(!this.supported) return;
     try { window.speechSynthesis.cancel(); } catch(e){}
+    if(this._activeTimer){ try { clearInterval(this._activeTimer); } catch(e){} this._activeTimer = null; }
     this.speaking = false;
     this.clearHighlight();
     this.words = [];
     this.updateButton();
+  },
+  // Return all word spans whose char range falls within [start, end).
+  wordsInRange(start, end){
+    if(!this.words) return [];
+    return this.words.filter(w => w.start >= start && w.start < end);
   },
   // Elements whose words should be wrapped/highlighted during speech.
   // Order here must match the order they're joined into the spoken text.
@@ -4811,17 +4818,59 @@ const TTS = {
         u.rate = 1.0;
         u.pitch = 1.0;
         u.volume = 1.0;
-        // Word-level boundary events — not every engine fires these; if silent,
-        // we just don't highlight, but audio still plays.
+
+        // --- Word highlighting ---
+        // Preferred path: engine fires word boundary events → precise sync.
+        // Fallback: many cloud/neural voices don't fire boundary events at all,
+        // so we also run a time-based estimator that advances through words
+        // based on estimated speech rate. If real boundary events arrive, we
+        // cancel the estimator and use them instead.
+        const wordsInChunk = this.wordsInRange(chunkStart, chunkStart + chunkText.length);
+        let boundaryFired = false;
+        let estTimer = null;
+        let estStart = 0;
+        this._activeTimer = null;
+        const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
+
         u.onboundary = (ev)=>{
           if(!this.speaking) return;
-          // Some engines fire 'sentence' too; only use 'word'
           if(ev.name && ev.name !== 'word') return;
+          boundaryFired = true;
+          stopEstimator();
           const absPos = chunkStart + (ev.charIndex || 0);
           this.setActiveWordAt(absPos);
         };
-        u.onend = speakNext;
+
+        u.onstart = ()=>{
+          if(!this.speaking || !wordsInChunk.length) return;
+          estStart = Date.now();
+          // Rough speech rate: ~2.5 words/sec at rate 1.0 for English; a bit
+          // slower for Hebrew/Arabic. Tuned conservatively so highlight stays
+          // slightly BEHIND the voice rather than ahead (easier to follow).
+          const wps = (lang === 'ar' || lang === 'he' ? 2.0 : 2.3) * (u.rate || 1.0);
+          // Give the engine 350ms to start firing boundary events. If none
+          // fire by then, run the estimator for the rest of this chunk.
+          setTimeout(()=>{
+            if(boundaryFired || !this.speaking) return;
+            let idx = 0;
+            // Highlight first word immediately
+            if(wordsInChunk[0]) this.setActiveWordAt(wordsInChunk[0].start);
+            estTimer = setInterval(()=>{
+              if(!this.speaking){ stopEstimator(); return; }
+              const elapsed = (Date.now() - estStart) / 1000;
+              const target = Math.min(wordsInChunk.length - 1, Math.floor(elapsed * wps));
+              if(target !== idx){
+                idx = target;
+                this.setActiveWordAt(wordsInChunk[idx].start);
+              }
+            }, 100);
+            this._activeTimer = estTimer;
+          }, 350);
+        };
+
+        u.onend = ()=>{ stopEstimator(); speakNext(); };
         u.onerror = (ev)=>{
+          stopEstimator();
           const err = ev && ev.error;
           if(err && err !== 'interrupted' && err !== 'canceled'){
             this.speaking = false;
@@ -4829,7 +4878,7 @@ const TTS = {
             this.updateButton();
           }
         };
-        try { window.speechSynthesis.speak(u); } catch(e){ this.speaking = false; this.clearHighlight(); this.updateButton(); }
+        try { window.speechSynthesis.speak(u); } catch(e){ stopEstimator(); this.speaking = false; this.clearHighlight(); this.updateButton(); }
       };
       speakNext();
     });
@@ -6747,7 +6796,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=39').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=40').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
