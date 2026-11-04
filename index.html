@@ -4820,53 +4820,44 @@ const TTS = {
         u.volume = 1.0;
 
         // --- Word highlighting ---
-        // Preferred path: engine fires word boundary events → precise sync.
-        // Fallback: many cloud/neural voices don't fire boundary events at all,
-        // so we also run a time-based estimator that advances through words
-        // based on estimated speech rate. If real boundary events arrive, we
-        // cancel the estimator and use them instead.
+        // Strategy: ALWAYS run a time-based estimator so highlighting shows up
+        // on any voice (including cloud/neural ones that don't fire
+        // onboundary). When real boundary events DO fire, they override the
+        // estimator's position for precise sync.
         const wordsInChunk = this.wordsInRange(chunkStart, chunkStart + chunkText.length);
-        let boundaryFired = false;
         let estTimer = null;
-        let estStart = 0;
+        let estStart = Date.now();
         this._activeTimer = null;
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
+
+        // Highlight the first word of this chunk immediately so the user sees
+        // SOMETHING even if the engine takes a while to start speaking.
+        if(wordsInChunk.length) this.setActiveWordAt(wordsInChunk[0].start);
 
         u.onboundary = (ev)=>{
           if(!this.speaking) return;
           if(ev.name && ev.name !== 'word') return;
-          boundaryFired = true;
-          stopEstimator();
           const absPos = chunkStart + (ev.charIndex || 0);
-          this.setActiveWordAt(absPos);
+          // Reset the estimator's clock to this real timestamp so it
+          // continues tracking from here if boundary events stop.
+          estStart = Date.now();
+          const found = this.setActiveWordAt(absPos);
+          // If the engine's charIndex sits before our first word in the chunk,
+          // the estimator will catch up; no harm done.
         };
 
-        u.onstart = ()=>{
-          if(!this.speaking || !wordsInChunk.length) return;
-          estStart = Date.now();
-          // Rough speech rate: ~2.5 words/sec at rate 1.0 for English; a bit
-          // slower for Hebrew/Arabic. Tuned conservatively so highlight stays
-          // slightly BEHIND the voice rather than ahead (easier to follow).
-          const wps = (lang === 'ar' || lang === 'he' ? 2.0 : 2.3) * (u.rate || 1.0);
-          // Give the engine 350ms to start firing boundary events. If none
-          // fire by then, run the estimator for the rest of this chunk.
-          setTimeout(()=>{
-            if(boundaryFired || !this.speaking) return;
-            let idx = 0;
-            // Highlight first word immediately
-            if(wordsInChunk[0]) this.setActiveWordAt(wordsInChunk[0].start);
-            estTimer = setInterval(()=>{
-              if(!this.speaking){ stopEstimator(); return; }
-              const elapsed = (Date.now() - estStart) / 1000;
-              const target = Math.min(wordsInChunk.length - 1, Math.floor(elapsed * wps));
-              if(target !== idx){
-                idx = target;
-                this.setActiveWordAt(wordsInChunk[idx].start);
-              }
-            }, 100);
-            this._activeTimer = estTimer;
-          }, 350);
-        };
+        // Start the estimator right away (don't wait for onstart — some
+        // engines never fire it reliably).
+        const wps = (lang === 'ar' || lang === 'he' ? 2.0 : 2.3) * (u.rate || 1.0);
+        estTimer = setInterval(()=>{
+          if(!this.speaking){ stopEstimator(); return; }
+          const elapsed = (Date.now() - estStart) / 1000;
+          const target = Math.min(wordsInChunk.length - 1, Math.floor(elapsed * wps));
+          if(target >= 0 && wordsInChunk[target]){
+            this.setActiveWordAt(wordsInChunk[target].start);
+          }
+        }, 120);
+        this._activeTimer = estTimer;
 
         u.onend = ()=>{ stopEstimator(); speakNext(); };
         u.onerror = (ev)=>{
@@ -6796,7 +6787,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=40').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=41').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
