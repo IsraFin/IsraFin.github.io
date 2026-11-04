@@ -3594,6 +3594,9 @@ const STR = {
     hiThere:'Hi, {name} 👋', homeSub:'Pick a topic to start learning', topicsDone:'{done}/{total} lessons done',
     overallLbl:'Overall progress', topics:'topics', backAria:'Back', markedDone:'Read ✓',
     speakStart:'Read lesson aloud', speakStop:'Stop reading', speakUnavailable:'Your browser does not support reading this lesson aloud.',
+    speakNoVoice:'No Arabic voice found on your device. Install Arabic TTS in your system settings to use this.',
+    speakNoVoiceHe:'No Hebrew voice found on your device. Install Hebrew TTS in your system settings to use this.',
+    speakNoVoiceEn:'No English voice found on your device.',
     prev:'Previous', next:'Next', footnote:'Figures like tax brackets, minimum wage, and interest rates change periodically — always check official sources (Tax Authority, Bank of Israel, National Insurance) for current numbers. This app is for learning, not professional financial advice.',
     changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? Your current progress, XP, and badges will be lost (this demo doesn\'t save between users).',
     modalCancel:'Cancel', modalConfirm:'OK',
@@ -3687,6 +3690,9 @@ const STR = {
     hiThere:'היי, {name} 👋', homeSub:'בחרו נושא כדי להתחיל ללמוד', topicsDone:'{done}/{total} שיעורים הושלמו',
     overallLbl:'התקדמות כוללת', topics:'נושאים', backAria:'חזרה', markedDone:'נקרא ✓',
     speakStart:'הקראת השיעור', speakStop:'עצירת ההקראה', speakUnavailable:'הדפדפן שלכם לא תומך בהקראת השיעור בקול.',
+    speakNoVoice:'לא נמצא קול בערבית במכשיר שלכם. יש להתקין קול TTS בערבית בהגדרות המערכת כדי להשתמש בזה.',
+    speakNoVoiceHe:'לא נמצא קול בעברית במכשיר שלכם. יש להתקין קול TTS בעברית בהגדרות המערכת.',
+    speakNoVoiceEn:'לא נמצא קול באנגלית במכשיר שלכם.',
     prev:'הקודם', next:'הבא', footnote:'נתונים כמו מדרגות מס, שכר מינימום וריביות משתנים מעת לעת — תמיד כדאי לבדוק מקורות רשמיים (רשות המסים, בנק ישראל, הביטוח הלאומי) לנתונים עדכניים. אפליקציה זו נועדה ללמידה בלבד ואינה ייעוץ פיננסי מקצועי.',
     changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? ההתקדמות, נקודות הניסיון והתגים הנוכחיים יאבדו (הדוגמה הזו לא שומרת בין משתמשים).',
     modalCancel:'ביטול', modalConfirm:'אישור',
@@ -3780,6 +3786,9 @@ const STR = {
     hiThere:'مرحباً، {name} 👋', homeSub:'اختر موضوعاً لتبدأ التعلم', topicsDone:'{done}/{total} دروس مكتملة',
     overallLbl:'التقدم الإجمالي', topics:'مواضيع', backAria:'رجوع', markedDone:'تمت القراءة ✓',
     speakStart:'قراءة الدرس بصوت عالٍ', speakStop:'إيقاف القراءة', speakUnavailable:'متصفحك لا يدعم قراءة هذا الدرس بصوت عالٍ.',
+    speakNoVoice:'لم يتم العثور على صوت عربي في جهازك. ثبّت صوت TTS عربي من إعدادات النظام لاستخدام هذه الميزة.',
+    speakNoVoiceHe:'لم يتم العثور على صوت عبري في جهازك. ثبّت صوت TTS عبري من إعدادات النظام.',
+    speakNoVoiceEn:'لم يتم العثور على صوت إنجليزي في جهازك.',
     prev:'السابق', next:'التالي', footnote:'أرقام مثل الشرائح الضريبية والحد الأدنى للأجور وأسعار الفائدة تتغير دورياً — تحقق دائماً من المصادر الرسمية (سلطة الضرائب، بنك إسرائيل، التأمين الوطني) للحصول على أحدث الأرقام. هذا التطبيق مخصص للتعلم فقط وليس استشارة مالية مهنية.',
     changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ ستُفقد تقدمك ونقاط خبرتك وأوسمتك الحالية (هذا العرض التجريبي لا يحفظ البيانات بين المستخدمين).',
     modalCancel:'إلغاء', modalConfirm:'موافق',
@@ -4539,24 +4548,37 @@ const TTS = {
   supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
   speaking: false,
   voicesLoaded: false,
-  // Map our app's lang code to BCP-47 tags the Web Speech API understands
-  langMap: { en:'en-US', he:'he-IL', ar:'ar-SA' },
+  // Map our app's lang code to BCP-47 tags, plus fallback locales.
+  // Arabic especially varies widely across OSes — ar-SA (Saudi), ar-EG (Egyptian),
+  // ar-AE (Emirati), ar-JO (Jordanian), ar-LB (Lebanese), ar-MA (Moroccan),
+  // ar-DZ (Algerian), ar-TN (Tunisian) are all common. We try all of them.
+  langTargets: {
+    en: ['en-US','en-GB','en-AU','en-CA','en-IN','en'],
+    he: ['he-IL','he'],
+    ar: ['ar-SA','ar-EG','ar-AE','ar-JO','ar-LB','ar-MA','ar-DZ','ar-TN','ar-BH','ar-KW','ar-QA','ar-OM','ar-IQ','ar-YE','ar-SY','ar-PS','ar']
+  },
   // Strip HTML tags / glossary term markup so the engine reads clean prose
   cleanText(html){
     const tmp = document.createElement('div');
     tmp.innerHTML = html;
     return (tmp.textContent || tmp.innerText || '').replace(/\s+/g,' ').trim();
   },
-  // Pick the best available voice for a given BCP-47 tag (falls back to default)
-  pickVoice(targetLang){
-    if(!this.supported) return null;
+  // Pick the best available voice for a given lang code, trying several locales.
+  // Returns {voice, lang} — voice may be null if none match; lang is the actual tag used.
+  pickVoiceForLang(lang){
+    if(!this.supported) return { voice:null, lang:'en-US' };
     const voices = window.speechSynthesis.getVoices() || [];
-    if(!voices.length) return null;
-    const exact = voices.find(v=> v.lang && v.lang.toLowerCase() === targetLang.toLowerCase());
-    if(exact) return exact;
-    const prefix = targetLang.split('-')[0].toLowerCase();
+    const targets = this.langTargets[lang] || [this.langTargets.en[0]];
+    // Try exact match first for each target locale in order
+    for(const target of targets){
+      const exact = voices.find(v=> v.lang && v.lang.toLowerCase() === target.toLowerCase());
+      if(exact) return { voice:exact, lang:exact.lang };
+    }
+    // Then any voice whose lang prefix matches (e.g. any ar-*)
+    const prefix = (targets[0] || 'en').split('-')[0].toLowerCase();
     const partial = voices.find(v=> v.lang && v.lang.toLowerCase().startsWith(prefix));
-    return partial || null;
+    if(partial) return { voice:partial, lang:partial.lang };
+    return { voice:null, lang:targets[0] };
   },
   stop(){
     if(!this.supported) return;
@@ -4564,32 +4586,61 @@ const TTS = {
     this.speaking = false;
     this.updateButton();
   },
+  // Attempt a voice lookup, waiting briefly if voices haven't loaded yet
+  ensureVoicesThen(cb){
+    if(!this.supported) return cb();
+    const voices = window.speechSynthesis.getVoices() || [];
+    if(voices.length){ cb(); return; }
+    // Chrome loads voices async — wait up to 1s
+    let done = false;
+    const finish = ()=>{ if(done) return; done = true; cb(); };
+    const handler = ()=>{ window.speechSynthesis.removeEventListener?.('voiceschanged', handler); finish(); };
+    window.speechSynthesis.addEventListener?.('voiceschanged', handler);
+    setTimeout(finish, 1000);
+  },
   speak(text, lang){
     if(!this.supported || !text) return;
     this.stop();
-    const target = this.langMap[lang] || 'en-US';
-    // Chunk long text into sentences — some engines cut off after ~200 chars
-    const chunks = this.chunkText(text, lang);
-    let i = 0;
-    this.speaking = true;
-    this.updateButton();
-    const speakNext = ()=>{
-      if(!this.speaking || i >= chunks.length){
+    this.ensureVoicesThen(()=>{
+      const { voice, lang: resolvedLang } = this.pickVoiceForLang(lang);
+      // If no voice matches the requested language, tell the user why
+      // instead of silently speaking with the wrong voice.
+      if(!voice){
+        const key = lang === 'ar' ? 'speakNoVoice' : lang === 'he' ? 'speakNoVoiceHe' : 'speakNoVoiceEn';
+        showToast(t(key), 'ℹ️', 'top');
         this.speaking = false;
         this.updateButton();
         return;
       }
-      const u = new SpeechSynthesisUtterance(chunks[i++]);
-      u.lang = target;
-      const v = this.pickVoice(target);
-      if(v) u.voice = v;
-      u.rate = 0.95;
-      u.pitch = 1.0;
-      u.onend = speakNext;
-      u.onerror = ()=>{ this.speaking = false; this.updateButton(); };
-      try { window.speechSynthesis.speak(u); } catch(e){ this.speaking = false; this.updateButton(); }
-    };
-    speakNext();
+      // Chunk long text into sentences — some engines cut off after ~200 chars
+      const chunks = this.chunkText(text, lang);
+      let i = 0;
+      this.speaking = true;
+      this.updateButton();
+      const speakNext = ()=>{
+        if(!this.speaking || i >= chunks.length){
+          this.speaking = false;
+          this.updateButton();
+          return;
+        }
+        const u = new SpeechSynthesisUtterance(chunks[i++]);
+        u.lang = resolvedLang;
+        u.voice = voice;
+        u.rate = 0.95;
+        u.pitch = 1.0;
+        u.onend = speakNext;
+        u.onerror = (ev)=>{
+          // Ignore benign 'interrupted'/'canceled' errors from stop()/navigation
+          const err = ev && ev.error;
+          if(err && err !== 'interrupted' && err !== 'canceled'){
+            this.speaking = false;
+            this.updateButton();
+          }
+        };
+        try { window.speechSynthesis.speak(u); } catch(e){ this.speaking = false; this.updateButton(); }
+      };
+      speakNext();
+    });
   },
   chunkText(text, lang){
     // Keep each chunk under ~200 chars; split on sentence boundaries
@@ -6531,7 +6582,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=36').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=37').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
