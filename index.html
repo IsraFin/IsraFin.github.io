@@ -4551,7 +4551,7 @@ function setLang(code){
 }
 
 // ===== Text-to-Speech (reads lessons aloud in the active language) =====
-console.log('[IsraFin TTS v46b]');
+console.log('[IsraFin TTS v47]');
 const TTS = {
   supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
   speaking: false,
@@ -4842,26 +4842,26 @@ const TTS = {
         this._activeTimer = null;
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
 
-        // --- Highlight strategy (v46b) ---
-        // PRIMARY: boundary events drive the highlight directly — on
-        // Windows Chrome/Edge they fire per-word and give exact charIndex.
-        // FALLBACK: a timer-based estimator kicks in only if no boundary
-        // event fires within the first 1.5s (some voices/engines skip them).
+        // --- Highlight strategy (v47) ---
+        // Hybrid: estimator starts immediately for smooth movement;
+        // boundary events correct position and recalibrate the rate.
         const baseCps = (lang === 'ar' ? 12 : lang === 'he' ? 13 : 16.5) * (u.rate || 1.0);
         charsPerSec = baseCps;
         let gotBoundary = false;
 
-        // Highlight the first word immediately so the user has visual confirmation.
+        // Highlight the first word immediately.
         if(wordsInChunk.length) this.setActiveWordAt(wordsInChunk[0].start);
 
-        // Fallback estimator — only used when boundary events don't fire.
-        const startFallback = ()=>{
-          if(gotBoundary || estTimer) return; // boundaries are working, no need
+        const beginEstimator = ()=>{
+          if(started) return;
+          started = true;
           estStart = Date.now();
+          lastBoundaryTime = estStart;
           lastBoundaryChar = 0;
           estTimer = setInterval(()=>{
             if(!this.speaking){ stopEstimator(); return; }
-            if(gotBoundary){ stopEstimator(); return; } // boundary took over
+            // If boundary events are driving, don't fight them.
+            if(gotBoundary) return;
             const elapsed = (Date.now() - estStart) / 1000;
             const rawPos = chunkStart + elapsed * charsPerSec;
             const clamped = Math.min(chunkEnd - 1, Math.max(chunkStart, rawPos));
@@ -4870,19 +4870,9 @@ const TTS = {
           this._activeTimer = estTimer;
         };
 
-        // Give boundary events 1.5s to start firing; if they don't, use estimator.
-        u.onstart = ()=>{
-          started = true;
-          estStart = Date.now();
-          setTimeout(()=>{ if(this.speaking && !gotBoundary) startFallback(); }, 1500);
-        };
-        setTimeout(()=>{
-          if(this.speaking && !started){
-            started = true;
-            estStart = Date.now();
-            setTimeout(()=>{ if(this.speaking && !gotBoundary) startFallback(); }, 1500);
-          }
-        }, 700);
+        // Start estimator as soon as audio begins (or after 700ms fallback).
+        u.onstart = ()=> beginEstimator();
+        setTimeout(()=>{ if(this.speaking) beginEstimator(); }, 700);
 
         u.onboundary = (ev)=>{
           if(!this.speaking) return;
@@ -4890,11 +4880,18 @@ const TTS = {
           const relChar = ev.charIndex || 0;
           const absPos = chunkStart + relChar;
           gotBoundary = true;
-          // Stop the fallback estimator if it was running.
-          if(estTimer){ stopEstimator(); }
-          // Highlight the word at this exact position — boundary events
-          // give us the real charIndex, so no guessing needed.
+          // Snap highlight to the exact position the engine reports.
           this.setActiveWordAt(absPos);
+          // Recalibrate estimator rate from overall progress (used if
+          // boundary events stop mid-chunk for any reason).
+          if(started && estStart){
+            const totalSec = (Date.now() - estStart) / 1000;
+            if(totalSec > 0.1 && relChar > 0){
+              charsPerSec = relChar / totalSec;
+            }
+            lastBoundaryTime = Date.now();
+            lastBoundaryChar = relChar;
+          }
         };
 
         u.onend = ()=>{ stopEstimator(); speakNext(); };
@@ -6825,7 +6822,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=46b').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=47').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
