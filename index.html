@@ -266,7 +266,8 @@ a{color:inherit;}
 .speak-btn{
   width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--paper);
   display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; cursor:pointer;
-  margin-inline-start:auto; transition: background 0.15s, border-color 0.15s;
+  position:absolute; top:18px; inset-inline-end:18px; z-index:2;
+  transition: background 0.15s, border-color 0.15s;
 }
 .speak-btn:active{ transform: scale(0.95); }
 .speak-btn.speaking{
@@ -4551,7 +4552,7 @@ function setLang(code){
 }
 
 // ===== Text-to-Speech (reads lessons aloud in the active language) =====
-console.log('[IsraFin TTS v49]');
+console.log('[IsraFin TTS v50]');
 const TTS = {
   supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
   speaking: false,
@@ -5416,7 +5417,6 @@ function renderLesson(){
           <div class="cat-sub-count">${sub.name[state.lang]}</div>
         </div>
       </div>
-      ${renderSpeakBtn()}
     </div>`;
 
   const footer = `
@@ -5429,6 +5429,8 @@ function renderLesson(){
     ? `<button class="lesson-mark done" id="retakeQuizBtn">✓ ${t('markedDone')} · ${t('quizRetake')}</button>`
     : `<button class="lesson-mark" id="startTopicQuizBtn">📝 ${t('takeQuiz')}</button>
        <div class="quiz-gate-note">${t('quizGateNote')}</div>`;
+
+  const speakHtml = renderSpeakBtn();
 
   if(state.quickLearn){
     // Step-card mode
@@ -5447,6 +5449,7 @@ function renderLesson(){
     }
     return `<div class="screen active" style="--accent:${cat.color}22; --accent-deep:${cat.color};">${header}
       <div class="lesson-card">
+        ${speakHtml}
         <div class="lesson-title">${tp[state.lang].t}</div>
         <div class="step-dots">${dots}</div>
         <div class="step-container" id="stepContainer">${cardContent}</div>
@@ -5460,6 +5463,7 @@ function renderLesson(){
     // Normal mode
     return `<div class="screen active" style="--accent:${cat.color}22; --accent-deep:${cat.color};">${header}
       <div class="lesson-card">
+        ${speakHtml}
         <div class="lesson-title">${tp[state.lang].t}</div>
         <div class="lesson-body">${highlightTerms(tp[state.lang].b, state.lang)}</div>
         ${quizBtn}
@@ -5551,8 +5555,9 @@ function renderGuidedLesson(){
           <div class="cat-sub-count">${sub.name[state.lang]}</div>
         </div>
       </div>
-      ${renderSpeakBtn()}
     </div>`;
+
+  const guidedSpeakHtml = renderSpeakBtn();
 
   // Summary screen
   if(g.finished){
@@ -5603,6 +5608,7 @@ function renderGuidedLesson(){
     const conceptText = liveCards[step.idx] != null ? liveCards[step.idx] : step.text;
     body = `
       <div class="lesson-card guided-step">
+        ${guidedSpeakHtml}
         <span class="guided-badge concept">${t('guidedConceptBadge')}</span>
         <div class="guided-topic-title">${tp[state.lang].t}</div>
         <span class="guided-concept-emoji">${emoji}</span>
@@ -5635,6 +5641,7 @@ function renderGuidedLesson(){
       </div>` : '';
     body = `
       <div class="quiz-card guided-step">
+        ${guidedSpeakHtml}
         <span class="guided-badge question">${t('guidedQuestionBadge')}</span>
         <div class="guided-question-text">${q.q}</div>
         <div class="guided-opts">${opts}</div>
@@ -6860,7 +6867,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=49').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=50').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
