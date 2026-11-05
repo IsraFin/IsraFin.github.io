@@ -4551,11 +4551,33 @@ function setLang(code){
 }
 
 // ===== Text-to-Speech (reads lessons aloud in the active language) =====
-console.log('[IsraFin TTS v48]');
+console.log('[IsraFin TTS v49]');
 const TTS = {
   supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
   speaking: false,
   voicesLoaded: false,
+  // Detect OS once — used to pick per-platform TTS pacing.
+  _os: (()=>{
+    const ua = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
+    if(/iPad|iPhone|iPod/.test(ua)) return 'ios';
+    if(/Android/.test(ua)) return 'android';
+    if(/Windows/.test(ua)) return 'windows';
+    if(/Macintosh|Mac OS/.test(ua)) return 'mac';
+    if(/Linux/.test(ua)) return 'linux';
+    return 'other';
+  })(),
+  // Base chars-per-second by OS and language (at rate 1.0).
+  // Windows neural voices (Aria/Jenny) are noticeably faster than
+  // macOS (Samantha/Daniel) and Linux (espeak). These are starting
+  // estimates — boundary events recalibrate to the actual voice speed.
+  _cpsTable: {
+    windows: { en: 20, he: 14, ar: 13 },
+    mac:     { en: 13, he: 11, ar: 10 },
+    ios:     { en: 13, he: 11, ar: 10 },
+    android: { en: 14, he: 12, ar: 11 },
+    linux:   { en: 11, he: 10, ar: 9 },
+    other:   { en: 14, he: 12, ar: 11 }
+  },
   // Map our app's lang code to BCP-47 tags, plus fallback locales.
   // Arabic especially varies widely across OSes — ar-SA (Saudi), ar-EG (Egyptian),
   // ar-AE (Emirati), ar-JO (Jordanian), ar-LB (Lebanese), ar-MA (Moroccan),
@@ -4842,10 +4864,12 @@ const TTS = {
         this._activeTimer = null;
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
 
-        // --- Highlight strategy (v48) ---
+        // --- Highlight strategy (v49) ---
         // Estimator runs continuously; boundary events recalibrate it.
         // When speech ends, quickly sweep highlight to end of chunk.
-        const baseCps = (lang === 'ar' ? 13 : lang === 'he' ? 14 : 20) * (u.rate || 1.0);
+        // Base CPS is tuned per OS — voices differ widely across platforms.
+        const cpsTable = TTS._cpsTable[TTS._os] || TTS._cpsTable.other;
+        const baseCps = (cpsTable[lang] || cpsTable.en) * (u.rate || 1.0);
         charsPerSec = baseCps;
 
         // Highlight the first word immediately.
@@ -6836,7 +6860,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=48').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=49').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
