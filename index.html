@@ -4841,13 +4841,17 @@ const TTS = {
         this._activeTimer = null;
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
 
-        // Initial pacing guess per language (chars/sec at rate 1.0).
-        // Windows neural voices (Microsoft Aria/Jenny/Guy) run ~16-18 cps;
-        // macOS Samantha/Daniel ~13-14; Chrome on Linux ~12-13.
-        // Start slightly fast rather than slow — a highlight that leads by
-        // half a word is less noticeable than one that lags a full word.
+        // --- Pacing strategy ---
+        // On Windows, boundary events fire with processing delay — by the
+        // time JS runs and the DOM updates, the voice is already past that
+        // word. We compensate with a forward "look-ahead" bias so the
+        // highlight sits on or slightly ahead of the spoken word.
         const baseCps = (lang === 'ar' ? 12 : lang === 'he' ? 13 : 16.5) * (u.rate || 1.0);
         charsPerSec = baseCps;
+        // Look-ahead: advance the highlight position by this many chars
+        // beyond what boundary events / estimator report. ~6 chars ≈ one
+        // short word, compensating for event-processing + DOM-update lag.
+        const leadChars = 6;
 
         // Highlight the first word immediately so the user has visual confirmation.
         if(wordsInChunk.length) this.setActiveWordAt(wordsInChunk[0].start);
@@ -4858,16 +4862,19 @@ const TTS = {
           estStart = Date.now();
           lastBoundaryTime = estStart;
           lastBoundaryChar = 0;
+          boundaryCount = 0;
           estTimer = setInterval(()=>{
             if(!this.speaking){ stopEstimator(); return; }
             const elapsedMs = Date.now() - lastBoundaryTime;
-            const absPos = chunkStart + lastBoundaryChar + (elapsedMs / 1000) * charsPerSec;
-            // Clamp to this chunk's range so we don't bleed into the next.
-            const clamped = Math.min(chunkEnd - 1, Math.max(chunkStart, absPos));
-            this.setActiveWordAt(clamped);
-          }, 60);
+            const rawPos = chunkStart + lastBoundaryChar + (elapsedMs / 1000) * charsPerSec;
+            // Add look-ahead and clamp to this chunk's range.
+            const absPos = Math.min(chunkEnd - 1, Math.max(chunkStart, rawPos + leadChars));
+            this.setActiveWordAt(absPos);
+          }, 55);
           this._activeTimer = estTimer;
         };
+
+        let boundaryCount = 0;
 
         // Begin the estimator the moment audio actually starts. If onstart
         // never fires (some engines skip it), begin anyway after 700ms so
@@ -4880,27 +4887,24 @@ const TTS = {
           if(ev.name && ev.name !== 'word') return;
           const relChar = ev.charIndex || 0;
           const absPos = chunkStart + relChar;
-          // Recalibrate: compute actual chars/sec based on observed progress
-          // since the last boundary event (or chunk start).
           const now = Date.now();
           if(started){
-            const dt = (now - lastBoundaryTime) / 1000;
-            const dc = relChar - lastBoundaryChar;
-            if(dt > 0.05 && dc > 0){
-              const measured = dc / dt;
-              // Blend measured rate into the running estimate.
-              // Use aggressive 85/15 weighting so we converge fast,
-              // but clamp to avoid wildly jumping on a single outlier.
-              const clamped = Math.max(baseCps * 0.5, Math.min(baseCps * 2.5, measured));
-              charsPerSec = 0.15 * charsPerSec + 0.85 * clamped;
+            // Recalibrate: measure actual chars/sec from overall progress
+            // since speech started (more stable than consecutive deltas).
+            const totalElapsed = (now - estStart) / 1000;
+            if(totalElapsed > 0.1 && relChar > 0){
+              const overallRate = relChar / totalElapsed;
+              // Blend: trust overall measurement heavily
+              charsPerSec = 0.2 * charsPerSec + 0.8 * overallRate;
             }
           } else {
-            // First boundary before onstart — treat this as the real start.
             beginEstimator();
           }
+          boundaryCount++;
           lastBoundaryTime = now;
           lastBoundaryChar = relChar;
-          this.setActiveWordAt(absPos);
+          // Snap highlight to boundary position + look-ahead
+          this.setActiveWordAt(Math.min(chunkEnd - 1, absPos + leadChars));
         };
 
         u.onend = ()=>{ stopEstimator(); speakNext(); };
@@ -6831,7 +6835,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=44').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=45').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
