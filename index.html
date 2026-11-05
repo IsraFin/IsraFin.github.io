@@ -4551,7 +4551,7 @@ function setLang(code){
 }
 
 // ===== Text-to-Speech (reads lessons aloud in the active language) =====
-console.log('[IsraFin TTS v47]');
+console.log('[IsraFin TTS v48]');
 const TTS = {
   supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
   speaking: false,
@@ -4842,12 +4842,11 @@ const TTS = {
         this._activeTimer = null;
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
 
-        // --- Highlight strategy (v47) ---
-        // Hybrid: estimator starts immediately for smooth movement;
-        // boundary events correct position and recalibrate the rate.
-        const baseCps = (lang === 'ar' ? 12 : lang === 'he' ? 13 : 16.5) * (u.rate || 1.0);
+        // --- Highlight strategy (v48) ---
+        // Estimator runs continuously; boundary events recalibrate it.
+        // When speech ends, quickly sweep highlight to end of chunk.
+        const baseCps = (lang === 'ar' ? 13 : lang === 'he' ? 14 : 20) * (u.rate || 1.0);
         charsPerSec = baseCps;
-        let gotBoundary = false;
 
         // Highlight the first word immediately.
         if(wordsInChunk.length) this.setActiveWordAt(wordsInChunk[0].start);
@@ -4859,44 +4858,59 @@ const TTS = {
           lastBoundaryTime = estStart;
           lastBoundaryChar = 0;
           estTimer = setInterval(()=>{
-            if(!this.speaking){ stopEstimator(); return; }
-            // If boundary events are driving, don't fight them.
-            if(gotBoundary) return;
-            const elapsed = (Date.now() - estStart) / 1000;
-            const rawPos = chunkStart + elapsed * charsPerSec;
+            if(!this.speaking && !this._sweeping){ stopEstimator(); return; }
+            const elapsed = (Date.now() - lastBoundaryTime) / 1000;
+            const rawPos = chunkStart + lastBoundaryChar + elapsed * charsPerSec;
             const clamped = Math.min(chunkEnd - 1, Math.max(chunkStart, rawPos));
             this.setActiveWordAt(clamped);
           }, 55);
           this._activeTimer = estTimer;
         };
 
-        // Start estimator as soon as audio begins (or after 700ms fallback).
+        // Start estimator as soon as audio begins (or after 500ms fallback).
         u.onstart = ()=> beginEstimator();
-        setTimeout(()=>{ if(this.speaking) beginEstimator(); }, 700);
+        setTimeout(()=>{ if(this.speaking) beginEstimator(); }, 500);
 
         u.onboundary = (ev)=>{
           if(!this.speaking) return;
           if(ev.name && ev.name !== 'word') return;
           const relChar = ev.charIndex || 0;
           const absPos = chunkStart + relChar;
-          gotBoundary = true;
-          // Snap highlight to the exact position the engine reports.
+          const now = Date.now();
+          // Snap highlight to the engine-reported position.
           this.setActiveWordAt(absPos);
-          // Recalibrate estimator rate from overall progress (used if
-          // boundary events stop mid-chunk for any reason).
+          // Recalibrate rate from overall progress since speech started.
           if(started && estStart){
-            const totalSec = (Date.now() - estStart) / 1000;
-            if(totalSec > 0.1 && relChar > 0){
+            const totalSec = (now - estStart) / 1000;
+            if(totalSec > 0.08 && relChar > 0){
               charsPerSec = relChar / totalSec;
             }
-            lastBoundaryTime = Date.now();
-            lastBoundaryChar = relChar;
           }
+          lastBoundaryTime = now;
+          lastBoundaryChar = relChar;
         };
 
-        u.onend = ()=>{ stopEstimator(); speakNext(); };
+        u.onend = ()=>{
+          // Speech ended but highlight may be behind. Quickly sweep
+          // to end of chunk before moving on, so user sees all words.
+          this._sweeping = true;
+          const sweepRate = charsPerSec * 3; // 3x speed to catch up fast
+          const sweepTimer = setInterval(()=>{
+            const elapsed = (Date.now() - lastBoundaryTime) / 1000;
+            const rawPos = chunkStart + lastBoundaryChar + elapsed * sweepRate;
+            if(rawPos >= chunkEnd - 1){
+              clearInterval(sweepTimer);
+              this._sweeping = false;
+              stopEstimator();
+              speakNext();
+            } else {
+              this.setActiveWordAt(rawPos);
+            }
+          }, 30);
+        };
         u.onerror = (ev)=>{
           stopEstimator();
+          this._sweeping = false;
           const err = ev && ev.error;
           if(err && err !== 'interrupted' && err !== 'canceled'){
             this.speaking = false;
@@ -6822,7 +6836,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=47').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=48').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
