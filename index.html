@@ -4842,9 +4842,11 @@ const TTS = {
         const stopEstimator = ()=>{ if(estTimer){ clearInterval(estTimer); estTimer = null; this._activeTimer = null; } };
 
         // Initial pacing guess per language (chars/sec at rate 1.0).
-        // Intentionally a little slow so highlight lags slightly rather than
-        // racing ahead of audio — easier to follow and less jarring.
-        const baseCps = (lang === 'ar' ? 11 : lang === 'he' ? 12 : 13.5) * (u.rate || 1.0);
+        // Windows neural voices (Microsoft Aria/Jenny/Guy) run ~16-18 cps;
+        // macOS Samantha/Daniel ~13-14; Chrome on Linux ~12-13.
+        // Start slightly fast rather than slow — a highlight that leads by
+        // half a word is less noticeable than one that lags a full word.
+        const baseCps = (lang === 'ar' ? 12 : lang === 'he' ? 13 : 16.5) * (u.rate || 1.0);
         charsPerSec = baseCps;
 
         // Highlight the first word immediately so the user has visual confirmation.
@@ -4863,7 +4865,7 @@ const TTS = {
             // Clamp to this chunk's range so we don't bleed into the next.
             const clamped = Math.min(chunkEnd - 1, Math.max(chunkStart, absPos));
             this.setActiveWordAt(clamped);
-          }, 100);
+          }, 60);
           this._activeTimer = estTimer;
         };
 
@@ -4885,9 +4887,12 @@ const TTS = {
             const dt = (now - lastBoundaryTime) / 1000;
             const dc = relChar - lastBoundaryChar;
             if(dt > 0.05 && dc > 0){
-              // Blend measured rate into the running estimate (70/30) so a
-              // single outlier doesn't jerk the timing around.
-              charsPerSec = 0.3 * charsPerSec + 0.7 * (dc / dt);
+              const measured = dc / dt;
+              // Blend measured rate into the running estimate.
+              // Use aggressive 85/15 weighting so we converge fast,
+              // but clamp to avoid wildly jumping on a single outlier.
+              const clamped = Math.max(baseCps * 0.5, Math.min(baseCps * 2.5, measured));
+              charsPerSec = 0.15 * charsPerSec + 0.85 * clamped;
             }
           } else {
             // First boundary before onstart — treat this as the real start.
@@ -6826,7 +6831,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=43').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=44').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
