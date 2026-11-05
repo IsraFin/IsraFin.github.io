@@ -4849,9 +4849,10 @@ const TTS = {
         const baseCps = (lang === 'ar' ? 12 : lang === 'he' ? 13 : 16.5) * (u.rate || 1.0);
         charsPerSec = baseCps;
         // Look-ahead: advance the highlight position by this many chars
-        // beyond what boundary events / estimator report. ~6 chars ≈ one
-        // short word, compensating for event-processing + DOM-update lag.
-        const leadChars = 6;
+        // beyond what boundary events / estimator report. ~13 chars ≈ two
+        // short words, compensating for event-processing + DOM-update lag
+        // on Windows (measured ~0.7-0.8s total delay at 16.5 cps).
+        const leadChars = 13;
 
         // Highlight the first word immediately so the user has visual confirmation.
         if(wordsInChunk.length) this.setActiveWordAt(wordsInChunk[0].start);
@@ -6835,7 +6836,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=45').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=46').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
