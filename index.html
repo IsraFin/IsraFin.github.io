@@ -643,6 +643,10 @@ a{color:inherit;}
 .reallife-featured-bar{ height:6px; border-radius:6px; background:rgba(255,255,255,0.25); overflow:hidden; margin-top:14px; position:relative; }
 .reallife-featured-bar-fill{ height:100%; background:#fff; border-radius:6px; }
 </style>
+<!-- Firebase SDK (compat – single-file-friendly) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -4552,7 +4556,7 @@ function setLang(code){
 }
 
 // ===== Text-to-Speech (reads lessons aloud in the active language) =====
-console.log('[IsraFin TTS v50]');
+console.log('[IsraFin TTS v51]');
 const TTS = {
   supported: typeof window !== 'undefined' && 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined',
   speaking: false,
@@ -5073,6 +5077,8 @@ function saveCurrentProfile(){
   profiles[key] = snapshot;
   saveProfiles(profiles);
   try{ window.localStorage.setItem(LAST_USER_KEY, state.userName); }catch(e){}
+  // Sync to cloud
+  Cloud.save(key, snapshot);
 }
 function loadProfileInto(name){
   const profiles = loadProfiles();
@@ -5086,6 +5092,110 @@ function getLastUser(){
   if(!storageAvailable()) return '';
   try{ return window.localStorage.getItem(LAST_USER_KEY) || ''; }catch(e){ return ''; }
 }
+
+// ===== Firebase cloud persistence =====
+const FIREBASE_CONFIG = {
+  // TODO: Replace with your Firebase project config
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+  projectId: "PASTE_YOUR_PROJECT_ID",
+  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+  messagingSenderId: "PASTE_YOUR_SENDER_ID",
+  appId: "PASTE_YOUR_APP_ID"
+};
+
+const Cloud = {
+  _ready: false,
+  _uid: null,
+  _db: null,
+  _pending: null, // queued save while auth is still loading
+
+  init(){
+    // Skip if config hasn't been filled in
+    if(!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey.startsWith('PASTE_')) {
+      console.log('[IsraFin Cloud] Firebase not configured — running local-only');
+      return;
+    }
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      this._db = firebase.firestore();
+      // Enable offline persistence so reads work without network
+      this._db.enablePersistence({synchronizeTabs: true}).catch(()=>{});
+      firebase.auth().onAuthStateChanged(user => {
+        if(user){
+          this._uid = user.uid;
+          this._ready = true;
+          console.log('[IsraFin Cloud] Signed in:', user.uid);
+          // If a save was queued while auth was loading, flush it now
+          if(this._pending){
+            this._saveToCloud(this._pending.key, this._pending.data);
+            this._pending = null;
+          }
+          // If we're already on a profile, try to pull cloud data
+          if(state._profileLoaded && state.userName){
+            this._mergeFromCloud(profileKeyFor(state.userName));
+          }
+        } else {
+          // Sign in anonymously
+          firebase.auth().signInAnonymously().catch(e => {
+            console.warn('[IsraFin Cloud] Auth failed:', e.message);
+          });
+        }
+      });
+    } catch(e){
+      console.warn('[IsraFin Cloud] Init failed:', e.message);
+    }
+  },
+
+  // Save a profile snapshot to Firestore
+  _saveToCloud(profileKey, data){
+    if(!this._ready || !this._db || !this._uid) {
+      // Queue for when auth finishes
+      this._pending = {key: profileKey, data};
+      return;
+    }
+    const doc = this._db.collection('users').doc(this._uid)
+      .collection('profiles').doc(profileKey);
+    doc.set(data, {merge: true}).catch(e => {
+      console.warn('[IsraFin Cloud] Save failed:', e.message);
+    });
+  },
+
+  // Load a profile from Firestore, merge with local if cloud is newer
+  async _mergeFromCloud(profileKey){
+    if(!this._ready || !this._db || !this._uid) return;
+    try {
+      const doc = await this._db.collection('users').doc(this._uid)
+        .collection('profiles').doc(profileKey).get();
+      if(!doc.exists) return;
+      const cloud = doc.data();
+      const local = loadProfiles()[profileKey];
+      // Cloud wins if it has a newer savedAt, or local has no data
+      if(!local || (cloud.savedAt && (!local.savedAt || cloud.savedAt > local.savedAt))){
+        // Merge cloud data into state
+        PROFILE_FIELDS.forEach(f => { if(cloud[f] !== undefined) state[f] = cloud[f]; });
+        // Also persist to localStorage so next offline load is fresh
+        const profiles = loadProfiles();
+        profiles[profileKey] = cloud;
+        saveProfiles(profiles);
+        render();
+        console.log('[IsraFin Cloud] Loaded newer cloud profile');
+      }
+    } catch(e){
+      console.warn('[IsraFin Cloud] Read failed:', e.message);
+    }
+  },
+
+  // Called by saveCurrentProfile — piggybacks on every local save
+  save(profileKey, snapshot){
+    this._saveToCloud(profileKey, snapshot);
+  },
+
+  // Called on login — tries to pull cloud data
+  onLogin(profileKey){
+    this._mergeFromCloud(profileKey);
+  }
+};
 
 function logoutUser(){
   saveCurrentProfile(); // preserve this user's progress before switching
@@ -6519,6 +6629,7 @@ function attachEvents(){
       if(state.userName.trim()==='') return;
       const hadProfile = loadProfileInto(state.userName);
       state._profileLoaded = true;
+      Cloud.onLogin(profileKeyFor(state.userName));
       goto(hadProfile ? 'home' : 'goals');
     });
   }
@@ -6863,11 +6974,12 @@ document.addEventListener('click', (e)=>{
 // If the user changes language or navigates, cancel any speech
 window.addEventListener('beforeunload', ()=>{ TTS.stop(); });
 
+Cloud.init();
 render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=50').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=51').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
