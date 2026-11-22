@@ -4641,7 +4641,8 @@ const TTS = {
     const candidates = [];
     for(const v of voices){
       if(!v.lang) continue;
-      const vl = v.lang.toLowerCase();
+      // Android reports locales like "en_US" (underscore); normalise to "en-us".
+      const vl = v.lang.toLowerCase().replace(/_/g, '-');
       let localeBonus = 0;
       const exactIdx = targets.findIndex(t => t.toLowerCase() === vl);
       if(exactIdx >= 0){
@@ -4811,7 +4812,8 @@ const TTS = {
     this.stop();
     this.ensureVoicesThen(()=>{
       const { voice, lang: resolvedLang } = this.pickVoiceForLang(lang);
-      if(!voice){
+      // English: if no voice matched, still speak and let the device pick its default.
+      if(!voice && lang !== 'en'){
         const key = lang === 'ar' ? 'speakNoVoice' : lang === 'he' ? 'speakNoVoiceHe' : 'speakNoVoiceEn';
         showToast(t(key), 'ℹ️', 'top');
         this.speaking = false;
@@ -4842,7 +4844,7 @@ const TTS = {
         i++;
         const u = new SpeechSynthesisUtterance(chunkText);
         u.lang = resolvedLang;
-        u.voice = voice;
+        if(voice) u.voice = voice;
         u.rate = 1.0;
         u.pitch = 1.0;
         u.volume = 1.0;
@@ -6978,7 +6980,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=52').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=53').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
