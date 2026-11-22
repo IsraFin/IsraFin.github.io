@@ -138,6 +138,50 @@ a{color:inherit;}
 .modal-actions{ display:flex; gap:10px; }
 .modal-actions .btn-ghost, .modal-actions .btn-primary{ flex:1; }
 
+/* ===== Continue-where-you-left-off pop-up ===== */
+.resume-overlay{
+  position:fixed; inset:0; z-index:110;
+  background:rgba(22,35,29,0.50);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px; animation:resumeFade .2s ease;
+}
+.resume-card{
+  position:relative; width:100%; max-width:360px;
+  background:var(--emerald-deep); color:#fff;
+  border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+  padding:22px 20px 14px; animation:resumePop .25s cubic-bezier(.2,.9,.3,1.2);
+}
+.resume-close{
+  position:absolute; top:12px; inset-inline-end:12px;
+  width:40px; height:40px; border-radius:50%; border:none; cursor:pointer;
+  background:rgba(255,255,255,0.14); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+}
+.resume-close:hover{ background:rgba(255,255,255,0.26); }
+.resume-label{
+  display:flex; align-items:center; gap:8px; padding-inline-end:48px;
+  font-size:13px; font-weight:600; color:#CFE8DC;
+}
+.resume-title{ font-family:var(--font-display); font-weight:800; font-size:22px; line-height:1.25; margin-top:14px; }
+.resume-meta{ font-size:13.5px; color:#CFE8DC; margin-top:4px; }
+.resume-bar{ height:6px; border-radius:6px; background:rgba(255,255,255,0.22); overflow:hidden; margin-top:14px; }
+.resume-bar-fill{ height:100%; background:var(--gold); border-radius:6px; }
+.resume-go{
+  display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+  margin-top:18px; min-height:50px; border:none; border-radius:14px; cursor:pointer;
+  background:var(--gold); color:var(--ink);
+  font-family:var(--font-display); font-weight:700; font-size:16px;
+}
+.resume-go:hover{ background:#F2BE68; }
+.resume-later{
+  display:block; width:100%; min-height:44px; margin-top:4px;
+  background:none; border:none; cursor:pointer;
+  color:#CFE8DC; font-family:var(--font-body); font-size:14.5px; font-weight:500;
+}
+.resume-later:hover{ color:#fff; text-decoration:underline; }
+@keyframes resumeFade{ from{opacity:0} to{opacity:1} }
+@keyframes resumePop{ from{opacity:0; transform:translateY(14px) scale(.96)} to{opacity:1; transform:none} }
+
 /* ===== Screens ===== */
 .screen{ display:none; animation: fadeUp .35s ease; }
 .screen.active{display:block;}
@@ -3689,6 +3733,7 @@ const STR = {
     realLifeToggleLabel:'REAL LIFE', quickLearnLabel:'QUICK LEARN', homeSubRealLife:'Practical money skills for real life in Israel',
     guidedModeLabel:'GUIDED LEARNING', guidedModeDesc:'Learn step by step with quick checks along the way',
     guidedCheck:'Check', guidedContinue:'Continue', guidedCorrectHdr:'Correct!', guidedWrongHdr:'Not quite',
+    resumeLabel:'Continue where you left off', resumeStep:'Step {n} of {total}', resumeBtn:'Continue', resumeLater:'Not now', resumeClose:'Close',
     guidedConceptBadge:'Learn', guidedQuestionBadge:'Quick Check',
     guidedCompleteTitle:'Lesson Complete!', guidedCompleteSub:'You\'ve learned {topic}',
     guidedQuestionsScore:'{score}/{total} questions correct',
@@ -3785,6 +3830,7 @@ const STR = {
     realLifeToggleLabel:'חיים אמיתיים', quickLearnLabel:'למידה מהירה', homeSubRealLife:'מיומנויות כסף מעשיות לחיים האמיתיים בישראל',
     guidedModeLabel:'למידה מודרכת', guidedModeDesc:'למדו שלב-אחר-שלב עם בדיקות קצרות בדרך',
     guidedCheck:'בדיקה', guidedContinue:'המשך', guidedCorrectHdr:'נכון!', guidedWrongHdr:'לא ממש',
+    resumeLabel:'ממשיכים מאיפה שעצרתם', resumeStep:'שלב {n} מתוך {total}', resumeBtn:'המשך', resumeLater:'לא עכשיו', resumeClose:'סגירה',
     guidedConceptBadge:'ללמוד', guidedQuestionBadge:'בדיקה מהירה',
     guidedCompleteTitle:'השיעור הושלם!', guidedCompleteSub:'למדתם על {topic}',
     guidedQuestionsScore:'{score}/{total} שאלות נכונות',
@@ -3881,6 +3927,7 @@ const STR = {
     realLifeToggleLabel:'الحياة الواقعية', quickLearnLabel:'تعلّم سريع', homeSubRealLife:'مهارات مالية عملية للحياة الواقعية في إسرائيل',
     guidedModeLabel:'تعلّم موجّه', guidedModeDesc:'تعلّم خطوة بخطوة مع فحوصات سريعة أثناء الطريق',
     guidedCheck:'تحقق', guidedContinue:'متابعة', guidedCorrectHdr:'صحيح!', guidedWrongHdr:'ليس تماماً',
+    resumeLabel:'تابع من حيث توقفت', resumeStep:'الخطوة {n} من {total}', resumeBtn:'متابعة', resumeLater:'ليس الآن', resumeClose:'إغلاق',
     guidedConceptBadge:'تعلّم', guidedQuestionBadge:'فحص سريع',
     guidedCompleteTitle:'اكتمل الدرس!', guidedCompleteSub:'تعلّمت عن {topic}',
     guidedQuestionsScore:'{score}/{total} أسئلة صحيحة',
@@ -4200,6 +4247,9 @@ let state = {
   goalGlow: {}, // catId -> true — categories that should glow
   goalVisited: {}, // catId -> true — glowing categories already tapped into
   goalJustFinished: false, // true for one visit to the goal picker right after finishing a goal
+  resume: null, // { catId, subIdx, topicIdx, topicId, stepIdx, correctCount, mode:'guided'|'quick', at } — last unfinished lesson
+  resumePrompt: false, // true while the "continue where you left off" pop-up is showing
+  _resumePromptShown: false, // pop-up appears at most once per login
   _profileLoaded: false // internal: true only once real saved data has been loaded/initialized — guards against overwriting a profile with blank defaults
 };
 
@@ -5011,6 +5061,8 @@ function goto(screen, extra){
   if(TTS.speaking) TTS.stop();
   if(screen === 'home') state.factIndex = Math.floor(Math.random()*FINANCIAL_FACTS.en.length);
   if(screen === 'lesson'){ state.lessonCard = 0; state.guided = null; } // clear guided state so initGuidedLesson rebuilds for this topic
+  // Once the user is already in a lesson this session, don't greet them with the resume pop-up on the way back home.
+  if(screen === 'lesson') state._resumePromptShown = true;
   state.screen = screen;
   if(extra) Object.assign(state, extra);
   render();
@@ -5043,10 +5095,115 @@ function renderConfirmModal(){
   </div>`;
 }
 
+// ===== Continue where you left off =====
+// Look up the topic a resume record points at; null if it no longer exists.
+function resumeTopic(r){
+  if(!r) return null;
+  const cat = findCategory(r.catId);
+  const sub = cat && cat.subs[r.subIdx];
+  const tp = sub && sub.topics[r.topicIdx];
+  if(!tp || tp.id !== r.topicId) return null;
+  return { cat, tp };
+}
+// A resume record is worth offering only if its topic exists and isn't completed yet.
+function validResume(){
+  const r = state.resume;
+  const found = resumeTopic(r);
+  if(!found) return null;
+  if(state.progress[r.topicId]) return null;
+  return found;
+}
+// Runs on every save: remember the user's spot in an unfinished lesson,
+// and forget it once that lesson is finished or the topic is marked done.
+function trackResume(){
+  if(state.screen !== 'lesson' || !state.activeTopic) return;
+  const a = state.activeTopic;
+  const cat = findCategory(a.catId);
+  const tp = cat && cat.subs[a.subIdx] && cat.subs[a.subIdx].topics[a.topicIdx];
+  if(!tp) return;
+  const clearIfSame = ()=>{ if(state.resume && state.resume.topicId === tp.id) state.resume = null; };
+  if(state.progress[tp.id]){ clearIfSame(); return; } // already completed — nothing to resume
+  const base = { catId:a.catId, subIdx:a.subIdx, topicIdx:a.topicIdx, topicId:tp.id, at:Date.now() };
+  if(state.guidedMode){
+    const g = state.guided;
+    if(!g || g.topicId !== tp.id) return;
+    if(g.finished){ clearIfSame(); return; }
+    // An answered question counts as done, so resuming lands on the step after it
+    // and the answer isn't scored twice.
+    const idx = g.answered ? g.stepIdx + 1 : g.stepIdx;
+    if(idx <= 0) return; // only opened, nothing done yet — keep any older spot
+    state.resume = Object.assign(base, { mode:'guided', stepIdx:idx, correctCount:g.correctCount });
+  } else if(state.quickLearn){
+    const ci = state.lessonCard || 0;
+    if(ci <= 0) return;
+    state.resume = Object.assign(base, { mode:'quick', stepIdx:ci, correctCount:0 });
+  }
+}
+function resumeStepInfo(r, tp){
+  const cards = splitLessonCards(tp[state.lang].b, state.lang);
+  if(r.mode === 'quick') return { n: Math.min(r.stepIdx + 1, cards.length + 1), total: cards.length + 1 };
+  const questions = (QUIZDATA.topics[tp.id] && QUIZDATA.topics[tp.id][state.lang]) || [];
+  const total = Math.max(1, buildGuidedSteps(cards, questions).length);
+  return { n: Math.min(r.stepIdx + 1, total), total };
+}
+function renderResumeModal(){
+  if(!state.resumePrompt || state.screen !== 'home') return '';
+  const found = validResume();
+  if(!found){ state.resumePrompt = false; return ''; }
+  const { cat, tp } = found;
+  const { n, total } = resumeStepInfo(state.resume, tp);
+  const pct = Math.round(((n - 1) / total) * 100);
+  const rtl = dirFor(state.lang) === 'rtl';
+  return `
+  <div class="resume-overlay" id="resumeOverlay">
+    <div class="resume-card" role="dialog" aria-modal="true" aria-labelledby="resumeTitle">
+      <button class="resume-close" id="resumeClose" aria-label="${t('resumeClose')}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+      <div class="resume-label">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#E8A33D" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 8v4l3 2"/></svg>
+        <span>${t('resumeLabel')}</span>
+      </div>
+      <div class="resume-title" id="resumeTitle">${tp[state.lang].t}</div>
+      <div class="resume-meta">${cat.icon} ${cat.name[state.lang]} · ${t('resumeStep',{n,total})}</div>
+      <div class="resume-bar"><div class="resume-bar-fill" style="width:${pct}%;"></div></div>
+      <button class="resume-go" id="resumeGo">${t('resumeBtn')}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" ${rtl?'style="transform:scaleX(-1)"':''}><path d="M7 4.5v15l12-7.5z"/></svg>
+      </button>
+      <button class="resume-later" id="resumeLater">${t('resumeLater')}</button>
+    </div>
+  </div>`;
+}
+function closeResume(){
+  if(!state.resumePrompt) return;
+  state.resumePrompt = false;
+  render();
+}
+function openResume(){
+  const r = state.resume;
+  const found = validResume();
+  state.resumePrompt = false;
+  if(!found){ render(); return; }
+  goto('lesson', { activeCategory: r.catId, activeTopic: { catId:r.catId, subIdx:r.subIdx, topicIdx:r.topicIdx } });
+  const modeMatches = (r.mode === 'guided' && state.guidedMode) || (r.mode === 'quick' && !state.guidedMode && state.quickLearn);
+  if(!modeMatches) return; // learning mode changed since — open the topic from the start
+  if(r.mode === 'guided'){
+    const g = state.guided;
+    if(!g) return;
+    g.correctCount = r.correctCount || 0;
+    g.stepIdx = Math.min(r.stepIdx, g.steps.length);
+    if(g.stepIdx >= g.steps.length) finishGuidedLesson();
+  } else {
+    const cards = splitLessonCards(found.tp[state.lang].b, state.lang);
+    state.lessonCard = Math.min(r.stepIdx, cards.length);
+  }
+  render();
+}
+
 // ===== Local persistence (per-profile, by name) =====
 const PROFILES_KEY = 'israfin2:profiles';
 const LAST_USER_KEY = 'israfin2:lastUser';
-const PROFILE_FIELDS = ['userName','avatar','lang','xp','progress','badges','bestStreak','answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode','quickLearn','guidedMode'];
+const PROFILE_FIELDS = ['userName','avatar','lang','xp','progress','badges','bestStreak','answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode','quickLearn','guidedMode','resume'];
 
 function storageAvailable(){
   try{
@@ -5071,6 +5228,7 @@ function saveProfiles(profiles){
 function saveCurrentProfile(){
   if(!state._profileLoaded) return; // never persist until we've genuinely loaded or intentionally started this profile
   if(!state.userName || state.userName.trim()==='') return;
+  trackResume();
   const profiles = loadProfiles();
   const key = profileKeyFor(state.userName);
   const snapshot = {};
@@ -5218,6 +5376,9 @@ function logoutUser(){
   state.goalGlow = {};
   state.goalVisited = {};
   state.goalJustFinished = false;
+  state.resume = null;
+  state.resumePrompt = false;
+  state._resumePromptShown = false;
   state._profileLoaded = false;
   render();
   window.scrollTo(0,0);
@@ -5323,6 +5484,11 @@ function checkGoalComplete(){
 }
 
 function renderHome(){
+  // First home view after logging in: offer to resume an unfinished lesson.
+  if(!state._resumePromptShown){
+    state._resumePromptShown = true;
+    if(validResume()) state.resumePrompt = true;
+  }
   const total = totalTopics(), done = doneCount();
   const rlCat = REALLIFE[0];
   const displayDone = state.realLifeMode ? catDoneCount(rlCat) : done;
@@ -6566,13 +6732,26 @@ function render(){
   // Stop any active narration — the DOM rebuild would strip the word spans
   // and leave the engine speaking into nothing visible.
   if(typeof TTS !== 'undefined' && TTS.speaking) TTS.stop();
-  document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderModesModal();
+  document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderModesModal() + renderResumeModal();
   attachEvents();
   if(typeof TTS !== 'undefined') TTS.updateButton();
   saveCurrentProfile();
 }
 
 function attachEvents(){
+  // Continue-where-you-left-off pop-up
+  const resumeGo = document.getElementById('resumeGo');
+  if(resumeGo) resumeGo.addEventListener('click', openResume);
+  ['resumeClose','resumeLater'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('click', closeResume);
+  });
+  const resumeOverlay = document.getElementById('resumeOverlay');
+  if(resumeOverlay){
+    resumeOverlay.addEventListener('click', (e)=>{ if(e.target === resumeOverlay) closeResume(); });
+    if(resumeGo) resumeGo.focus({ preventScroll:true });
+  }
+
   const confirmModalOk = document.getElementById('confirmModalOk');
   if(confirmModalOk){
     confirmModalOk.addEventListener('click', ()=>{
@@ -6972,6 +7151,9 @@ document.addEventListener('click', (e)=>{
   TTS.toggle(state.lang);
 });
 
+// Escape closes the continue pop-up
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && state.resumePrompt) closeResume(); });
+
 // If the user changes language or navigates, cancel any speech
 window.addEventListener('beforeunload', ()=>{ TTS.stop(); });
 
@@ -6980,7 +7162,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=53').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=54').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
