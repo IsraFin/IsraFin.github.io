@@ -5260,9 +5260,37 @@ function loadProfileInto(name){
   const profiles = loadProfiles();
   const saved = profiles[profileKeyFor(name)];
   if(!saved) return false;
+  applyProfile(saved, name);
+  return true;
+}
+function applyProfile(saved, name){
   PROFILE_FIELDS.forEach(f => { if(saved[f]!==undefined) state[f] = saved[f]; });
   state.userName = name; // preserve exact casing the user typed this time
-  return true;
+}
+// Log in by name. Checks BOTH this device's copy and the cloud copy before deciding
+// whether this is a new profile, and uses whichever is newer — so a cleared browser
+// gets its progress back instead of starting blank and overwriting the cloud copy.
+let _loggingIn = false;
+async function loginWithName(name){
+  if(_loggingIn || !name || name.trim()==='') return;
+  _loggingIn = true;
+  const btn = document.getElementById('startBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '…'; }
+  const key = profileKeyFor(name);
+  const local = loadProfiles()[key] || null;
+  let cloud = null;
+  try { cloud = await Cloud.fetchProfile(key); } catch(e){ cloud = null; }
+  let pick = local;
+  if(cloud && (!local || (cloud.savedAt || 0) > (local.savedAt || 0))) pick = cloud;
+  if(pick){
+    applyProfile(pick, name);
+    if(pick === cloud){ // keep this device's copy in step with the cloud
+      const profiles = loadProfiles(); profiles[key] = cloud; saveProfiles(profiles);
+    }
+  }
+  state._profileLoaded = true; // saving is allowed only from here on
+  _loggingIn = false;
+  goto(pick ? 'home' : 'goals');
 }
 function getLastUser(){
   if(!storageAvailable()) return '';
@@ -5283,7 +5311,9 @@ const Cloud = {
   _ready: false,
   _uid: null,
   _db: null,
-  _pending: null, // queued save while auth is still loading
+  _pending: {}, // profileKey -> latest snapshot queued while auth is still loading
+  _configured: false,
+  _readyWaiters: [],
 
   init(){
     // Skip if config hasn't been filled in
@@ -5292,6 +5322,8 @@ const Cloud = {
       return;
     }
     try {
+      if(typeof firebase === 'undefined') throw new Error('Firebase SDK did not load (offline?)');
+      this._configured = true;
       firebase.initializeApp(FIREBASE_CONFIG);
       this._db = firebase.firestore();
       // Enable offline persistence so reads work without network
@@ -5301,11 +5333,11 @@ const Cloud = {
           this._uid = user.uid;
           this._ready = true;
           console.log('[IsraFin Cloud] Signed in:', user.uid);
-          // If a save was queued while auth was loading, flush it now
-          if(this._pending){
-            this._saveToCloud(this._pending.key, this._pending.data);
-            this._pending = null;
-          }
+          // Wake anything waiting for sign-in (e.g. a login checking the cloud copy)
+          this._readyWaiters.splice(0).forEach(fn => fn(true));
+          // Flush saves queued while auth was loading (one per profile)
+          const queued = this._pending; this._pending = {};
+          Object.keys(queued).forEach(k => this._saveToCloud(k, queued[k]));
           // If we're already on a profile, try to pull cloud data
           if(state._profileLoaded && state.userName){
             this._mergeFromCloud(profileKeyFor(state.userName));
@@ -5326,7 +5358,7 @@ const Cloud = {
   _saveToCloud(profileKey, data){
     if(!this._ready || !this._db || !this._uid) {
       // Queue for when auth finishes
-      this._pending = {key: profileKey, data};
+      if(this._configured) this._pending[profileKey] = data;
       return;
     }
     const doc = this._db.collection('users').doc(this._uid)
@@ -5366,9 +5398,31 @@ const Cloud = {
     this._saveToCloud(profileKey, snapshot);
   },
 
-  // Called on login — tries to pull cloud data
-  onLogin(profileKey){
-    this._mergeFromCloud(profileKey);
+  // Resolves true once signed in, or false after timeoutMs (or if Firebase isn't available).
+  whenReady(timeoutMs){
+    if(this._ready) return Promise.resolve(true);
+    if(!this._configured) return Promise.resolve(false);
+    return new Promise(resolve => {
+      let done = false;
+      const finish = v => { if(done) return; done = true; resolve(v); };
+      this._readyWaiters.push(finish);
+      setTimeout(() => finish(false), timeoutMs);
+    });
+  },
+
+  // Fetch one profile's cloud copy, or null. Never waits more than ~4s in total,
+  // so a slow or offline connection can't block logging in.
+  async fetchProfile(profileKey){
+    if(!(await this.whenReady(2500)) || !this._db || !this._uid) return null;
+    const ref = this._db.collection('users').doc(this._uid).collection('profiles').doc(profileKey);
+    const timeout = new Promise(resolve => setTimeout(() => resolve(null), 2000));
+    try {
+      const doc = await Promise.race([ref.get(), timeout]);
+      return (doc && doc.exists) ? doc.data() : null;
+    } catch(e){
+      console.warn('[IsraFin Cloud] Read failed:', e.message);
+      return null;
+    }
   }
 };
 
@@ -6821,13 +6875,7 @@ function attachEvents(){
   });
   const startBtn = document.getElementById('startBtn');
   if(startBtn){
-    startBtn.addEventListener('click', ()=>{
-      if(state.userName.trim()==='') return;
-      const hadProfile = loadProfileInto(state.userName);
-      state._profileLoaded = true;
-      Cloud.onLogin(profileKeyFor(state.userName));
-      goto(hadProfile ? 'home' : 'goals');
-    });
+    startBtn.addEventListener('click', ()=>{ loginWithName(state.userName); });
   }
 
   // Goal picker
@@ -7178,7 +7226,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=55').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=56').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
