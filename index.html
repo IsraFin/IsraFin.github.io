@@ -5095,13 +5095,12 @@ function getLastUser(){
 
 // ===== Firebase cloud persistence =====
 const FIREBASE_CONFIG = {
-  // TODO: Replace with your Firebase project config
-  apiKey: "PASTE_YOUR_API_KEY",
-  authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
-  projectId: "PASTE_YOUR_PROJECT_ID",
-  storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
-  messagingSenderId: "PASTE_YOUR_SENDER_ID",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "AIzaSyCFNZOntVhZ2KFcyWc0A28zUI1Hrrf2EW0",
+  authDomain: "israfin.firebaseapp.com",
+  projectId: "israfin",
+  storageBucket: "israfin.firebasestorage.app",
+  messagingSenderId: "535504247958",
+  appId: "1:535504247958:web:cdc30eed4244fa9808f6b7"
 };
 
 const Cloud = {
@@ -6979,7 +6978,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=51').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=52').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
