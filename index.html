@@ -236,6 +236,30 @@ a{color:inherit;}
 .btn-primary:active{ transform: translateY(0); }
 .btn-primary:disabled{ opacity:.5; box-shadow:none; }
 .login-note{ font-size:12.5px; color:var(--ink-soft); margin-top:14px; line-height:1.5; }
+/* ===== Google sign-in ===== */
+.g-or{ display:flex; align-items:center; gap:10px; margin:16px 0 12px; color:var(--ink-soft); font-size:12.5px; }
+.g-or::before, .g-or::after{ content:''; flex:1; height:1px; background:var(--line); }
+.g-btn{
+  width:100%; min-height:48px; display:flex; align-items:center; justify-content:center; gap:10px;
+  border:1px solid #DADCE0; border-radius:12px; background:#fff; color:#1F1F1F; cursor:pointer;
+  font-family:var(--font-body); font-size:15px; font-weight:600;
+}
+.g-btn:hover{ background:#F8F9FA; }
+.g-btn:disabled{ opacity:.6; cursor:wait; }
+.g-synced{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-soft); flex-wrap:wrap; }
+.g-synced bdi{ font-weight:600; color:var(--ink); }
+.profile-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.profile-chip{
+  display:flex; align-items:center; gap:6px; min-height:40px; padding:6px 14px; cursor:pointer;
+  border:1.5px solid var(--line); border-radius:999px; background:var(--paper);
+  font-family:var(--font-body); font-size:14px; font-weight:600; color:var(--ink);
+}
+.profile-chip:hover{ border-color:var(--accent-deep); }
+.g-card{ margin:18px 18px 4px; padding:16px; border-radius:var(--radius-lg); background:var(--paper); border:1px solid var(--line); box-shadow:var(--shadow-sm); }
+.g-card-title{ font-family:var(--font-display); font-weight:800; font-size:16px; }
+.g-card-sub{ font-size:13.5px; color:var(--ink-soft); margin:4px 0 12px; line-height:1.45; }
+.g-card .g-synced{ margin-top:8px; }
+.g-card .g-signout{ width:100%; margin-top:12px; }
 .login-langs{ display:flex; justify-content:center; gap:8px; margin-bottom:22px; }
 .mini-lang{
   padding:7px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--paper);
@@ -3688,7 +3712,7 @@ QUIZDATA.subs['real-life:3'] = {
 const STR = {
   en: { appName:'IsraFin', tagline:'Learn how money really works in Israel — saving, investing, banking, taxes, and more.',
     nameLabel:'What should we call you?', namePh:'Your name', startBtn:'Start Learning',
-    loginNote:'This is a demo login — your name is remembered only for this visit and resets if you reload the app.',
+    loginNote:'Your progress is saved automatically. Type the same name next time to pick up where you left off.',
     hiThere:'Hi, {name} 👋', homeSub:'Pick a topic to start learning', topicsDone:'{done}/{total} lessons done',
     overallLbl:'Overall progress', topics:'topics', backAria:'Back', markedDone:'Read ✓',
     speakStart:'Read lesson aloud', speakStop:'Stop reading', speakUnavailable:'Your browser does not support reading this lesson aloud.',
@@ -3778,6 +3802,7 @@ const STR = {
     realLifeToggleLabel:'REAL LIFE', quickLearnLabel:'QUICK LEARN', homeSubRealLife:'Practical money skills for real life in Israel',
     guidedModeLabel:'GUIDED LEARNING', guidedModeDesc:'Learn step by step with quick checks along the way',
     guidedCheck:'Check', guidedContinue:'Continue', guidedCorrectHdr:'Correct!', guidedWrongHdr:'Not quite',
+    gSignIn:'Continue with Google', gWhy:'Sign in to keep your progress on every device.', gSynced:'Synced with Google', gSignOut:'Sign out of Google', gProfiles:'Your profiles', gError:'Google sign-in didn\'t work. Please try again.', gNotEnabled:'Google sign-in isn\'t available yet.', gSyncTitle:'Sync across devices', gOr:'or',
     resumeLabel:'Continue where you left off', resumeStep:'Step {n} of {total}', resumeBtn:'Continue', resumeLater:'Not now', resumeClose:'Close',
     guidedConceptBadge:'Learn', guidedQuestionBadge:'Quick Check',
     guidedCompleteTitle:'Lesson Complete!', guidedCompleteSub:'You\'ve learned {topic}',
@@ -3788,7 +3813,7 @@ const STR = {
     guidedExitConfirm:'Leave lesson? Your progress on this attempt will be lost.' },
   he: { appName:'IsraFin', tagline:'למדו איך הכסף באמת עובד בישראל — חיסכון, השקעות, בנקאות, מיסים ועוד.',
     nameLabel:'איך לקרוא לכם?', namePh:'השם שלכם', startBtn:'בואו נתחיל ללמוד',
-    loginNote:'זוהי כניסה לדוגמה — השם שלכם נשמר רק לביקור הזה ומתאפס אם טוענים את האפליקציה מחדש.',
+    loginNote:'ההתקדמות שלכם נשמרת אוטומטית. הקלידו את אותו השם בפעם הבאה כדי להמשיך מאיפה שעצרתם.',
     hiThere:'היי, {name} 👋', homeSub:'בחרו נושא כדי להתחיל ללמוד', topicsDone:'{done}/{total} שיעורים הושלמו',
     overallLbl:'התקדמות כוללת', topics:'נושאים', backAria:'חזרה', markedDone:'נקרא ✓',
     speakStart:'הקראת השיעור', speakStop:'עצירת ההקראה', speakUnavailable:'הדפדפן שלכם לא תומך בהקראת השיעור בקול.',
@@ -3878,6 +3903,7 @@ const STR = {
     realLifeToggleLabel:'חיים אמיתיים', quickLearnLabel:'למידה מהירה', homeSubRealLife:'מיומנויות כסף מעשיות לחיים האמיתיים בישראל',
     guidedModeLabel:'למידה מודרכת', guidedModeDesc:'למדו שלב-אחר-שלב עם בדיקות קצרות בדרך',
     guidedCheck:'בדיקה', guidedContinue:'המשך', guidedCorrectHdr:'נכון!', guidedWrongHdr:'לא ממש',
+    gSignIn:'המשך עם Google', gWhy:'התחברו כדי לשמור את ההתקדמות בכל מכשיר.', gSynced:'מסונכרן עם Google', gSignOut:'התנתקות מ-Google', gProfiles:'הפרופילים שלכם', gError:'ההתחברות עם Google לא הצליחה. נסו שוב.', gNotEnabled:'ההתחברות עם Google עדיין לא זמינה.', gSyncTitle:'סנכרון בין מכשירים', gOr:'או',
     resumeLabel:'ממשיכים מאיפה שעצרתם', resumeStep:'שלב {n} מתוך {total}', resumeBtn:'המשך', resumeLater:'לא עכשיו', resumeClose:'סגירה',
     guidedConceptBadge:'ללמוד', guidedQuestionBadge:'בדיקה מהירה',
     guidedCompleteTitle:'השיעור הושלם!', guidedCompleteSub:'למדתם על {topic}',
@@ -3888,7 +3914,7 @@ const STR = {
     guidedExitConfirm:'לצאת מהשיעור? ההתקדמות בניסיון הזה תאבד.' },
   ar: { appName:'IsraFin', tagline:'تعلّم كيف يعمل المال فعلياً في إسرائيل — الادخار، الاستثمار، الخدمات المصرفية، الضرائب، والمزيد.',
     nameLabel:'كيف نناديك؟', namePh:'اسمك', startBtn:'ابدأ التعلم',
-    loginNote:'هذا تسجيل دخول تجريبي — يُحفظ اسمك فقط لهذه الزيارة ويُعاد ضبطه عند إعادة تحميل التطبيق.',
+    loginNote:'يُحفظ تقدّمك تلقائيًا. اكتب الاسم نفسه في المرة القادمة لتتابع من حيث توقفت.',
     hiThere:'مرحباً، {name} 👋', homeSub:'اختر موضوعاً لتبدأ التعلم', topicsDone:'{done}/{total} دروس مكتملة',
     overallLbl:'التقدم الإجمالي', topics:'مواضيع', backAria:'رجوع', markedDone:'تمت القراءة ✓',
     speakStart:'قراءة الدرس بصوت عالٍ', speakStop:'إيقاف القراءة', speakUnavailable:'متصفحك لا يدعم قراءة هذا الدرس بصوت عالٍ.',
@@ -3978,6 +4004,7 @@ const STR = {
     realLifeToggleLabel:'الحياة الواقعية', quickLearnLabel:'تعلّم سريع', homeSubRealLife:'مهارات مالية عملية للحياة الواقعية في إسرائيل',
     guidedModeLabel:'تعلّم موجّه', guidedModeDesc:'تعلّم خطوة بخطوة مع فحوصات سريعة أثناء الطريق',
     guidedCheck:'تحقق', guidedContinue:'متابعة', guidedCorrectHdr:'صحيح!', guidedWrongHdr:'ليس تماماً',
+    gSignIn:'المتابعة باستخدام Google', gWhy:'سجّل الدخول للاحتفاظ بتقدّمك على كل جهاز.', gSynced:'متزامن مع Google', gSignOut:'تسجيل الخروج من Google', gProfiles:'ملفاتك الشخصية', gError:'لم ينجح تسجيل الدخول باستخدام Google. حاول مرة أخرى.', gNotEnabled:'تسجيل الدخول باستخدام Google غير متاح بعد.', gSyncTitle:'المزامنة بين الأجهزة', gOr:'أو',
     resumeLabel:'تابع من حيث توقفت', resumeStep:'الخطوة {n} من {total}', resumeBtn:'متابعة', resumeLater:'ليس الآن', resumeClose:'إغلاق',
     guidedConceptBadge:'تعلّم', guidedQuestionBadge:'فحص سريع',
     guidedCompleteTitle:'اكتمل الدرس!', guidedCompleteSub:'تعلّمت عن {topic}',
@@ -5302,6 +5329,30 @@ function loadProfileInto(name){
   applyProfile(saved, name);
   return true;
 }
+// Combine two copies of the same profile (e.g. from two devices) without losing progress:
+// finished lessons, badges and visited goals are unioned; XP, streak and exam scores keep
+// the higher value; everything else (language, settings, resume spot) comes from the newer copy.
+function mergeProfileData(a, b){
+  if(!a) return b || null;
+  if(!b) return a;
+  const newer = (b.savedAt||0) > (a.savedAt||0) ? b : a;
+  const older = newer === a ? b : a;
+  const m = Object.assign({}, older, newer);
+  const union = f => Object.assign({}, older[f]||{}, newer[f]||{});
+  m.progress = union('progress');
+  m.badges = union('badges');
+  m.goalVisited = union('goalVisited');
+  m.examBest = {};
+  new Set([...Object.keys(a.examBest||{}), ...Object.keys(b.examBest||{})]).forEach(k => {
+    m.examBest[k] = Math.max((a.examBest||{})[k]||0, (b.examBest||{})[k]||0);
+  });
+  m.xp = Math.max(a.xp||0, b.xp||0);
+  m.bestStreak = Math.max(a.bestStreak||0, b.bestStreak||0);
+  m.hadPerfectQuiz = !!(a.hadPerfectQuiz || b.hadPerfectQuiz);
+  if(m.resume && m.progress[m.resume.topicId]) m.resume = null; // finished elsewhere
+  m.savedAt = Math.max(a.savedAt||0, b.savedAt||0);
+  return m;
+}
 function applyProfile(saved, name){
   PROFILE_FIELDS.forEach(f => { if(saved[f]!==undefined) state[f] = saved[f]; });
   state.userName = name; // preserve exact casing the user typed this time
@@ -5319,12 +5370,11 @@ async function loginWithName(name){
   const local = loadProfiles()[key] || null;
   let cloud = null;
   try { cloud = await Cloud.fetchProfile(key); } catch(e){ cloud = null; }
-  let pick = local;
-  if(cloud && (!local || (cloud.savedAt || 0) > (local.savedAt || 0))) pick = cloud;
+  const pick = mergeProfileData(local, cloud);
   if(pick){
     applyProfile(pick, name);
-    if(pick === cloud){ // keep this device's copy in step with the cloud
-      const profiles = loadProfiles(); profiles[key] = cloud; saveProfiles(profiles);
+    if(pick !== local){ // keep this device's copy in step with the cloud
+      const profiles = loadProfiles(); profiles[key] = pick; saveProfiles(profiles);
     }
   }
   state._profileLoaded = true; // saving is allowed only from here on
@@ -5367,11 +5417,19 @@ const Cloud = {
       this._db = firebase.firestore();
       // Enable offline persistence so reads work without network
       this._db.enablePersistence({synchronizeTabs: true}).catch(()=>{});
+      // Finish a Google sign-in that had to use a full-page redirect instead of a popup.
+      firebase.auth().getRedirectResult().then(r => {
+        if(r && r.user) this._afterGoogle();
+      }).catch(e => this._handleGoogleError(e));
       firebase.auth().onAuthStateChanged(user => {
         if(user){
+          const switched = this._uid && this._uid !== user.uid;
           this._uid = user.uid;
           this._ready = true;
-          console.log('[IsraFin Cloud] Signed in:', user.uid);
+          this.user = user.isAnonymous ? null : { email: user.email, name: user.displayName };
+          console.log('[IsraFin Cloud] Signed in:', user.isAnonymous ? 'anonymous' : 'google', user.uid);
+          // A Google account syncs every profile it holds onto this device.
+          if(!user.isAnonymous && !switched) this.syncAll().then(()=>render());
           // Wake anything waiting for sign-in (e.g. a login checking the cloud copy)
           this._readyWaiters.splice(0).forEach(fn => fn(true));
           // Flush saves queued while auth was loading (one per profile)
@@ -5382,6 +5440,7 @@ const Cloud = {
             this._mergeFromCloud(profileKeyFor(state.userName));
           }
         } else {
+          this.user = null;
           // Sign in anonymously
           firebase.auth().signInAnonymously().catch(e => {
             console.warn('[IsraFin Cloud] Auth failed:', e.message);
@@ -5416,16 +5475,14 @@ const Cloud = {
       if(!doc.exists) return;
       const cloud = doc.data();
       const local = loadProfiles()[profileKey];
-      // Cloud wins if it has a newer savedAt, or local has no data
-      if(!local || (cloud.savedAt && (!local.savedAt || cloud.savedAt > local.savedAt))){
-        // Merge cloud data into state
-        PROFILE_FIELDS.forEach(f => { if(cloud[f] !== undefined) state[f] = cloud[f]; });
-        // Also persist to localStorage so next offline load is fresh
+      const merged = mergeProfileData(local, cloud);
+      if(JSON.stringify(merged) !== JSON.stringify(local)){
         const profiles = loadProfiles();
-        profiles[profileKey] = cloud;
+        profiles[profileKey] = merged;
         saveProfiles(profiles);
+        if(state._profileLoaded && profileKeyFor(state.userName) === profileKey) applyProfile(merged, state.userName);
         render();
-        console.log('[IsraFin Cloud] Loaded newer cloud profile');
+        console.log('[IsraFin Cloud] Merged cloud profile');
       }
     } catch(e){
       console.warn('[IsraFin Cloud] Read failed:', e.message);
@@ -5447,6 +5504,81 @@ const Cloud = {
       this._readyWaiters.push(finish);
       setTimeout(() => finish(false), timeoutMs);
     });
+  },
+
+  user: null, // { email, name } when signed in with Google, else null
+
+  isGoogle(){ return !!this.user; },
+
+  // Merge every profile in this account with every profile on this device, both ways.
+  async syncAll(){
+    if(!this._ready || !this._db || !this._uid) return;
+    try {
+      const snap = await this._db.collection('users').doc(this._uid).collection('profiles').get();
+      const cloud = {}; snap.forEach(d => { cloud[d.id] = d.data(); });
+      const local = loadProfiles();
+      const merged = {};
+      new Set([...Object.keys(local), ...Object.keys(cloud)]).forEach(k => {
+        merged[k] = mergeProfileData(local[k], cloud[k]);
+        if(JSON.stringify(merged[k]) !== JSON.stringify(cloud[k] || null)) this._saveToCloud(k, merged[k]);
+      });
+      saveProfiles(merged);
+      if(state._profileLoaded && state.userName){
+        const k = profileKeyFor(state.userName);
+        if(merged[k]) applyProfile(merged[k], state.userName);
+      }
+    } catch(e){
+      console.warn('[IsraFin Cloud] Sync failed:', e.message);
+    }
+  },
+
+  // Sign in with Google. On a device that already has progress, this LINKS the existing
+  // account to Google (same ID, nothing moves). If the Google account already belongs to
+  // another device's progress, switch to it and merge this device's profiles into it.
+  async googleSignIn(){
+    if(!this._configured) throw { code: 'not-configured' };
+    await this.whenReady(4000);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+    const cur = auth.currentUser;
+    try {
+      if(cur && cur.isAnonymous) await cur.linkWithPopup(provider);
+      else await auth.signInWithPopup(provider);
+    } catch(e){
+      if(e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-environment')){
+        // Popups not allowed here — fall back to a full-page redirect.
+        if(cur && cur.isAnonymous) return cur.linkWithRedirect(provider);
+        return auth.signInWithRedirect(provider);
+      }
+      const handled = await this._handleGoogleError(e);
+      if(!handled) throw e;
+      return;
+    }
+    await this._afterGoogle();
+  },
+
+  async _handleGoogleError(e){
+    if(e && (e.code === 'auth/credential-already-in-use' || e.code === 'auth/email-already-in-use') && e.credential){
+      await firebase.auth().signInWithCredential(e.credential);
+      await this._afterGoogle();
+      return true;
+    }
+    if(e) console.warn('[IsraFin Cloud] Google sign-in:', e.code || e.message);
+    return false;
+  },
+
+  async _afterGoogle(){
+    const u = firebase.auth().currentUser;
+    if(u){ this._uid = u.uid; this._ready = true; this.user = u.isAnonymous ? null : { email: u.email, name: u.displayName }; }
+    await this.syncAll();
+    render();
+  },
+
+  async googleSignOut(){
+    if(!this._configured) return;
+    await firebase.auth().signOut(); // onAuthStateChanged then starts a fresh anonymous session
+    this.user = null;
   },
 
   // Fetch one profile's cloud copy, or null. Never waits more than ~4s in total,
@@ -5535,8 +5667,41 @@ function renderLogin(){
       <div class="avatar-row">${avatarRow}</div>
       <button class="btn-primary" id="startBtn" ${state.userName.trim()===''?'disabled':''}>${t('startBtn')}</button>
       <div class="login-note">${t('loginNote')}</div>
+      ${renderGoogleLoginBlock()}
     </div>
   </div>`;
+}
+
+function googleLogoSvg(){
+  return `<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>`;
+}
+// Login screen: "Continue with Google", or — once signed in — the profiles saved in that account.
+function renderGoogleLoginBlock(){
+  if(!Cloud._configured) return '';
+  if(Cloud.isGoogle()){
+    const profiles = Object.values(loadProfiles()).filter(p => p && p.userName);
+    const chips = profiles.map(p => `<button class="profile-chip" data-profile-name="${escapeHtml(p.userName)}"><span aria-hidden="true">${p.avatar||'🙂'}</span>${escapeHtml(p.userName)}</button>`).join('');
+    return `
+      <div class="g-synced">${googleLogoSvg()}<span>${t('gSynced')} · <bdi>${escapeHtml(Cloud.user.email||'')}</bdi></span></div>
+      ${chips ? `<div class="field-label" style="margin-top:14px;">${t('gProfiles')}</div><div class="profile-chips">${chips}</div>` : ''}`;
+  }
+  return `
+      <div class="g-or"><span>${t('gOr')}</span></div>
+      <button class="g-btn" id="googleBtn">${googleLogoSvg()}<span>${t('gSignIn')}</span></button>
+      <div class="login-note" style="margin-top:8px;">${t('gWhy')}</div>`;
+}
+// Profile screen card: link this profile's progress to Google, or show the linked account.
+function renderGoogleSyncCard(){
+  if(!Cloud._configured) return '';
+  return `
+    <div class="g-card">
+      <div class="g-card-title">☁️ ${t('gSyncTitle')}</div>
+      ${Cloud.isGoogle()
+        ? `<div class="g-synced">${googleLogoSvg()}<span>${t('gSynced')} · <bdi>${escapeHtml(Cloud.user.email||'')}</bdi></span></div>
+           <button class="btn-ghost g-signout" id="googleSignOutBtn">${t('gSignOut')}</button>`
+        : `<div class="g-card-sub">${t('gWhy')}</div>
+           <button class="g-btn" id="googleBtn">${googleLogoSvg()}<span>${t('gSignIn')}</span></button>`}
+    </div>`;
 }
 
 function renderGoals(){
@@ -5728,6 +5893,7 @@ function renderProfile(){
       <div class="stat-card"><div class="stat-num">${state.bestStreak}🔥</div><div class="stat-lbl">${t('bestStreakLbl')}</div></div>
       <div class="stat-card"><div class="stat-num">${earnedCount}/${badges.length}</div><div class="stat-lbl">${t('badgesEarnedLbl')}</div></div>
     </div>
+    ${renderGoogleSyncCard()}
     <div class="tools-section-hdr"><div class="tools-section-title">${t('badgesTitle')}</div></div>
     <div class="badge-grid">${badgeCards}</div>
   </div>`;
@@ -6887,6 +7053,29 @@ function render(){
 }
 
 function attachEvents(){
+  // Google sign-in / sign-out
+  const googleBtn = document.getElementById('googleBtn');
+  if(googleBtn) googleBtn.addEventListener('click', async ()=>{
+    googleBtn.disabled = true;
+    try { await Cloud.googleSignIn(); }
+    catch(e){
+      const code = (e && e.code) || '';
+      if(code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request' || code === 'auth/user-cancelled'){ /* user closed it */ }
+      else if(code === 'auth/operation-not-allowed' || code === 'not-configured' || code === 'auth/unauthorized-domain') showToast(t('gNotEnabled'), '⚠️');
+      else showToast(t('gError'), '⚠️');
+      console.warn('[IsraFin Cloud] Google sign-in failed:', code || e);
+    }
+    const b = document.getElementById('googleBtn'); if(b) b.disabled = false;
+  });
+  const googleSignOutBtn = document.getElementById('googleSignOutBtn');
+  if(googleSignOutBtn) googleSignOutBtn.addEventListener('click', async ()=>{
+    logoutUser(); // saves this profile to the account first, then returns to the login screen
+    await Cloud.googleSignOut();
+    render();
+  });
+  document.querySelectorAll('.profile-chip').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.userName = el.dataset.profileName; loginWithName(state.userName); });
+  });
   // Continue-where-you-left-off pop-up
   const resumeGo = document.getElementById('resumeGo');
   if(resumeGo) resumeGo.addEventListener('click', openResume);
@@ -7308,7 +7497,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=58').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=59').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
