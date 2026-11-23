@@ -3730,7 +3730,7 @@ const STR = {
     speakNoVoiceHe:'No Hebrew voice found on your device. Install Hebrew TTS in your system settings to use this.',
     speakNoVoiceEn:'No English voice found on your device.',
     prev:'Previous', next:'Next', footnote:'Figures like tax brackets, minimum wage, and interest rates change periodically — always check official sources (Tax Authority, Bank of Israel, National Insurance) for current numbers. This app is for learning, not professional financial advice.',
-    changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? Your current progress, XP, and badges will be lost (this demo doesn\'t save between users).',
+    changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? Your progress is saved — type this name again any time to continue.',
     modalCancel:'Cancel', modalConfirm:'OK',
     goalPickerTitle:'What do you want to learn?', goalPickerSub:'We\'ll highlight the best courses for you.',
     goalSaving:'Saving', goalInvesting:'Investing', goalTaxes:'Taxes', goalWorking:'Working & Pay', goalSafety:'Staying Safe', goalReallife:'Real Life in Israel',
@@ -3831,7 +3831,7 @@ const STR = {
     speakNoVoiceHe:'לא נמצא קול בעברית במכשיר שלכם. יש להתקין קול TTS בעברית בהגדרות המערכת.',
     speakNoVoiceEn:'לא נמצא קול באנגלית במכשיר שלכם.',
     prev:'הקודם', next:'הבא', footnote:'נתונים כמו מדרגות מס, שכר מינימום וריביות משתנים מעת לעת — תמיד כדאי לבדוק מקורות רשמיים (רשות המסים, בנק ישראל, הביטוח הלאומי) לנתונים עדכניים. אפליקציה זו נועדה ללמידה בלבד ואינה ייעוץ פיננסי מקצועי.',
-    changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? ההתקדמות, נקודות הניסיון והתגים הנוכחיים יאבדו (הדוגמה הזו לא שומרת בין משתמשים).',
+    changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? ההתקדמות שלכם נשמרת — הקלידו את השם הזה שוב בכל זמן כדי להמשיך.',
     modalCancel:'ביטול', modalConfirm:'אישור',
     goalPickerTitle:'מה אתם רוצים ללמוד?', goalPickerSub:'נדגיש עבורכם את הקורסים המתאימים ביותר.',
     goalSaving:'חיסכון', goalInvesting:'השקעות', goalTaxes:'מיסים', goalWorking:'עבודה ושכר', goalSafety:'בטיחות כספית', goalReallife:'חיים אמיתיים בישראל',
@@ -3932,7 +3932,7 @@ const STR = {
     speakNoVoiceHe:'لم يتم العثور على صوت عبري في جهازك. ثبّت صوت TTS عبري من إعدادات النظام.',
     speakNoVoiceEn:'لم يتم العثور على صوت إنجليزي في جهازك.',
     prev:'السابق', next:'التالي', footnote:'أرقام مثل الشرائح الضريبية والحد الأدنى للأجور وأسعار الفائدة تتغير دورياً — تحقق دائماً من المصادر الرسمية (سلطة الضرائب، بنك إسرائيل، التأمين الوطني) للحصول على أحدث الأرقام. هذا التطبيق مخصص للتعلم فقط وليس استشارة مالية مهنية.',
-    changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ ستُفقد تقدمك ونقاط خبرتك وأوسمتك الحالية (هذا العرض التجريبي لا يحفظ البيانات بين المستخدمين).',
+    changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ تقدّمك محفوظ — اكتب هذا الاسم مجدداً في أي وقت للمتابعة.',
     modalCancel:'إلغاء', modalConfirm:'موافق',
     goalPickerTitle:'ماذا تريد أن تتعلم؟', goalPickerSub:'سنبرز لك أفضل الدورات المناسبة.',
     goalSaving:'الادخار', goalInvesting:'الاستثمار', goalTaxes:'الضرائب', goalWorking:'العمل والأجر', goalSafety:'السلامة المالية', goalReallife:'الحياة الواقعية في إسرائيل',
@@ -7233,11 +7233,9 @@ function attachEventsRest(){
   const switchUserBtn = document.getElementById('switchUserBtn');
   if(switchUserBtn){
     switchUserBtn.addEventListener('click', ()=>{
-      showConfirm(t('logoutConfirm'), ()=>{
-        const wasGoogle = Cloud.isGoogle();
-        logoutUser(); // saves this profile first
-        if(wasGoogle) Cloud.googleSignOut().then(()=>render());
-      });
+      // Switch user only changes the profile name; Google stays signed in
+      // (signing out of Google is its own button on the progress page).
+      showConfirm(t('logoutConfirm'), logoutUser);
     });
   }
   const langMenu = document.getElementById('langMenu');
@@ -7622,7 +7620,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=70').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=71').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
