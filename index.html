@@ -278,6 +278,10 @@ a{color:inherit;}
 .sprite .lg-coin{ animation: rise .8s ease .1s both; transform-box: fill-box; transform-origin: center; }
 .sprite .lg-arrow{ stroke-dasharray:100; stroke-dashoffset:100; animation: lgDraw .8s ease-out .55s forwards; }
 .sprite .lg-head{ animation: pop .45s ease 1.25s both; transform-box: fill-box; transform-origin: center; }
+.sprite.no-anim *{ animation:none !important; }
+.sprite.no-anim .lg-arrow{ stroke-dashoffset:0; }
+.g-fade{ animation: gFade .25s ease both; }
+@keyframes gFade{ from{opacity:0} to{opacity:1} }
 @keyframes lgDraw{ to{ stroke-dashoffset:0; } }
 @keyframes rise{ from{ transform: translateY(14px) scale(.7); opacity:0;} to{ transform:translateY(0) scale(1); opacity:1;} }
 @keyframes pop{ from{ transform: scale(0) rotate(-20deg); opacity:0;} to{ transform: scale(1) rotate(0deg); opacity:1;} }
@@ -5430,6 +5434,8 @@ const Cloud = {
         if(r && r.user) this._afterGoogle();
       }).catch(e => this._handleGoogleError(e));
       firebase.auth().onAuthStateChanged(user => {
+        const wasKnown = this._authKnown;
+        this._authKnown = true;
         if(user){
           const switched = this._uid && this._uid !== user.uid;
           this._uid = user.uid;
@@ -5437,7 +5443,8 @@ const Cloud = {
           this.user = user.isAnonymous ? null : { email: user.email, name: user.displayName };
           console.log('[IsraFin Cloud] Signed in:', user.isAnonymous ? 'anonymous' : 'google', user.uid);
           // A Google account syncs every profile it holds onto this device.
-          if(!user.isAnonymous && !switched) this.syncAll().then(()=>render());
+          if(!user.isAnonymous && !switched) this.syncAll().then(()=>this.refreshUI());
+          else if(!wasKnown) this.refreshUI();
           // Wake anything waiting for sign-in (e.g. a login checking the cloud copy)
           this._readyWaiters.splice(0).forEach(fn => fn(true));
           // Flush saves queued while auth was loading (one per profile)
@@ -5449,6 +5456,7 @@ const Cloud = {
           }
         } else {
           this.user = null;
+          if(!wasKnown) this.refreshUI(); // not signed in with Google: show the Google button
           // Sign in anonymously
           firebase.auth().signInAnonymously().catch(e => {
             console.warn('[IsraFin Cloud] Auth failed:', e.message);
@@ -5515,6 +5523,19 @@ const Cloud = {
   },
 
   user: null, // { email, name } when signed in with Google, else null
+  _authKnown: false, // false until Firebase has said whether this device is signed in
+
+  // Update only what depends on sign-in. On the login screen that's just the Google area,
+  // so the logo animation, the layout and anything being typed are left alone.
+  refreshUI(){
+    const el = document.getElementById('gLoginBlock');
+    if(state.screen === 'login' && el){
+      el.outerHTML = renderGoogleLoginBlock();
+      bindGoogleEvents();
+    } else if(state.screen === 'profile' || state.screen === 'login'){
+      render();
+    }
+  },
 
   isGoogle(){ return !!this.user; },
 
@@ -5671,7 +5692,7 @@ function renderTopbar(){
 function renderLogin(){
   // Logo: a gold ₪ coin with the green growth arrow from the app icon rising above it.
   const sprite = `
-  <svg class="sprite" viewBox="-2 -5 122 105" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IsraFin">
+  <svg class="sprite${window.__logoPlayed ? ' no-anim' : ''}" viewBox="-2 -5 122 105" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IsraFin">
     <defs><linearGradient id="lgCoin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6C873"/><stop offset="1" stop-color="#D9902A"/></linearGradient></defs>
     <g class="lg-coin">
       <circle cx="54" cy="72" r="26" fill="#C98321"/>
@@ -5686,6 +5707,7 @@ function renderLogin(){
     <polyline class="lg-arrow" pathLength="100" points="10.0,45.0 34.0,25.0 52.0,35.0 91.4,9.5" fill="none" stroke="#5CD630" stroke-width="6.5"/>
     <polygon class="lg-head" points="104.5,1.0 91.1,24.6 77.5,3.6" fill="#5CD630"/>
   </svg>`;
+  window.__logoPlayed = true; // later redraws (e.g. switching language) show the logo without replaying it
   const avatars = ['🦉','🐿️','🦊','🐢','🐝','🦅'];
   const avatarRow = avatars.map(a=>`<button class="avatar-opt ${state.avatar===a?'selected':''}" data-avatar="${a}">${a}</button>`).join('');
   const miniLangs = LANGS.map(l=>`<button class="mini-lang ${state.lang===l.code?'active':''}" data-lang="${l.code}">${l.native}</button>`).join('');
@@ -5717,6 +5739,11 @@ function googleProfiles(){
 // Login screen: "Continue with Google", or — once signed in — the profiles saved in that account.
 function renderGoogleLoginBlock(){
   if(!Cloud._configured) return '';
+  // Until Firebase knows whether you're signed in, show nothing — not a button that then flips.
+  if(!Cloud._authKnown) return '<div id="gLoginBlock"></div>';
+  return `<div id="gLoginBlock" class="g-fade">${googleLoginInner()}</div>`;
+}
+function googleLoginInner(){
   if(Cloud.isGoogle()){
     const profiles = googleProfiles();
     const chips = profiles.map(p => `<button class="profile-chip" data-profile-name="${escapeHtml(p.userName)}"><span aria-hidden="true">${p.avatar||'🙂'}</span>${escapeHtml(p.userName)}</button>`).join('');
@@ -7094,6 +7121,10 @@ function render(){
 }
 
 function attachEvents(){
+  bindGoogleEvents();
+  attachEventsRest();
+}
+function bindGoogleEvents(){
   // Google sign-in / sign-out
   const googleBtn = document.getElementById('googleBtn');
   if(googleBtn) googleBtn.addEventListener('click', async ()=>{
@@ -7120,6 +7151,8 @@ function attachEvents(){
   document.querySelectorAll('.profile-chip').forEach(el=>{
     el.addEventListener('click', ()=>{ state.userName = el.dataset.profileName; loginWithName(state.userName); });
   });
+}
+function attachEventsRest(){
   // Continue-where-you-left-off pop-up
   const resumeGo = document.getElementById('resumeGo');
   if(resumeGo) resumeGo.addEventListener('click', openResume);
@@ -7545,7 +7578,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=65').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=66').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
