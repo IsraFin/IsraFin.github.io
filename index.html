@@ -246,6 +246,9 @@ a{color:inherit;}
 }
 .g-btn:hover{ background:#F8F9FA; }
 .g-btn:disabled{ opacity:.6; cursor:wait; }
+.faq-link{ color:var(--accent-deep); font-weight:600; text-decoration:underline; text-underline-offset:2px; }
+.faq-link-icon{ font-size:.8em; margin-inline-start:2px; display:inline-block; }
+[dir="rtl"] .faq-link-icon{ transform:scaleX(-1); }
 .g-err{ margin-top:10px; padding:10px 12px; border-radius:10px; background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; font-size:13px; line-height:1.45; }
 .g-err-code{ display:block; margin-top:4px; font-size:11.5px; color:#7F1D1D; opacity:.75; direction:ltr; text-align:start; font-family:ui-monospace,monospace; }
 .g-synced{ display:flex; align-items:flex-start; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-soft); line-height:1.4; }
@@ -6395,7 +6398,7 @@ const FAQ_DATA = [
   {cat:'safety', q:{en:'What is phishing and how do I protect myself?',he:'מה זה פישינג ואיך מתגוננים?',ar:'ما هو التصيد وكيف أحمي نفسي؟'}, a:{en:'Fake emails, texts, or calls pretending to be your bank or a trusted service, trying to steal your login info. Never click suspicious links, never share passwords, and if in doubt — hang up and call your bank directly using the number on your card.',he:'הודעות, אימיילים או שיחות מזויפות שמתחזות לבנק או שירות מהימן, ומנסות לגנוב פרטי התחברות. לעולם לא ללחוץ על קישורים חשודים, לא לשתף סיסמאות, ובמקרה של ספק — לנתק ולהתקשר לבנק ישירות מהמספר שעל הכרטיס.',ar:'رسائل أو مكالمات مزيفة تتظاهر بأنها من بنكك أو خدمة موثوقة، تحاول سرقة معلومات تسجيل الدخول. لا تنقر على روابط مشبوهة، لا تشارك كلمات المرور، وإذا شككت — أغلق واتصل ببنكك مباشرة من الرقم على بطاقتك.'}},
   {cat:'work', q:{en:'What is Bituach Leumi (National Insurance)?',he:'מה זה ביטוח לאומי?',ar:'ما هو التأمين الوطني (بيتواح لئومي)؟'}, a:{en:'Israel\'s social security system. Everyone pays from age 18 (even if not working). It funds: old-age pensions, disability benefits, unemployment insurance, maternity leave, and more. Payments are deducted from your salary automatically.',he:'מערכת הביטחון הסוציאלי של ישראל. כולם משלמים מגיל 18 (גם אם לא עובדים). ממנת: קצבת זקנה, נכות, דמי אבטלה, חופשת לידה ועוד. התשלומים מנוכים מהמשכורת אוטומטית.',ar:'نظام الضمان الاجتماعي في إسرائيل. الجميع يدفع من سن 18 (حتى لو لم يعمل). يموّل: معاشات الشيخوخة، إعانات الإعاقة، تأمين البطالة، إجازة الأمومة، وغيرها. تُخصم المدفوعات من الراتب تلقائياً.'}},
   {cat:'work', q:{en:'What should I check on my payslip?',he:'מה לבדוק בתלוש השכר?',ar:'ماذا يجب أن أتحقق في قسيمة الراتب؟'}, a:{en:'Gross salary matches your agreement, income tax and National Insurance deductions look right, pension contributions are there, overtime/bonuses are included, and net pay matches what you received. Mistakes happen — always verify.',he:'שהשכר ברוטו תואם להסכם, שניכויי מס הכנסה וביטוח לאומי נראים נכונים, שיש הפרשות פנסיה, ששעות נוספות/בונוסים כלולים, ושהנטו תואם למה שקיבלתם. טעויות קורות — תמיד לבדוק.',ar:'أن الراتب الإجمالي يطابق اتفاقك، أن خصومات الضرائب والتأمين الوطني صحيحة، أن مساهمات التقاعد موجودة، أن ساعات العمل الإضافية/المكافآت مشمولة، وأن الراتب الصافي يطابق ما استلمته. الأخطاء تحدث — تحقق دائماً.'}},
-  {cat:'work', q:{en:'What is minimum wage in Israel?',he:'מה שכר המינימום בישראל?',ar:'ما هو الحد الأدنى للأجور في إسرائيل؟'}, a:{en:'The minimum wage is updated periodically — always check the latest figure on the Ministry of Economy website. It\'s illegal for employers to pay less. If you\'re paid below minimum wage, you can file a complaint with the labor ministry.',he:'שכר המינימום מתעדכן מעת לעת — תמיד בדקו את הנתון העדכני באתר משרד הכלכלה. אסור למעסיק לשלם פחות. אם משלמים לכם מתחת לשכר מינימום, אפשר להגיש תלונה למשרד העבודה.',ar:'يتم تحديث الحد الأدنى للأجور دورياً — تحقق دائماً من أحدث رقم على موقع وزارة الاقتصاد. من غير القانوني أن يدفع صاحب العمل أقل منه. إذا كان راتبك أقل من الحد الأدنى، يمكنك تقديم شكوى لوزارة العمل.'}},
+  {cat:'work', q:{en:'What is minimum wage in Israel?',he:'מה שכר המינימום בישראל?',ar:'ما هو الحد الأدنى للأجور في إسرائيل؟'}, a:{en:'The minimum wage is updated periodically — check the current figure on the National Insurance (Bituach Leumi) website. It\'s illegal for employers to pay less. If you\'re paid below minimum wage, you can file a complaint with the Ministry of Labor.',he:'שכר המינימום מתעדכן מעת לעת — את הסכום העדכני אפשר למצוא באתר הביטוח הלאומי. אסור למעסיק לשלם פחות. אם משלמים לכם מתחת לשכר המינימום, אפשר להגיש תלונה למשרד העבודה.',ar:'يتم تحديث الحد الأدنى للأجور دورياً — تجد الرقم الحالي على موقع كل حق (كول زخوت). من غير القانوني أن يدفع صاحب العمل أقل منه. إذا كان راتبك أقل من الحد الأدنى، يمكنك تقديم شكوى لوزارة العمل.'}},
   {cat:'life', q:{en:'What should I know before renting an apartment?',he:'מה חשוב לדעת לפני שכירת דירה?',ar:'ما الذي يجب معرفته قبل استئجار شقة؟'}, a:{en:'Read the full contract before signing. Expect to pay: first month + deposit (often several months or bank guarantee) + broker fee. Check who pays for repairs, what the exit terms are, and whether Arnona and Va\'ad Bayit are included. Get everything in writing.',he:'קראו את כל החוזה לפני חתימה. צפו לשלם: חודש ראשון + פיקדון (לרוב כמה חודשים או ערבות בנקאית) + דמי תיווך. בדקו מי משלם על תיקונים, מה תנאי היציאה, והאם ארנונה וועד בית כלולים. קבלו הכל בכתב.',ar:'اقرأ العقد كاملاً قبل التوقيع. توقع أن تدفع: الشهر الأول + وديعة (غالباً عدة أشهر أو ضمان بنكي) + رسوم وسيط. تحقق من يدفع تكاليف الإصلاحات، ما شروط الخروج، وهل الأرنونا ولجنة المبنى مشمولة. احصل على كل شيء مكتوباً.'}},
   {cat:'life', q:{en:'What is Arnona?',he:'מה זה ארנונה?',ar:'ما هي الأرنونا؟'}, a:{en:'Municipal property tax — you pay it to your city/town based on your apartment size, location, and municipality. Rates vary dramatically between cities. Students, soldiers, and new immigrants may qualify for discounts. Pay on time to avoid penalties.',he:'מס רכוש עירוני — משלמים לעירייה לפי גודל הדירה, מיקום ורשות מקומית. התעריפים משתנים בצורה דרמטית בין ערים. סטודנטים, חיילים ועולים חדשים עשויים לקבל הנחות. שלמו בזמן כדי להימנע מקנסות.',ar:'ضريبة أملاك بلدية — تدفعها لبلديتك حسب حجم الشقة والموقع والبلدية. المعدلات تختلف بشكل كبير بين المدن. الطلاب والجنود والمهاجرون الجدد قد يستحقون تخفيضات. ادفع في الوقت المحدد لتجنب الغرامات.'}},
 ];
@@ -6441,6 +6444,47 @@ function renderModesModal(){
   </div>`;
 }
 
+// Official websites for organisations named in FAQ answers. Keyed by the English question;
+// each link turns the first matching phrase (per language) into a link that opens in a new tab.
+const L_TAX = {en:'https://www.gov.il/en/departments/israel_tax_authority', he:'https://www.gov.il/he/departments/israel_tax_authority', ar:'https://www.gov.il/ar/departments/israel_tax_authority'};
+const L_BTL = {en:'https://www.btl.gov.il/English%20Homepage/Pages/default.aspx', he:'https://www.btl.gov.il/', ar:'https://www.btl.gov.il/Arabic%20HomePage/Pages/default.aspx'};
+const L_TASE = {en:'https://www.tase.co.il/en', he:'https://www.tase.co.il/he', ar:'https://www.tase.co.il/en'};
+const L_ISA = 'https://www.isa.gov.il/';
+const FAQ_LINKS = {
+  'What taxes do I pay in Israel?': [
+    {url:L_TAX, m:{en:['Income Tax (Mas Hachnasa)'], he:['מס הכנסה'], ar:['ضريبة الدخل']}},
+    {url:L_BTL, m:{en:['National Insurance (Bituach Leumi)'], he:['ביטוח לאומי'], ar:['التأمين الوطني (بيتواح لئومي)']}}],
+  'What are tax credit points (Nekudot Zikuy)?': [
+    {url:L_TAX, m:{en:['income tax'], he:['מס ההכנסה'], ar:['ضريبة الدخل']}}],
+  'What is an index fund?': [
+    {url:L_TASE, m:{en:['TA-125'], he:['ת"א 125'], ar:['TA-125']}}],
+  'How do I spot a financial scam?': [
+    {url:L_ISA, m:{en:['unregistered/unlicensed service'], he:['שירות לא רשום/ללא רישיון'], ar:['خدمة غير مسجلة/مرخصة']}}],
+  'What is Bituach Leumi (National Insurance)?': [
+    {url:L_BTL, m:{en:["Israel's social security system"], he:['מערכת הביטחון הסוציאלי של ישראל'], ar:['نظام الضمان الاجتماعي في إسرائيل']}}],
+  'What should I check on my payslip?': [
+    {url:L_BTL, m:{en:['National Insurance'], he:['ביטוח לאומי'], ar:['التأمين الوطني']}}],
+  'What is minimum wage in Israel?': [
+    {url:{en:'https://www.btl.gov.il/English%20Homepage/Mediniyut/GeneralInformation/Pages/MinimumWage.aspx',
+          he:'https://www.btl.gov.il/Mediniyut/GeneralData/Pages/%D7%A9%D7%9B%D7%A8%20%D7%9E%D7%99%D7%A0%D7%99%D7%9E%D7%95%D7%9D.aspx',
+          ar:'https://www.kolzchut.org.il/ar/%D8%A7%D9%84%D8%AD%D8%AF_%D8%A7%D9%84%D8%A3%D8%AF%D9%86%D9%89_%D9%85%D9%86_%D8%A7%D9%84%D8%A3%D8%AC%D9%88%D8%B1'},
+     m:{en:['National Insurance (Bituach Leumi) website'], he:['באתר הביטוח הלאומי'], ar:['موقع كل حق (كول زخوت)']}},
+    {url:'https://www.gov.il/he/service/work-rights-violation-complaints', m:{en:['Ministry of Labor'], he:['משרד העבודה'], ar:['وزارة العمل']}}],
+};
+function linkifyFaq(text, qEn, lang){
+  let out = text;
+  (FAQ_LINKS[qEn] || []).forEach(l => {
+    const url = typeof l.url === 'string' ? l.url : (l.url[lang] || l.url.en);
+    for(const phrase of (l.m[lang] || [])){
+      const i = out.indexOf(phrase);
+      if(i < 0 || out.lastIndexOf('<a ', i) > out.lastIndexOf('</a>', i)) continue;
+      out = out.slice(0, i) + `<a class="faq-link" href="${url}" target="_blank" rel="noopener noreferrer">${phrase}<span class="faq-link-icon" aria-hidden="true">↗</span></a>` + out.slice(i + phrase.length);
+      break;
+    }
+  });
+  return out;
+}
+
 function renderFaqPanel(){
   if(!faqOpen) return '';
   const title = state.lang==='he'?'שאלות נפוצות':state.lang==='ar'?'أسئلة شائعة':'Common Questions';
@@ -6453,7 +6497,7 @@ function renderFaqPanel(){
         <span class="faq-q-text">${faq.q[state.lang]}</span>
         <span class="faq-arrow">${isOpen?'▲':'▼'}</span>
       </div>
-      ${isOpen?`<div class="faq-a">${faq.a[state.lang]}</div>`:''}
+      ${isOpen?`<div class="faq-a">${linkifyFaq(faq.a[state.lang], faq.q.en, state.lang)}</div>`:''}
     </div>`;
   }).join('');
   return `
@@ -7554,7 +7598,7 @@ document.addEventListener('click', (e)=>{
       <span class="faq-q-text">${faq.q[state.lang]}</span>
       <span class="faq-arrow">${isOpen?'▲':'▼'}</span>
     </div>
-    ${isOpen?`<div class="faq-a">${faq.a[state.lang]}</div>`:''}`;
+    ${isOpen?`<div class="faq-a">${linkifyFaq(faq.a[state.lang], faq.q.en, state.lang)}</div>`:''}`;
   });
 });
 
@@ -7577,7 +7621,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=67').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=68').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
