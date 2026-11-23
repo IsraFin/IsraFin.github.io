@@ -5460,7 +5460,7 @@ const Cloud = {
 
   // Save a profile snapshot to Firestore
   _saveToCloud(profileKey, data){
-    if(!this._ready || !this._db || !this._uid) {
+    if(this._holdSaves || !this._ready || !this._db || !this._uid) {
       // Queue for when auth finishes
       if(this._configured) this._pending[profileKey] = data;
       return;
@@ -5526,7 +5526,10 @@ const Cloud = {
       const merged = {};
       new Set([...Object.keys(local), ...Object.keys(cloud)]).forEach(k => {
         merged[k] = mergeProfileData(local[k], cloud[k]);
-        if(JSON.stringify(merged[k]) !== JSON.stringify(cloud[k] || null)) this._saveToCloud(k, merged[k]);
+        if(JSON.stringify(merged[k]) !== JSON.stringify(cloud[k] || null)){
+          this._db.collection('users').doc(this._uid).collection('profiles').doc(k).set(merged[k], {merge:true})
+            .catch(e => console.warn('[IsraFin Cloud] Save failed:', e.message));
+        }
       });
       saveProfiles(merged);
       if(state._profileLoaded && state.userName){
@@ -5548,17 +5551,21 @@ const Cloud = {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     const cur = auth.currentUser;
+    // Until this device's profiles are merged with the account's, don't let any save
+    // overwrite the account's copy (it may hold progress from another device).
+    this._holdSaves = true;
     try {
       if(cur && cur.isAnonymous) await cur.linkWithPopup(provider);
       else await auth.signInWithPopup(provider);
     } catch(e){
       if(e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-environment')){
+        this._holdSaves = false;
         // Popups not allowed here — fall back to a full-page redirect.
         if(cur && cur.isAnonymous) return cur.linkWithRedirect(provider);
         return auth.signInWithRedirect(provider);
       }
       const handled = await this._handleGoogleError(e);
-      if(!handled) throw e;
+      if(!handled){ this._holdSaves = false; this._pending = {}; throw e; }
       return;
     }
     await this._afterGoogle();
@@ -5577,9 +5584,12 @@ const Cloud = {
   async _afterGoogle(){
     const u = firebase.auth().currentUser;
     if(u){ this._uid = u.uid; this._ready = true; this.user = u.isAnonymous ? null : { email: u.email, name: u.displayName }; }
+    this._holdSaves = true;
+    this._pending = {}; // drop saves made mid-switch; the merge below supersedes them
+    await this.syncAll(); // merge both ways first, so nothing on this device overwrites the account
+    this._holdSaves = false;
     // The profile in use when signing in is the one this Google account belongs to.
     if(state._profileLoaded && state.userName){ state.googleLinked = true; saveCurrentProfile(); }
-    await this.syncAll();
     // Signed in from the login screen: open the account's profile straight away if there's just one.
     if(!state._profileLoaded){
       const mine = googleProfiles();
@@ -7524,7 +7534,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=62').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=63').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
