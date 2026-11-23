@@ -62,6 +62,7 @@ a{color:inherit;}
   border-bottom: 1px solid var(--line);
 }
 .brand{display:flex; align-items:center; gap:9px; font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-0.02em;}
+.brand-mark{ width:32px; height:32px; flex-shrink:0; }
 .brand-coin{
   width:30px; height:30px; border-radius:50%;
   background: linear-gradient(155deg, var(--gold) 0%, var(--gold-deep) 100%);
@@ -270,16 +271,15 @@ a{color:inherit;}
 .mini-lang.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
 
 /* growth sprite */
-.sprite{ width:120px; height:100px; }
+.sprite{ width:150px; height:129px; }
 .coin{ transform-origin:center; }
-.sprite .c1{ animation: rise .9s ease .1s both; }
-.sprite .c2{ animation: rise .9s ease .28s both; }
-.sprite .c3{ animation: rise .9s ease .46s both; }
-.sprite .c4{ animation: rise .9s ease .64s both; }
-.sprite .leaf{ animation: pop .5s ease .95s both; transform-origin: 60px 30px; }
+.sprite .lg-coin{ animation: rise .8s ease .1s both; transform-box: fill-box; transform-origin: center; }
+.sprite .lg-arrow{ stroke-dasharray:100; stroke-dashoffset:100; animation: lgDraw .8s ease-out .55s forwards; }
+.sprite .lg-head{ animation: pop .45s ease 1.25s both; transform-box: fill-box; transform-origin: center; }
+@keyframes lgDraw{ to{ stroke-dashoffset:0; } }
 @keyframes rise{ from{ transform: translateY(14px) scale(.7); opacity:0;} to{ transform:translateY(0) scale(1); opacity:1;} }
 @keyframes pop{ from{ transform: scale(0) rotate(-20deg); opacity:0;} to{ transform: scale(1) rotate(0deg); opacity:1;} }
-@media (prefers-reduced-motion: reduce){ .sprite *{animation:none !important;} }
+@media (prefers-reduced-motion: reduce){ .sprite *{animation:none !important;} .sprite .lg-arrow{ stroke-dashoffset:0; } }
 
 /* ===== Home ===== */
 .home-header{ padding:20px 20px 4px; }
@@ -5655,7 +5655,7 @@ function renderTopbar(){
   const langBtns = LANGS.map(l => `<div class="lang-opt ${state.lang===l.code?'active':''}" data-lang="${l.code}">${l.native}${state.lang===l.code?' ✓':''}</div>`).join('');
   return `
   <div class="topbar">
-    <div class="brand"><div class="brand-coin">₪</div> <span class="brand-name">${t('appName')}</span></div>
+    <div class="brand"><svg class="brand-mark" viewBox="0 -1.5 31.5 31.5" aria-hidden="true"><circle cx="13" cy="18" r="11.5" fill="#E3A447"/><text x="13" y="23" font-size="13" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text><polyline points="17,10 21,6.5 23.5,8 27.5,4" fill="none" stroke="#025837" stroke-width="3.6"/><polyline points="17,10 21,6.5 23.5,8 27.5,4" fill="none" stroke="#5CD630" stroke-width="1.8"/><polygon points="30,1 29,6.5 25,3" fill="#5CD630" stroke="#025837" stroke-width="0.9" stroke-linejoin="round"/></svg> <span class="brand-name">${t('appName')}</span></div>
     <div class="topbar-actions" style="position:relative;">
       <button class="switch-user-btn" id="switchUserBtn">${t('logout')}</button>
       <button class="icon-btn ai-chat-btn" id="aiChatBtn" aria-label="FAQ">❓</button>
@@ -5667,13 +5667,19 @@ function renderTopbar(){
 }
 
 function renderLogin(){
+  // Logo: a gold ₪ coin with the green growth arrow from the app icon rising above it.
   const sprite = `
-  <svg class="sprite" viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-    <g class="coin c1"><ellipse cx="60" cy="82" rx="30" ry="9" fill="#E8A33D"/><ellipse cx="60" cy="79" rx="30" ry="9" fill="#F2BE68"/></g>
-    <g class="coin c2"><ellipse cx="60" cy="66" rx="26" ry="8" fill="#E8A33D"/><ellipse cx="60" cy="63" rx="26" ry="8" fill="#F2BE68"/></g>
-    <g class="coin c3"><ellipse cx="60" cy="51" rx="22" ry="7" fill="#E8A33D"/><ellipse cx="60" cy="48" rx="22" ry="7" fill="#F2BE68"/></g>
-    <g class="coin c4"><ellipse cx="60" cy="37" rx="18" ry="6" fill="#E8A33D"/><ellipse cx="60" cy="34" rx="18" ry="6" fill="#F2BE68"/><text x="60" y="38" font-size="11" text-anchor="middle" fill="#B87D1F" font-weight="700">₪</text></g>
-    <g class="leaf"><path d="M60 34 C 66 18, 84 16, 90 22 C 84 30, 68 32, 60 34 Z" fill="#1F7A5C"/><path d="M60 34 C 54 18, 40 14, 33 20 C 38 30, 52 32, 60 34 Z" fill="#2C9670"/></g>
+  <svg class="sprite" viewBox="-2 -5 122 105" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IsraFin">
+    <defs><linearGradient id="lgCoin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6C873"/><stop offset="1" stop-color="#D9902A"/></linearGradient></defs>
+    <g class="lg-coin">
+      <circle cx="54" cy="70" r="27" fill="#C98321"/>
+      <circle cx="54" cy="67" r="27" fill="url(#lgCoin)"/>
+      <circle cx="54" cy="67" r="21" fill="none" stroke="#FBE3B0" stroke-width="1.8" opacity=".8"/>
+      <text x="54" y="77.5" font-size="29" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text>
+    </g>
+    <polyline class="lg-arrow" pathLength="100" points="10,40 34,20 52,30 86,8" fill="none" stroke="#025837" stroke-width="12"/>
+    <polyline class="lg-arrow" pathLength="100" points="10,40 34,20 52,30 86,8" fill="none" stroke="#5CD630" stroke-width="6.5"/>
+    <polygon class="lg-head" points="108,0 102,27 82,13" fill="#5CD630" stroke="#025837" stroke-width="3" stroke-linejoin="round"/>
   </svg>`;
   const avatars = ['🦉','🐿️','🦊','🐢','🐝','🦅'];
   const avatarRow = avatars.map(a=>`<button class="avatar-opt ${state.avatar===a?'selected':''}" data-avatar="${a}">${a}</button>`).join('');
@@ -7534,7 +7540,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=63').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=64').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
