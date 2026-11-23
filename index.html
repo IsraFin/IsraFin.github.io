@@ -69,6 +69,9 @@ a{color:inherit;}
   font-size:15px; color:#fff; font-weight:800; box-shadow: inset 0 -2px 3px rgba(0,0,0,0.18), 0 2px 4px rgba(184,125,31,0.4);
 }
 .topbar-actions{display:flex; align-items:center; gap:8px;}
+.brand-avatar{ width:34px; height:34px; border-radius:50%; padding:0; border:2px solid var(--gold); background:var(--paper); cursor:pointer; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.av-img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:50%; }
+.brand-avatar .av-emoji{ font-size:19px; line-height:1; }
 .icon-btn{
   width:38px; height:38px; border-radius:50%;
   border:1px solid var(--line); background:var(--paper);
@@ -322,6 +325,32 @@ a{color:inherit;}
 .cat-bar-fill{ height:100%; background:var(--accent); border-radius:4px; transition: width .4s ease; }
 
 .footnote{ padding:22px 26px 10px; font-size:12px; color:var(--ink-soft); text-align:center; line-height:1.6; }
+.account-card{ margin:8px 20px 4px; padding:18px; border-radius:var(--radius-md); background:var(--surface, var(--paper)); border:1px solid var(--border, var(--line)); display:flex; flex-direction:column; gap:10px; }
+.account-top{ display:flex; align-items:center; gap:14px; }
+.account-avatar{ position:relative; width:60px; height:60px; border-radius:50%; padding:0; flex-shrink:0; cursor:pointer; border:2px solid var(--gold); background:var(--bg); display:flex; align-items:center; justify-content:center; }
+.account-avatar .av-emoji{ font-size:30px; line-height:1; }
+.account-avatar-edit{ position:absolute; bottom:-2px; inset-inline-end:-2px; width:22px; height:22px; border-radius:50%; background:var(--emerald-deep); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; border:2px solid var(--paper); }
+.account-who{ min-width:0; }
+.account-name{ font-family:var(--font-display); font-weight:800; font-size:18px; overflow-wrap:anywhere; }
+.account-sub{ display:flex; align-items:flex-start; gap:6px; font-size:13px; color:var(--ink-soft); margin-top:3px; line-height:1.4; }
+.account-sub svg{ flex-shrink:0; margin-top:1px; }
+.account-sub bdi{ font-weight:600; color:var(--ink); overflow-wrap:anywhere; }
+.account-btn{ width:100%; }
+.account-signout{ width:100%; min-height:46px; border-radius:999px; cursor:pointer; background:transparent; border:1.5px solid #E5B4AC; color:#9B2C1F; font-family:var(--font-body); font-weight:700; font-size:15px; }
+.account-signout:hover{ background:#FBEAE7; }
+.avatar-modal{ text-align:center; }
+.avatar-modal-hdr{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.avatar-modal-title{ font-family:var(--font-display); font-weight:800; font-size:18px; }
+.avatar-close{ width:40px; height:40px; border-radius:50%; border:none; background:var(--bg); cursor:pointer; font-size:16px; color:var(--ink); flex-shrink:0; }
+.avatar-preview{ width:96px; height:96px; margin:4px auto 16px; border-radius:50%; border:3px solid var(--gold); background:var(--bg); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.avatar-preview .av-emoji{ font-size:48px; line-height:1; }
+.avatar-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.av-pick{ height:64px; border-radius:16px; font-size:30px; cursor:pointer; background:var(--bg); border:2px solid transparent; }
+.av-pick.selected{ border-color:var(--emerald); background:#E4F1EB; }
+.avatar-upload{ display:flex; align-items:center; justify-content:center; gap:8px; min-height:48px; border-radius:999px; cursor:pointer; border:1.5px solid var(--emerald); color:var(--emerald-deep); font-weight:700; font-size:15px; }
+.avatar-upload:hover{ background:#E4F1EB; }
+.chip-av{ width:24px; height:24px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.chip-av .av-emoji{ font-size:16px; }
 .support-card{ margin:8px 20px 4px; padding:18px; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); text-align:center; }
 .support-text{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px; }
 .support-email{ display:inline-block; font-size:14px; font-weight:700; color:var(--brand); text-decoration:none; padding:8px 18px; border:1.5px solid var(--brand); border-radius:10px; transition:all .15s; }
@@ -3761,6 +3790,7 @@ const STR = {
     toolCompoundName:'Compound Interest Calculator', toolCompoundDesc:'See how saving vs. investing grows over time',
     toolPaycheckName:'Paycheck Breakdown', toolPaycheckDesc:'See where your salary actually goes',
     toolSimName:'Budget Challenge', toolSimDesc:'Live 12 months of real financial decisions',
+    accountTitle:'Account', accountGuest:'Guest · saved on this device only', changeAvatar:'Change avatar', avatarPickTitle:'Choose your avatar', avatarFromGallery:'Choose from gallery', avatarImgError:'That picture couldn\'t be used. Please try another one.', signOut:'Sign out', signOutConfirm:'Sign out? Your progress is saved, and you can sign back in any time.', closeLbl:'Close',
     supportTitle:'Support', supportText:'Have a question, found a bug, or want to suggest a feature? Reach out to us!',
     modesLabel:'Modes',
     compoundTitle:'Compound Interest Calculator', compoundStartLbl:'Starting amount', compoundMonthlyLbl:'Monthly contribution',
@@ -3862,6 +3892,7 @@ const STR = {
     toolCompoundName:'מחשבון ריבית דריבית', toolCompoundDesc:'ראו איך חיסכון מול השקעה גדלים עם הזמן',
     toolPaycheckName:'פירוק תלוש שכר', toolPaycheckDesc:'ראו לאן המשכורת שלכם באמת הולכת',
     toolSimName:'אתגר התקציב', toolSimDesc:'חוו 12 חודשים של החלטות כספיות אמיתיות',
+    accountTitle:'חשבון', accountGuest:'אורח · נשמר רק במכשיר הזה', changeAvatar:'החלפת דמות', avatarPickTitle:'בחרו את הדמות שלכם', avatarFromGallery:'בחירה מהגלריה', avatarImgError:'לא הצלחנו להשתמש בתמונה הזו. נסו תמונה אחרת.', signOut:'התנתקות', signOutConfirm:'להתנתק? ההתקדמות שלכם נשמרת, ואפשר להתחבר שוב בכל זמן.', closeLbl:'סגירה',
     supportTitle:'תמיכה', supportText:'יש לכם שאלה, מצאתם באג, או רוצים להציע רעיון? דברו איתנו!',
     modesLabel:'מצבים',
     compoundTitle:'מחשבון ריבית דריבית', compoundStartLbl:'סכום התחלתי', compoundMonthlyLbl:'הפקדה חודשית',
@@ -3963,6 +3994,7 @@ const STR = {
     toolCompoundName:'حاسبة الفائدة المركبة', toolCompoundDesc:'شاهد كيف ينمو الادخار مقابل الاستثمار مع الوقت',
     toolPaycheckName:'تفصيل الراتب', toolPaycheckDesc:'شاهد إلى أين يذهب راتبك فعلياً',
     toolSimName:'تحدي الميزانية', toolSimDesc:'عِش 12 شهراً من القرارات المالية الحقيقية',
+    accountTitle:'الحساب', accountGuest:'ضيف · محفوظ على هذا الجهاز فقط', changeAvatar:'تغيير الصورة الرمزية', avatarPickTitle:'اختر صورتك الرمزية', avatarFromGallery:'اختيار من المعرض', avatarImgError:'تعذّر استخدام هذه الصورة. جرّب صورة أخرى.', signOut:'تسجيل الخروج', signOutConfirm:'تسجيل الخروج؟ تقدّمك محفوظ، ويمكنك الدخول مجدداً في أي وقت.', closeLbl:'إغلاق',
     supportTitle:'الدعم', supportText:'لديك سؤال، وجدت خطأ، أو تريد اقتراح ميزة؟ تواصل معنا!',
     modesLabel:'الأوضاع',
     compoundTitle:'حاسبة الفائدة المركبة', compoundStartLbl:'المبلغ الأولي', compoundMonthlyLbl:'المساهمة الشهرية',
@@ -4341,6 +4373,9 @@ let state = {
   resume: null, // { catId, subIdx, topicIdx, topicId, stepIdx, correctCount, mode:'guided'|'quick', at } — last unfinished lesson
   examBest: {}, // catId -> best course-exam score in % (100 = course mastered)
   googleLinked: false, // true for the profile that is tied to the signed-in Google account
+  avatarImg: null, // small square photo (data URL) chosen from the gallery; overrides the emoji avatar
+  avatarPicker: false, // avatar picker open
+  avatarErr: false,
   resumePrompt: false, // true while the "continue where you left off" pop-up is showing
   _resumePromptShown: false, // pop-up appears at most once per login
   _profileLoaded: false // internal: true only once real saved data has been loaded/initialized — guards against overwriting a profile with blank defaults
@@ -5174,6 +5209,96 @@ function hideConfirm(){
   state.confirmModal = null;
   render();
 }
+const AVATAR_OPTIONS = ['🦉','🐿️','🦊','🐢','🐝','🦅'];
+// A saved photo is only ever a small JPEG/PNG data URL made by this app.
+function safeAvatarImg(v){ return (typeof v === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(v)) ? v : null; }
+// The user's avatar: their photo if they picked one, otherwise their emoji.
+function avatarInner(profile){
+  const p = profile || state;
+  const img = safeAvatarImg(p.avatarImg);
+  return img ? `<img class="av-img" src="${img}" alt="">` : `<span class="av-emoji" aria-hidden="true">${p.avatar || '🙂'}</span>`;
+}
+function renderAvatarPicker(){
+  if(!state.avatarPicker) return '';
+  const grid = AVATAR_OPTIONS.map(a => `<button class="av-pick ${!safeAvatarImg(state.avatarImg) && state.avatar===a ? 'selected':''}" data-pick-avatar="${a}" aria-label="${a}">${a}</button>`).join('');
+  return `
+  <div class="modal-overlay" id="avatarOverlay">
+    <div class="modal-card avatar-modal" role="dialog" aria-modal="true" aria-labelledby="avatarTitle">
+      <div class="avatar-modal-hdr">
+        <div class="avatar-modal-title" id="avatarTitle">${t('avatarPickTitle')}</div>
+        <button class="avatar-close" id="avatarClose" aria-label="${t('closeLbl')}">✕</button>
+      </div>
+      <div class="avatar-preview">${avatarInner()}</div>
+      <div class="avatar-grid">${grid}</div>
+      <label class="avatar-upload">🖼️ ${t('avatarFromGallery')}<input type="file" accept="image/*" id="avatarFile" hidden></label>
+      ${state.avatarErr ? `<div class="g-err" role="alert">⚠️ ${t('avatarImgError')}</div>` : ''}
+    </div>
+  </div>`;
+}
+// Turn a gallery picture into a small square avatar (centre crop, 160×160, ~10–20 KB),
+// small enough to save with the profile and sync to the cloud.
+function processAvatarFile(file){
+  return new Promise((resolve, reject) => {
+    if(!file || !/^image\//.test(file.type)) return reject(new Error('not an image'));
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const S = 160, side = Math.min(img.naturalWidth, img.naturalHeight);
+        if(!side) throw new Error('empty image');
+        const c = document.createElement('canvas'); c.width = S; c.height = S;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, S, S);
+        ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, S, S);
+        let q = 0.85, out = c.toDataURL('image/jpeg', q);
+        while(out.length > 60000 && q > 0.4){ q -= 0.15; out = c.toDataURL('image/jpeg', q); }
+        URL.revokeObjectURL(url);
+        resolve(out);
+      } catch(e){ URL.revokeObjectURL(url); reject(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('could not read image')); };
+    img.src = url;
+  });
+}
+function openAvatarPicker(){ state.avatarPicker = true; state.avatarErr = false; render(); }
+function closeAvatarPicker(){ state.avatarPicker = false; state.avatarErr = false; render(); }
+function bindAvatarEvents(){
+  ['avatarBtn','accountAvatarBtn','changeAvatarBtn'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.addEventListener('click', openAvatarPicker);
+  });
+  const ov = document.getElementById('avatarOverlay');
+  if(!ov) return;
+  ov.addEventListener('click', e => { if(e.target === ov) closeAvatarPicker(); });
+  const close = document.getElementById('avatarClose'); if(close) close.addEventListener('click', closeAvatarPicker);
+  document.querySelectorAll('[data-pick-avatar]').forEach(el => el.addEventListener('click', () => {
+    state.avatar = el.dataset.pickAvatar; state.avatarImg = null; closeAvatarPicker();
+  }));
+  const file = document.getElementById('avatarFile');
+  if(file) file.addEventListener('change', async () => {
+    try { state.avatarImg = await processAvatarFile(file.files && file.files[0]); closeAvatarPicker(); }
+    catch(e){ console.warn('[IsraFin] avatar image:', e.message); state.avatarErr = true; render(); }
+  });
+}
+// Home screen "Account" section: who you are, change avatar, Google status, sign out.
+function renderAccountSection(){
+  const google = Cloud.isGoogle();
+  return `
+    <div class="tools-section-hdr"><div class="tools-section-title">👤 ${t('accountTitle')}</div></div>
+    <div class="account-card">
+      <div class="account-top">
+        <button class="account-avatar" id="accountAvatarBtn" aria-label="${t('changeAvatar')}">${avatarInner()}<span class="account-avatar-edit" aria-hidden="true">✎</span></button>
+        <div class="account-who">
+          <div class="account-name"><bdi>${escapeHtml(state.userName)}</bdi></div>
+          <div class="account-sub">${google ? `${googleLogoSvg()}<span>${t('gSynced')} · <bdi>${escapeHtml(Cloud.user.email||'')}</bdi></span>` : `<span>${t('accountGuest')}</span>`}</div>
+        </div>
+      </div>
+      <button class="btn-ghost account-btn" id="changeAvatarBtn">🖼️ ${t('changeAvatar')}</button>
+      ${!google && Cloud._configured ? `<button class="g-btn account-google" id="googleBtn">${googleLogoSvg()}<span>${t('gSignIn')}</span></button>
+        ${state.gErr ? `<div class="g-err" role="alert">⚠️ ${state.gErr.msg}<span class="g-err-code">${escapeHtml(state.gErr.code)}</span></div>` : ''}` : ''}
+      <button class="account-signout" id="signOutBtn">${t('signOut')}</button>
+    </div>`;
+}
+
 function renderConfirmModal(){
   if(!state.confirmModal) return '';
   return `
@@ -5296,7 +5421,7 @@ function openResume(){
 // ===== Local persistence (per-profile, by name) =====
 const PROFILES_KEY = 'israfin2:profiles';
 const LAST_USER_KEY = 'israfin2:lastUser';
-const PROFILE_FIELDS = ['userName','avatar','lang','xp','progress','badges','bestStreak','answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode','quickLearn','guidedMode','resume','examBest','googleLinked'];
+const PROFILE_FIELDS = ['userName','avatar','lang','xp','progress','badges','bestStreak','answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode','quickLearn','guidedMode','resume','examBest','googleLinked','avatarImg'];
 
 function storageAvailable(){
   try{
@@ -5534,7 +5659,7 @@ const Cloud = {
     if(state.screen === 'login' && el){
       el.outerHTML = renderGoogleLoginBlock();
       bindGoogleEvents();
-    } else if(state.screen === 'profile' || state.screen === 'login'){
+    } else if(state.screen === 'profile' || state.screen === 'login' || state.screen === 'home'){
       render();
     }
   },
@@ -5668,6 +5793,8 @@ function logoutUser(){
   state.resume = null;
   state.examBest = {};
   state.googleLinked = false;
+  state.avatarImg = null;
+  state.avatarPicker = false;
   state.resumePrompt = false;
   state._resumePromptShown = false;
   state._profileLoaded = false;
@@ -5680,7 +5807,9 @@ function renderTopbar(){
   const langBtns = LANGS.map(l => `<div class="lang-opt ${state.lang===l.code?'active':''}" data-lang="${l.code}">${l.native}${state.lang===l.code?' ✓':''}</div>`).join('');
   return `
   <div class="topbar">
-    <div class="brand"><div class="brand-coin">₪</div> <span class="brand-name">${t('appName')}</span></div>
+    <div class="brand">${state._profileLoaded
+      ? `<button class="brand-avatar" id="avatarBtn" aria-label="${t('changeAvatar')}">${avatarInner()}</button>`
+      : `<div class="brand-coin">₪</div>`} <span class="brand-name">${t('appName')}</span></div>
     <div class="topbar-actions" style="position:relative;">
       <button class="switch-user-btn" id="switchUserBtn">${t('logout')}</button>
       <button class="icon-btn ai-chat-btn" id="aiChatBtn" aria-label="FAQ">❓</button>
@@ -5748,7 +5877,7 @@ function renderGoogleLoginBlock(){
 function googleLoginInner(){
   if(Cloud.isGoogle()){
     const profiles = googleProfiles();
-    const chips = profiles.map(p => `<button class="profile-chip" data-profile-name="${escapeHtml(p.userName)}"><span aria-hidden="true">${p.avatar||'🙂'}</span>${escapeHtml(p.userName)}</button>`).join('');
+    const chips = profiles.map(p => `<button class="profile-chip" data-profile-name="${escapeHtml(p.userName)}"><span class="chip-av">${avatarInner(p)}</span>${escapeHtml(p.userName)}</button>`).join('');
     return `
       <div class="g-synced">${googleLogoSvg()}<span>${t('gSynced')} · <bdi>${escapeHtml(Cloud.user.email||'')}</bdi></span></div>
       ${chips ? `<div class="field-label" style="margin-top:14px;">${t('gProfiles')}</div><div class="profile-chips">${chips}</div>` : ''}`;
@@ -5908,6 +6037,7 @@ function renderHome(){
       <div class="support-text">${t('supportText')}</div>
       <a class="support-email" href="https://mail.google.com/mail/?view=cm&to=IsraFin.app@gmail.com&su=IsraFin%20Feedback" target="_blank" rel="noopener">✉️ IsraFin.app@gmail.com</a>
     </div>
+    ${renderAccountSection()}
     <div class="footnote">${t('footnote')}</div>
   </div>`;
 }
@@ -7158,7 +7288,7 @@ function render(){
   // Stop any active narration — the DOM rebuild would strip the word spans
   // and leave the engine speaking into nothing visible.
   if(typeof TTS !== 'undefined' && TTS.speaking) TTS.stop();
-  document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderModesModal() + renderResumeModal();
+  document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderModesModal() + renderResumeModal() + renderAvatarPicker();
   attachEvents();
   if(typeof TTS !== 'undefined') TTS.updateButton();
   saveCurrentProfile();
@@ -7166,6 +7296,16 @@ function render(){
 
 function attachEvents(){
   bindGoogleEvents();
+  bindAvatarEvents();
+  const signOutBtn = document.getElementById('signOutBtn');
+  if(signOutBtn) signOutBtn.addEventListener('click', () => {
+    // Sign out = leave this profile and, if signed in, Google too.
+    showConfirm(t('signOutConfirm'), () => {
+      const wasGoogle = Cloud.isGoogle();
+      logoutUser(); // saves the profile first
+      if(wasGoogle) Cloud.googleSignOut().then(() => Cloud.refreshUI());
+    });
+  });
   attachEventsRest();
 }
 function bindGoogleEvents(){
@@ -7610,7 +7750,11 @@ document.addEventListener('click', (e)=>{
 });
 
 // Escape closes the continue pop-up
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && state.resumePrompt) closeResume(); });
+document.addEventListener('keydown', (e)=>{
+  if(e.key !== 'Escape') return;
+  if(state.avatarPicker) closeAvatarPicker();
+  else if(state.resumePrompt) closeResume();
+});
 
 // If the user changes language or navigates, cancel any speech
 window.addEventListener('beforeunload', ()=>{ TTS.stop(); });
@@ -7620,7 +7764,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=71').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=72').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
