@@ -1,9 +1,11 @@
-const CACHE_NAME = 'israfin-v68';
+const CACHE_NAME = 'israfin-v69';
 const CORE_ASSETS = [
   './index.html',
   './manifest.json',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  './icons/icon-512-maskable.png',
+  './icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -41,7 +43,9 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
           return response;
         })
-        .catch(() => caches.match(event.request))
+        // Offline: serve the saved app, whichever address was opened (/, /index.html, ?query…)
+        .catch(() => caches.match(event.request, { ignoreSearch: true })
+          .then((r) => r || caches.match('./index.html')))
     );
     return;
   }
