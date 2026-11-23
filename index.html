@@ -249,7 +249,9 @@ a{color:inherit;}
 .g-btn:disabled{ opacity:.6; cursor:wait; }
 .g-err{ margin-top:10px; padding:10px 12px; border-radius:10px; background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; font-size:13px; line-height:1.45; }
 .g-err-code{ display:block; margin-top:4px; font-size:11.5px; color:#7F1D1D; opacity:.75; direction:ltr; text-align:start; font-family:ui-monospace,monospace; }
-.g-synced{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-soft); flex-wrap:wrap; }
+.g-synced{ display:flex; align-items:flex-start; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-soft); line-height:1.4; }
+.g-synced svg{ flex-shrink:0; margin-top:1px; }
+.g-synced > span{ min-width:0; overflow-wrap:anywhere; }
 .g-synced bdi{ font-weight:600; color:var(--ink); }
 .profile-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
 .profile-chip{
@@ -5655,7 +5657,7 @@ function renderTopbar(){
   const langBtns = LANGS.map(l => `<div class="lang-opt ${state.lang===l.code?'active':''}" data-lang="${l.code}">${l.native}${state.lang===l.code?' ✓':''}</div>`).join('');
   return `
   <div class="topbar">
-    <div class="brand"><svg class="brand-mark" viewBox="0 -1.5 31.5 31.5" aria-hidden="true"><circle cx="13" cy="18" r="11.5" fill="#E3A447"/><text x="13" y="23" font-size="13" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text><polyline points="17,10 21,6.5 23.5,8 27.5,4" fill="none" stroke="#025837" stroke-width="3.6"/><polyline points="17,10 21,6.5 23.5,8 27.5,4" fill="none" stroke="#5CD630" stroke-width="1.8"/><polygon points="30,1 29,6.5 25,3" fill="#5CD630" stroke="#025837" stroke-width="0.9" stroke-linejoin="round"/></svg> <span class="brand-name">${t('appName')}</span></div>
+    <div class="brand"><svg class="brand-mark" viewBox="0 -1.5 31.5 31.5" aria-hidden="true"><circle cx="13" cy="18" r="11.5" fill="#E3A447"/><text x="13" y="23" font-size="13" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text><polyline points="16.5,11.0 20.5,7.5 23.0,9.0 27.4,4.2" fill="none" stroke="#025837" stroke-width="3.6"/><polygon points="29.9,1.5 28.4,7.7 23.8,3.5" fill="#025837" stroke="#025837" stroke-width="1.6"/><polyline points="16.5,11.0 20.5,7.5 23.0,9.0 27.4,4.2" fill="none" stroke="#5CD630" stroke-width="1.8"/><polygon points="29.9,1.5 28.4,7.7 23.8,3.5" fill="#5CD630"/></svg> <span class="brand-name">${t('appName')}</span></div>
     <div class="topbar-actions" style="position:relative;">
       <button class="switch-user-btn" id="switchUserBtn">${t('logout')}</button>
       <button class="icon-btn ai-chat-btn" id="aiChatBtn" aria-label="FAQ">❓</button>
@@ -5672,14 +5674,17 @@ function renderLogin(){
   <svg class="sprite" viewBox="-2 -5 122 105" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="IsraFin">
     <defs><linearGradient id="lgCoin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6C873"/><stop offset="1" stop-color="#D9902A"/></linearGradient></defs>
     <g class="lg-coin">
-      <circle cx="54" cy="70" r="27" fill="#C98321"/>
-      <circle cx="54" cy="67" r="27" fill="url(#lgCoin)"/>
-      <circle cx="54" cy="67" r="21" fill="none" stroke="#FBE3B0" stroke-width="1.8" opacity=".8"/>
-      <text x="54" y="77.5" font-size="29" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text>
+      <circle cx="54" cy="72" r="26" fill="#C98321"/>
+      <circle cx="54" cy="69" r="26" fill="url(#lgCoin)"/>
+      <circle cx="54" cy="69" r="20" fill="none" stroke="#FBE3B0" stroke-width="1.8" opacity=".8"/>
+      <text x="54" y="79" font-size="28" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text>
     </g>
-    <polyline class="lg-arrow" pathLength="100" points="10,40 34,20 52,30 86,8" fill="none" stroke="#025837" stroke-width="12"/>
-    <polyline class="lg-arrow" pathLength="100" points="10,40 34,20 52,30 86,8" fill="none" stroke="#5CD630" stroke-width="6.5"/>
-    <polygon class="lg-head" points="108,0 102,27 82,13" fill="#5CD630" stroke="#025837" stroke-width="3" stroke-linejoin="round"/>
+    <!-- Arrow: dark outline layer first, then the green fill layer, so shaft and head share one outline.
+         The head points exactly along the last segment. -->
+    <polyline class="lg-arrow" pathLength="100" points="10.0,45.0 34.0,25.0 52.0,35.0 91.4,9.5" fill="none" stroke="#025837" stroke-width="12"/>
+    <polygon class="lg-head" points="104.5,1.0 91.1,24.6 77.5,3.6" fill="#025837" stroke="#025837" stroke-width="6"/>
+    <polyline class="lg-arrow" pathLength="100" points="10.0,45.0 34.0,25.0 52.0,35.0 91.4,9.5" fill="none" stroke="#5CD630" stroke-width="6.5"/>
+    <polygon class="lg-head" points="104.5,1.0 91.1,24.6 77.5,3.6" fill="#5CD630"/>
   </svg>`;
   const avatars = ['🦉','🐿️','🦊','🐢','🐝','🦅'];
   const avatarRow = avatars.map(a=>`<button class="avatar-opt ${state.avatar===a?'selected':''}" data-avatar="${a}">${a}</button>`).join('');
@@ -7540,7 +7545,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=64').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=65').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
