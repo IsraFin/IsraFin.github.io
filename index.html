@@ -62,7 +62,6 @@ a{color:inherit;}
   border-bottom: 1px solid var(--line);
 }
 .brand{display:flex; align-items:center; gap:9px; font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-0.02em;}
-.brand-mark{ width:32px; height:32px; flex-shrink:0; }
 .brand-coin{
   width:30px; height:30px; border-radius:50%;
   background: linear-gradient(155deg, var(--gold) 0%, var(--gold-deep) 100%);
@@ -5678,7 +5677,7 @@ function renderTopbar(){
   const langBtns = LANGS.map(l => `<div class="lang-opt ${state.lang===l.code?'active':''}" data-lang="${l.code}">${l.native}${state.lang===l.code?' ✓':''}</div>`).join('');
   return `
   <div class="topbar">
-    <div class="brand"><svg class="brand-mark" viewBox="0 -1.5 31.5 31.5" aria-hidden="true"><circle cx="13" cy="18" r="11.5" fill="#E3A447"/><text x="13" y="23" font-size="13" text-anchor="middle" fill="#8A5A12" font-weight="800" font-family="Heebo, Arial, sans-serif">₪</text><polyline points="16.5,11.0 20.5,7.5 23.0,9.0 27.4,4.2" fill="none" stroke="#025837" stroke-width="3.6"/><polygon points="29.9,1.5 28.4,7.7 23.8,3.5" fill="#025837" stroke="#025837" stroke-width="1.6"/><polyline points="16.5,11.0 20.5,7.5 23.0,9.0 27.4,4.2" fill="none" stroke="#5CD630" stroke-width="1.8"/><polygon points="29.9,1.5 28.4,7.7 23.8,3.5" fill="#5CD630"/></svg> <span class="brand-name">${t('appName')}</span></div>
+    <div class="brand"><div class="brand-coin">₪</div> <span class="brand-name">${t('appName')}</span></div>
     <div class="topbar-actions" style="position:relative;">
       <button class="switch-user-btn" id="switchUserBtn">${t('logout')}</button>
       <button class="icon-btn ai-chat-btn" id="aiChatBtn" aria-label="FAQ">❓</button>
@@ -7578,7 +7577,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=66').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=67').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
