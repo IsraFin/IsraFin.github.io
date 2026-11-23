@@ -3506,19 +3506,19 @@ QUIZDATA.topics['rl-roommates'] = {
  en:[
   {q:`When sharing an apartment, it's smart to:`,o:[`Agree in writing how costs will be split`,`Let one person pay everything forever`,`Never discuss money`],c:0,e:`A written agreement avoids confusion and conflict later.`},
   {q:`A payment app like Bit helps roommates by:`,o:[`Signing the rental lease for them`,`Making shared costs easy to track`,`Filing their income taxes together`],c:1,e:`It simplifies tracking and settling shared expenses.`},
-  {q:`When splitting costs with roommates, it helps to:`,o:[`Argue about every bill`,`Agree on a clear system upfront`,`Let one person handle everything secretly`],c:0,e:`Clear agreements prevent conflict.`},
+  {q:`When splitting costs with roommates, it helps to:`,o:[`Argue about every bill`,`Agree on a clear system upfront`,`Let one person handle everything secretly`],c:1,e:`Clear agreements prevent conflict.`},
   {q:`Shared expenses typically include:`,o:[`Only food, nothing else`,`Each person's own purchases`,`Rent, bills and supplies`],c:2,e:`Common household costs.`}
  ],
  he:[
   {q:`כששותפים דירה, חכם:`,o:[`לתת לאדם אחד לשלם הכל לתמיד`,`לסכם בכתב איך יתחלקו ההוצאות`,`לעולם לא לדבר על כסף`],c:1,e:`הסכם בכתב מונע בלבול וקונפליקט בהמשך.`},
   {q:`אפליקציית תשלומים כמו ביט עוזרת לשותפים על ידי:`,o:[`הגשת דוח המס שלהם ביחד`,`חתימה על חוזה השכירות במקומם`,`מעקב קל אחרי הוצאות משותפות`],c:2,e:`היא מפשטת מעקב וסגירת הוצאות משותפות.`},
-  {q:`כשמחלקים הוצאות עם שותפים, עוזר:`,o:[`להסכים על שיטה ברורה מראש`,`לריב על כל חשבון`,`לתת לאדם אחד לטפל בסתר`],c:1,e:`הסכמות ברורות מונעות סכסוכים.`},
+  {q:`כשמחלקים הוצאות עם שותפים, עוזר:`,o:[`להסכים על שיטה ברורה מראש`,`לריב על כל חשבון`,`לתת לאדם אחד לטפל בסתר`],c:0,e:`הסכמות ברורות מונעות סכסוכים.`},
   {q:`הוצאות משותפות כוללות בדרך כלל:`,o:[`שכירות, חשמל ומוצרי בית`,`רק אוכל, ושום דבר אחר`,`הקניות האישיות של כל אחד`],c:0,e:`עלויות משק בית משותפות.`}
  ],
  ar:[
   {q:`عند مشاركة شقة، من الذكي:`,o:[`عدم الحديث عن المال أبداً بينكم`,`ترك شخص واحد يدفع كل شيء دائماً`,`الاتفاق كتابياً على تقسيم التكاليف`],c:2,e:`الاتفاق الكتابي يمنع الالتباس والخلاف لاحقاً.`},
   {q:`يساعد تطبيق دفع مثل بيت زملاء السكن من خلال:`,o:[`توقيع عقد الإيجار نيابةً عنهم`,`تسهيل تتبع التكاليف المشتركة`,`تقديم ضرائب الدخل معاً`],c:1,e:`يبسّط تتبع وتسوية النفقات المشتركة.`},
-  {q:`عند تقسيم التكاليف مع زملاء السكن، يساعد:`,o:[`الاتفاق على نظام واضح مسبقاً`,`ترك شخص واحد يتولى كل شيء سراً`,`الجدال على كل فاتورة`],c:2,e:`اتفاقيات واضحة تمنع النزاعات.`},
+  {q:`عند تقسيم التكاليف مع زملاء السكن، يساعد:`,o:[`الاتفاق على نظام واضح مسبقاً`,`ترك شخص واحد يتولى كل شيء سراً`,`الجدال على كل فاتورة`],c:0,e:`اتفاقيات واضحة تمنع النزاعات.`},
   {q:`المصروفات المشتركة عادةً تشمل:`,o:[`الإيجار والفواتير ولوازم المنزل`,`الطعام فقط ولا شيء آخر`,`المشتريات الشخصية لكل فرد`],c:0,e:`تكاليف المنزل المشتركة.`}
  ]
 };
@@ -7764,7 +7764,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=73').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=74').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
