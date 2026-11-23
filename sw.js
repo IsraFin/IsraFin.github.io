@@ -1,4 +1,4 @@
-const CACHE_NAME = 'israfin-v69';
+const CACHE_NAME = 'israfin-v70';
 const CORE_ASSETS = [
   './index.html',
   './manifest.json',
