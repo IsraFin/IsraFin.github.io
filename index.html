@@ -246,6 +246,8 @@ a{color:inherit;}
 }
 .g-btn:hover{ background:#F8F9FA; }
 .g-btn:disabled{ opacity:.6; cursor:wait; }
+.g-err{ margin-top:10px; padding:10px 12px; border-radius:10px; background:#FEF2F2; border:1px solid #FECACA; color:#991B1B; font-size:13px; line-height:1.45; }
+.g-err-code{ display:block; margin-top:4px; font-size:11.5px; color:#7F1D1D; opacity:.75; direction:ltr; text-align:start; font-family:ui-monospace,monospace; }
 .g-synced{ display:flex; align-items:center; gap:8px; margin-top:14px; font-size:13px; color:var(--ink-soft); flex-wrap:wrap; }
 .g-synced bdi{ font-weight:600; color:var(--ink); }
 .profile-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
@@ -3802,7 +3804,7 @@ const STR = {
     realLifeToggleLabel:'REAL LIFE', quickLearnLabel:'QUICK LEARN', homeSubRealLife:'Practical money skills for real life in Israel',
     guidedModeLabel:'GUIDED LEARNING', guidedModeDesc:'Learn step by step with quick checks along the way',
     guidedCheck:'Check', guidedContinue:'Continue', guidedCorrectHdr:'Correct!', guidedWrongHdr:'Not quite',
-    gSignIn:'Continue with Google', gWhy:'Sign in to keep your progress on every device.', gSynced:'Synced with Google', gSignOut:'Sign out of Google', gProfiles:'Your profiles', gError:'Google sign-in didn\'t work. Please try again.', gNotEnabled:'Google sign-in isn\'t available yet.', gSyncTitle:'Sync across devices', gOr:'or',
+    gErrProvider:'Google sign-in is switched off for this app. Turn on the Google provider in Firebase → Authentication → Sign-in method.', gErrDomain:'This website isn\'t on the app\'s allowed list. Add it in Firebase → Authentication → Settings → Authorized domains.', gErrNetwork:'No connection to Google. Check your internet and try again.', gSignIn:'Continue with Google', gWhy:'Sign in to keep your progress on every device.', gSynced:'Synced with Google', gSignOut:'Sign out of Google', gProfiles:'Your profiles', gError:'Google sign-in didn\'t work. Please try again.', gNotEnabled:'Google sign-in isn\'t available yet.', gSyncTitle:'Sync across devices', gOr:'or',
     resumeLabel:'Continue where you left off', resumeStep:'Step {n} of {total}', resumeBtn:'Continue', resumeLater:'Not now', resumeClose:'Close',
     guidedConceptBadge:'Learn', guidedQuestionBadge:'Quick Check',
     guidedCompleteTitle:'Lesson Complete!', guidedCompleteSub:'You\'ve learned {topic}',
@@ -3903,7 +3905,7 @@ const STR = {
     realLifeToggleLabel:'חיים אמיתיים', quickLearnLabel:'למידה מהירה', homeSubRealLife:'מיומנויות כסף מעשיות לחיים האמיתיים בישראל',
     guidedModeLabel:'למידה מודרכת', guidedModeDesc:'למדו שלב-אחר-שלב עם בדיקות קצרות בדרך',
     guidedCheck:'בדיקה', guidedContinue:'המשך', guidedCorrectHdr:'נכון!', guidedWrongHdr:'לא ממש',
-    gSignIn:'המשך עם Google', gWhy:'התחברו כדי לשמור את ההתקדמות בכל מכשיר.', gSynced:'מסונכרן עם Google', gSignOut:'התנתקות מ-Google', gProfiles:'הפרופילים שלכם', gError:'ההתחברות עם Google לא הצליחה. נסו שוב.', gNotEnabled:'ההתחברות עם Google עדיין לא זמינה.', gSyncTitle:'סנכרון בין מכשירים', gOr:'או',
+    gErrProvider:'ההתחברות עם Google כבויה באפליקציה הזו. צריך להפעיל את ספק Google ב-Firebase ← Authentication ← Sign-in method.', gErrDomain:'האתר הזה לא ברשימת האתרים המורשים. צריך להוסיף אותו ב-Firebase ← Authentication ← Settings ← Authorized domains.', gErrNetwork:'אין חיבור ל-Google. בדקו את האינטרנט ונסו שוב.', gSignIn:'המשך עם Google', gWhy:'התחברו כדי לשמור את ההתקדמות בכל מכשיר.', gSynced:'מסונכרן עם Google', gSignOut:'התנתקות מ-Google', gProfiles:'הפרופילים שלכם', gError:'ההתחברות עם Google לא הצליחה. נסו שוב.', gNotEnabled:'ההתחברות עם Google עדיין לא זמינה.', gSyncTitle:'סנכרון בין מכשירים', gOr:'או',
     resumeLabel:'ממשיכים מאיפה שעצרתם', resumeStep:'שלב {n} מתוך {total}', resumeBtn:'המשך', resumeLater:'לא עכשיו', resumeClose:'סגירה',
     guidedConceptBadge:'ללמוד', guidedQuestionBadge:'בדיקה מהירה',
     guidedCompleteTitle:'השיעור הושלם!', guidedCompleteSub:'למדתם על {topic}',
@@ -4004,7 +4006,7 @@ const STR = {
     realLifeToggleLabel:'الحياة الواقعية', quickLearnLabel:'تعلّم سريع', homeSubRealLife:'مهارات مالية عملية للحياة الواقعية في إسرائيل',
     guidedModeLabel:'تعلّم موجّه', guidedModeDesc:'تعلّم خطوة بخطوة مع فحوصات سريعة أثناء الطريق',
     guidedCheck:'تحقق', guidedContinue:'متابعة', guidedCorrectHdr:'صحيح!', guidedWrongHdr:'ليس تماماً',
-    gSignIn:'المتابعة باستخدام Google', gWhy:'سجّل الدخول للاحتفاظ بتقدّمك على كل جهاز.', gSynced:'متزامن مع Google', gSignOut:'تسجيل الخروج من Google', gProfiles:'ملفاتك الشخصية', gError:'لم ينجح تسجيل الدخول باستخدام Google. حاول مرة أخرى.', gNotEnabled:'تسجيل الدخول باستخدام Google غير متاح بعد.', gSyncTitle:'المزامنة بين الأجهزة', gOr:'أو',
+    gErrProvider:'تسجيل الدخول باستخدام Google متوقف في هذا التطبيق. يجب تفعيل مزوّد Google في Firebase ← Authentication ← Sign-in method.', gErrDomain:'هذا الموقع ليس في قائمة المواقع المسموح بها. يجب إضافته في Firebase ← Authentication ← Settings ← Authorized domains.', gErrNetwork:'لا يوجد اتصال بـ Google. تحقّق من الإنترنت وحاول مرة أخرى.', gSignIn:'المتابعة باستخدام Google', gWhy:'سجّل الدخول للاحتفاظ بتقدّمك على كل جهاز.', gSynced:'متزامن مع Google', gSignOut:'تسجيل الخروج من Google', gProfiles:'ملفاتك الشخصية', gError:'لم ينجح تسجيل الدخول باستخدام Google. حاول مرة أخرى.', gNotEnabled:'تسجيل الدخول باستخدام Google غير متاح بعد.', gSyncTitle:'المزامنة بين الأجهزة', gOr:'أو',
     resumeLabel:'تابع من حيث توقفت', resumeStep:'الخطوة {n} من {total}', resumeBtn:'متابعة', resumeLater:'ليس الآن', resumeClose:'إغلاق',
     guidedConceptBadge:'تعلّم', guidedQuestionBadge:'فحص سريع',
     guidedCompleteTitle:'اكتمل الدرس!', guidedCompleteSub:'تعلّمت عن {topic}',
@@ -5688,6 +5690,7 @@ function renderGoogleLoginBlock(){
   return `
       <div class="g-or"><span>${t('gOr')}</span></div>
       <button class="g-btn" id="googleBtn">${googleLogoSvg()}<span>${t('gSignIn')}</span></button>
+      ${state.gErr ? `<div class="g-err" role="alert">⚠️ ${state.gErr.msg}<span class="g-err-code">${escapeHtml(state.gErr.code)}</span></div>` : ''}
       <div class="login-note" style="margin-top:8px;">${t('gWhy')}</div>`;
 }
 // Profile screen card: link this profile's progress to Google, or show the linked account.
@@ -5700,7 +5703,8 @@ function renderGoogleSyncCard(){
         ? `<div class="g-synced">${googleLogoSvg()}<span>${t('gSynced')} · <bdi>${escapeHtml(Cloud.user.email||'')}</bdi></span></div>
            <button class="btn-ghost g-signout" id="googleSignOutBtn">${t('gSignOut')}</button>`
         : `<div class="g-card-sub">${t('gWhy')}</div>
-           <button class="g-btn" id="googleBtn">${googleLogoSvg()}<span>${t('gSignIn')}</span></button>`}
+           <button class="g-btn" id="googleBtn">${googleLogoSvg()}<span>${t('gSignIn')}</span></button>
+           ${state.gErr ? `<div class="g-err" role="alert">⚠️ ${state.gErr.msg}<span class="g-err-code">${escapeHtml(state.gErr.code)}</span></div>` : ''}`}
     </div>`;
 }
 
@@ -7057,15 +7061,18 @@ function attachEvents(){
   const googleBtn = document.getElementById('googleBtn');
   if(googleBtn) googleBtn.addEventListener('click', async ()=>{
     googleBtn.disabled = true;
+    state.gErr = null;
     try { await Cloud.googleSignIn(); }
     catch(e){
-      const code = (e && e.code) || '';
+      const code = (e && e.code) || 'unknown';
       if(code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request' || code === 'auth/user-cancelled'){ /* user closed it */ }
-      else if(code === 'auth/operation-not-allowed' || code === 'not-configured' || code === 'auth/unauthorized-domain') showToast(t('gNotEnabled'), '⚠️');
-      else showToast(t('gError'), '⚠️');
-      console.warn('[IsraFin Cloud] Google sign-in failed:', code || e);
+      else if(code === 'auth/operation-not-allowed') state.gErr = { msg: t('gErrProvider'), code };
+      else if(code === 'auth/unauthorized-domain') state.gErr = { msg: t('gErrDomain'), code };
+      else if(code === 'auth/network-request-failed') state.gErr = { msg: t('gErrNetwork'), code };
+      else state.gErr = { msg: t('gError'), code };
+      console.warn('[IsraFin Cloud] Google sign-in failed:', code, e);
     }
-    const b = document.getElementById('googleBtn'); if(b) b.disabled = false;
+    render();
   });
   const googleSignOutBtn = document.getElementById('googleSignOutBtn');
   if(googleSignOutBtn) googleSignOutBtn.addEventListener('click', async ()=>{
@@ -7497,7 +7504,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=60').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=61').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
