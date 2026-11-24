@@ -4926,7 +4926,8 @@ const TTS = {
     for(const v of voices){
       if(!v.lang) continue;
       // Android reports locales like "en_US" (underscore); normalise to "en-us".
-      const vl = v.lang.toLowerCase().replace(/_/g, '-');
+      // Android (Java) still uses the old code "iw" for Hebrew, e.g. "iw-IL" / "iw_IL".
+      const vl = v.lang.toLowerCase().replace(/_/g, '-').replace(/^iw(?=-|$)/, 'he');
       let localeBonus = 0;
       const exactIdx = targets.findIndex(t => t.toLowerCase() === vl);
       if(exactIdx >= 0){
@@ -5097,7 +5098,10 @@ const TTS = {
     this.ensureVoicesThen(()=>{
       const { voice, lang: resolvedLang } = this.pickVoiceForLang(lang);
       // English: if no voice matched, still speak and let the device pick its default.
-      if(!voice && lang !== 'en'){
+      // Some phones don't list their voices at all; then just ask for the language and let
+      // the device try. Only show "no voice" when the list exists and has none for it.
+      const listed = (window.speechSynthesis.getVoices() || []).length > 0;
+      if(!voice && lang !== 'en' && listed){
         const key = lang === 'ar' ? 'speakNoVoice' : lang === 'he' ? 'speakNoVoiceHe' : 'speakNoVoiceEn';
         showToast(t(key), 'ℹ️', 'top');
         this.speaking = false;
@@ -7975,7 +7979,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=75').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=76').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
