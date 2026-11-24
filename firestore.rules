@@ -1,0 +1,64 @@
+rules_version = '2';
+// IsraFin database rules. Paste into Firebase console → Firestore Database → Rules → Publish.
+// Each signed-in person (guest or Google) can only touch their own profiles, and a profile
+// can only hold the fields the app actually saves, with sensible types and sizes.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function optString(d, f, max) {
+      return !(f in d) || d[f] == null || (d[f] is string && d[f].size() <= max);
+    }
+    function optBool(d, f) {
+      return !(f in d) || d[f] == null || d[f] is bool;
+    }
+    function optNum(d, f, max) {
+      return !(f in d) || d[f] == null || (d[f] is number && d[f] >= 0 && d[f] <= max);
+    }
+    function optMap(d, f, maxKeys) {
+      return !(f in d) || d[f] == null || (d[f] is map && d[f].size() <= maxKeys);
+    }
+    function validProfile(d) {
+      return d.keys().hasOnly(['userName','avatar','lang','xp','progress','badges','bestStreak',
+               'answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode',
+               'quickLearn','guidedMode','resume','examBest','googleLinked','avatarImg','savedAt'])
+        && optString(d, 'userName', 40)
+        && optString(d, 'avatar', 16)
+        && (!('lang' in d) || d.lang in ['en', 'he', 'ar'])
+        && optNum(d, 'xp', 10000000)
+        && optNum(d, 'bestStreak', 100000)
+        && optNum(d, 'answerStreak', 100000)
+        && optNum(d, 'savedAt', 99999999999999)
+        && optBool(d, 'hadPerfectQuiz')
+        && optBool(d, 'realLifeMode')
+        && optBool(d, 'quickLearn')
+        && optBool(d, 'guidedMode')
+        && optBool(d, 'googleLinked')
+        && optString(d, 'goal', 60)
+        && optMap(d, 'progress', 2000)
+        && optMap(d, 'badges', 200)
+        && optMap(d, 'goalGlow', 50)
+        && optMap(d, 'goalVisited', 50)
+        && optMap(d, 'examBest', 50)
+        && optMap(d, 'resume', 12)
+        // a small JPEG/PNG/WebP photo, about 60 KB at most in the app
+        && (!('avatarImg' in d) || d.avatarImg == null
+            || (d.avatarImg is string && d.avatarImg.size() <= 100000
+                && d.avatarImg.matches('data:image/(jpeg|png|webp);base64,.*')));
+    }
+
+    match /users/{uid}/profiles/{profileKey} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && profileKey.size() <= 40
+        && validProfile(request.resource.data);
+    }
+
+    // Anything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
