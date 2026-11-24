@@ -23,7 +23,7 @@ service cloud.firestore {
     function validProfile(d) {
       return d.keys().hasOnly(['userName','avatar','lang','xp','progress','badges','bestStreak',
                'answerStreak','hadPerfectQuiz','goal','goalGlow','goalVisited','realLifeMode',
-               'quickLearn','guidedMode','resume','examBest','googleLinked','avatarImg','savedAt'])
+               'quickLearn','guidedMode','resume','examBest','googleLinked','avatarImg','savedAt','duels'])
         && optString(d, 'userName', 40)
         && optString(d, 'avatar', 16)
         && (!('lang' in d) || d.lang in ['en', 'he', 'ar'])
@@ -43,6 +43,7 @@ service cloud.firestore {
         && optMap(d, 'goalVisited', 50)
         && optMap(d, 'examBest', 50)
         && optMap(d, 'resume', 12)
+        && optMap(d, 'duels', 20)
         // a small JPEG/PNG/WebP photo, about 60 KB at most in the app
         && (!('avatarImg' in d) || d.avatarImg == null
             || (d.avatarImg is string && d.avatarImg.size() <= 100000
