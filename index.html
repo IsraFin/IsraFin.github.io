@@ -6340,6 +6340,8 @@ const Cloud = {
   _uid: null,
   _db: null,
   _pending: {}, // profileKey -> latest snapshot queued while auth is still loading
+  _debounced: {}, // profileKey -> latest snapshot waiting for the next batched save
+  _debT: null,
   _configured: false,
   _readyWaiters: [],
 
@@ -6407,12 +6409,13 @@ const Cloud = {
     if(this._holdSaves || !this._ready || !this._db || !this._uid) {
       // Queue for when auth finishes
       if(this._configured) this._pending[profileKey] = data;
-      return;
+      return Promise.resolve(false);
     }
     const doc = this._db.collection('users').doc(this._uid)
       .collection('profiles').doc(profileKey);
-    this._set(doc, data).catch(e => {
+    return this._set(doc, data).then(() => true).catch(e => {
       console.warn('[IsraFin Cloud] Save failed:', e.message);
+      return false;
     });
   },
 
@@ -6440,8 +6443,19 @@ const Cloud = {
   },
 
   // Called by saveCurrentProfile — piggybacks on every local save
+  // Saves are batched: the newest snapshot goes up at most every few seconds (and right away
+  // when the app is hidden or closed), instead of one cloud write per screen redraw.
   save(profileKey, snapshot){
-    this._saveToCloud(profileKey, snapshot);
+    this._debounced[profileKey] = snapshot;
+    if(!this._debT) this._debT = setTimeout(() => this.flush(), 4000);
+  },
+  // Send any waiting saves now. With ms, resolves true once they've reached the cloud (false on timeout/failure).
+  flush(ms){
+    clearTimeout(this._debT); this._debT = null;
+    const d = this._debounced; this._debounced = {};
+    const ps = Object.keys(d).map(k => this._saveToCloud(k, d[k]));
+    if(!ms) return Promise.resolve(true);
+    return Promise.race([Promise.all(ps).then(r => r.every(x => x !== false)), new Promise(r => setTimeout(() => r(false), ms))]).catch(() => false);
   },
 
   // Resolves true once signed in, or false after timeoutMs (or if Firebase isn't available).
@@ -6508,6 +6522,7 @@ const Cloud = {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     const cur = auth.currentUser;
+    this.flush(); // send any waiting guest save to the guest account first
     // Until this device's profiles are merged with the account's, don't let any save
     // overwrite the account's copy (it may hold progress from another device).
     this._holdSaves = true;
@@ -6563,6 +6578,7 @@ const Cloud = {
     if(!navigator.onLine) throw new Error('offline');
     if(!(await this.whenReady(4000)) || !this._db || !this._uid) throw new Error('offline');
     delete this._pending[profileKey];
+    delete this._debounced[profileKey]; // a waiting save must not bring it back
     const col = this._db.collection('users').doc(this._uid).collection('profiles');
     const withTimeout = (pr, ms) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error('offline')), ms))]);
     await withTimeout(col.doc(profileKey).delete(), 10000);
@@ -6587,8 +6603,13 @@ const Cloud = {
 
   async googleSignOut(){
     if(!this._configured) return;
+    // Make sure the latest progress is safely in the Google account before leaving it
+    const saved = navigator.onLine && await this.flush(4000);
     await firebase.auth().signOut(); // onAuthStateChanged then starts a fresh anonymous session
     this.user = null;
+    // Then take the account's profiles off this device, so the next person here can't open them.
+    // (Offline, we keep the copy rather than risk losing progress that hasn't reached the cloud.)
+    if(saved) removeGoogleProfilesFromDevice();
   },
 
   // Fetch one profile's cloud copy, or null. Never waits more than ~4s in total,
@@ -6606,6 +6627,17 @@ const Cloud = {
     }
   }
 };
+
+function removeGoogleProfilesFromDevice(){
+  const profiles = loadProfiles();
+  let lastWasGoogle = false;
+  try { const last = profileKeyFor(window.localStorage.getItem(LAST_USER_KEY)); lastWasGoogle = !!(profiles[last] && profiles[last].googleLinked); } catch(e){}
+  Object.keys(profiles).forEach(k => { if(profiles[k] && profiles[k].googleLinked) delete profiles[k]; });
+  saveProfiles(profiles);
+  try { if(lastWasGoogle) window.localStorage.removeItem(LAST_USER_KEY); } catch(e){}
+}
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'hidden') Cloud.flush(); });
+window.addEventListener('pagehide', () => Cloud.flush());
 
 function logoutUser(){
   saveCurrentProfile(); // preserve this user's progress before switching
@@ -7591,7 +7623,8 @@ function renderFaqPanel(){
 }
 
 function escapeHtml(str){
-  const d = document.createElement('div'); d.textContent = str||''; return d.innerHTML;
+  const d = document.createElement('div'); d.textContent = str||'';
+  return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); // quotes too, so text is safe inside attributes
 }
 
 // ===== Quiz logic =====
@@ -8761,7 +8794,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=78').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=79').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
