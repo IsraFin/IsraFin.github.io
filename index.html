@@ -324,8 +324,32 @@ a{color:inherit;}
 .cat-bar{ height:4px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:2px;}
 .cat-bar-fill{ height:100%; background:var(--accent); border-radius:4px; transition: width .4s ease; }
 
+.vh-overlay{ z-index:1200; }
+.vh-ask{ max-width:320px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.vh-icon{ flex:none; width:44px; height:44px; border-radius:13px; background:#FFF3E3; color:#B4600F; display:grid; place-items:center; font-size:21px; }
+.vh-title{ margin:0; font-size:17px; font-weight:800; color:var(--ink); text-wrap:balance; }
+.vh-text{ margin:0; font-size:14px; line-height:1.55; color:var(--ink-soft); }
+.vh-ask-actions{ display:flex; flex-direction:column; gap:6px; width:100%; margin-top:6px; }
+.vh-ask-actions .btn-primary{ width:100%; }
+.vh-no{ background:none; border:none; min-height:42px; font-family:var(--font-body); font-size:14.5px; font-weight:600; color:var(--ink-soft); cursor:pointer; }
+.vh-sheet-wrap{ align-items:flex-end; padding:0; }
+.vh-sheet{ width:100%; max-width:520px; max-height:88vh; overflow:auto; background:var(--paper); border-radius:22px 22px 0 0; padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; gap:12px; animation:vhUp .25s ease; }
+@keyframes vhUp{ from{ transform:translateY(40px); opacity:.4; } to{ transform:none; opacity:1; } }
+@media (prefers-reduced-motion: reduce){ .vh-sheet{ animation:none; } }
+.vh-grab{ width:40px; height:4px; border-radius:4px; background:var(--line); align-self:center; }
+.vh-head{ display:flex; gap:12px; align-items:flex-start; }
+.vh-tabs{ display:flex; background:var(--bg); border-radius:999px; padding:3px; gap:2px; }
+.vh-tab{ flex:1; border:0; background:none; border-radius:999px; padding:8px 10px; font-family:var(--font-body); font-weight:700; font-size:13.5px; color:var(--ink-soft); cursor:pointer; }
+.vh-tab[aria-pressed="true"]{ background:var(--emerald); color:#fff; }
+.vh-steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; counter-reset:vh; }
+.vh-steps li{ counter-increment:vh; display:grid; grid-template-columns:26px 1fr; gap:10px; align-items:start; font-size:14.5px; line-height:1.5; color:var(--ink); }
+.vh-steps li::before{ content:counter(vh); width:26px; height:26px; border-radius:50%; background:#E3F2EA; color:var(--emerald); font-weight:800; font-size:13px; display:grid; place-items:center; }
+.vh-still{ background:#FFF3E3; color:#8A4A0C; border-radius:12px; padding:10px 12px; font-size:13.5px; line-height:1.5; font-weight:600; }
+.vh-note{ margin:0; font-size:12.5px; line-height:1.5; color:var(--ink-soft); }
+.vh-actions{ display:flex; gap:10px; }
+.vh-actions button{ flex:1; }
 .legal-links{ margin-top:12px; display:flex; gap:8px; justify-content:center; align-items:center; color:var(--ink-soft); font-size:13px; }
-.legal-link{ background:none; border:none; padding:2px 0; font:inherit; font-weight:700; color:var(--brand); text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
+.legal-link{ background:none; border:none; padding:2px 0; font:inherit; font-weight:700; color:var(--emerald); text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
 .login-legal{ max-width:420px; margin:14px auto 4px; padding:0 24px; text-align:center; font-size:12.5px; line-height:1.6; color:var(--ink-soft); }
 .login-legal .legal-link{ font-size:12.5px; }
 .login-note{ max-width:420px; margin:0 auto 12px; padding:10px 14px; border-radius:12px; background:#E7F4EC; color:#1F5F3F; font-size:14px; font-weight:600; text-align:center; }
@@ -336,7 +360,7 @@ a{color:inherit;}
 .legal-updated{ font-size:12.5px; color:var(--ink-soft); margin:10px 0 4px; }
 .legal-h{ font-size:15px; font-weight:800; color:var(--ink); margin:18px 0 6px; }
 .legal-p{ font-size:14.5px; line-height:1.65; color:var(--ink); margin:0; }
-.legal-p a{ color:var(--brand); font-weight:700; }
+.legal-p a{ color:var(--emerald); font-weight:700; }
 .footnote{ padding:22px 26px 10px; font-size:12px; color:var(--ink-soft); text-align:center; line-height:1.6; }
 .account-card{ margin:8px 20px 4px; padding:18px; border-radius:var(--radius-md); background:var(--surface, var(--paper)); border:1px solid var(--border, var(--line)); display:flex; flex-direction:column; gap:10px; }
 .account-top{ display:flex; align-items:center; gap:14px; }
@@ -366,20 +390,20 @@ a{color:inherit;}
 .chip-av .av-emoji{ font-size:16px; }
 .support-card{ margin:8px 20px 4px; padding:18px; border-radius:var(--radius-md); background:var(--surface); border:1px solid var(--border); text-align:center; }
 .support-text{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px; }
-.support-email{ display:inline-block; font-size:14px; font-weight:700; color:var(--brand); text-decoration:none; padding:8px 18px; border:1.5px solid var(--brand); border-radius:10px; transition:all .15s; }
+.support-email{ display:inline-block; font-size:14px; font-weight:700; color:var(--emerald); text-decoration:none; padding:8px 18px; border:1.5px solid var(--emerald); border-radius:10px; transition:all .15s; }
 .support-email:active{ background:#16A34A; color:#fff; }
 .fact-card{ margin:18px 20px 4px; padding:16px 18px; border-radius:var(--radius-md); background:linear-gradient(135deg,#FFFBEB,#FEF3C7); border:1px solid #FDE68A; }
 .fact-label{ font-size:12px; font-weight:800; color:#92400E; text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px; }
 .fact-text{ font-size:13.5px; color:#78350F; line-height:1.5; }
-.gl-term{ color:var(--brand); text-decoration:underline; text-decoration-style:dotted; text-underline-offset:3px; cursor:pointer; font-weight:600; }
+.gl-term{ color:var(--emerald); text-decoration:underline; text-decoration-style:dotted; text-underline-offset:3px; cursor:pointer; font-weight:600; }
 .gl-tooltip{ position:fixed; left:50%; transform:translateX(-50%); bottom:32px; max-width:320px; width:calc(100% - 40px); background:var(--ink); color:#fff; padding:14px 18px; border-radius:14px; font-size:13.5px; line-height:1.5; z-index:999; box-shadow:0 8px 30px rgba(0,0,0,.25); animation:glPop .2s ease; }
 .gl-tooltip-term{ font-weight:800; font-size:14px; margin-bottom:4px; color:#B4F0C8; }
 .gl-tooltip-close{ position:absolute; top:8px; right:12px; background:none; border:none; color:#fff; font-size:18px; cursor:pointer; opacity:.7; }
 @keyframes glPop{ from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
 .step-dots{ display:flex; gap:6px; justify-content:center; margin:14px 0 18px; }
 .step-dot{ width:8px; height:8px; border-radius:50%; background:var(--border); transition:all .2s; }
-.step-dot.active{ background:var(--brand); transform:scale(1.3); }
-.step-dot.done{ background:var(--brand); opacity:.45; }
+.step-dot.active{ background:var(--emerald); transform:scale(1.3); }
+.step-dot.done{ background:var(--emerald); opacity:.45; }
 .step-container{ min-height:140px; }
 .step-card{ animation:stepIn .25s ease; text-align:center; padding:12px 4px; }
 .step-emoji{ font-size:36px; margin-bottom:12px; }
@@ -388,7 +412,7 @@ a{color:inherit;}
 .quiz-step{ padding:24px 4px; }
 .step-nav{ display:flex; align-items:center; justify-content:space-between; margin-top:18px; padding-top:14px; border-top:1px solid var(--border); }
 .step-btn{ width:44px; height:44px; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); font-size:20px; font-weight:700; color:var(--ink); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.step-btn.primary{ background:var(--brand); color:#fff; border-color:var(--brand); }
+.step-btn.primary{ background:var(--emerald); color:#fff; border-color:var(--emerald); }
 .step-btn:disabled{ opacity:.25; cursor:default; }
 .step-counter{ font-size:13px; color:var(--ink-soft); font-weight:600; }
 @keyframes stepIn{ from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
@@ -407,7 +431,7 @@ a{color:inherit;}
 }
 .speak-btn:active{ transform: scale(0.95); }
 .speak-btn.speaking{
-  background: var(--brand); color:#fff; border-color: var(--brand);
+  background: var(--emerald); color:#fff; border-color: var(--emerald);
   animation: speakPulse 1.4s ease-in-out infinite;
 }
 @keyframes speakPulse{
@@ -762,7 +786,7 @@ a{color:inherit;}
 .modes-btn-row{ padding:10px 20px 0; }
 .modes-btn{ display:flex; align-items:center; justify-content:space-between; width:100%; padding:10px 16px; border-radius:var(--radius-md); border:1.5px solid var(--border); background:var(--surface); cursor:pointer; font-size:14px; font-weight:600; color:var(--ink); transition:all .15s; }
 .modes-btn:active{ background:var(--border); }
-.modes-badge{ background:var(--brand); color:#fff; font-size:11px; font-weight:800; padding:2px 8px; border-radius:10px; min-width:20px; text-align:center; }
+.modes-badge{ background:var(--emerald); color:#fff; font-size:11px; font-weight:800; padding:2px 8px; border-radius:10px; min-width:20px; text-align:center; }
 .modes-panel{ width:100%; max-width:400px; background:var(--paper); border-radius:20px 20px 0 0; overflow:hidden; }
 .modes-body{ padding:16px 20px 24px; display:flex; flex-direction:column; gap:10px; }
 .reallife-toggle{ width:100%; display:flex; align-items:center; justify-content:space-between; background:var(--paper); border:1.5px solid var(--line); border-radius:999px; padding:10px 14px; box-shadow:var(--shadow-sm); }
@@ -785,10 +809,10 @@ a{color:inherit;}
 .ai-close{ background:none; border:none; font-size:24px; color:var(--ink-soft); cursor:pointer; padding:0 4px; }
 .ai-messages{ flex:1; overflow-y:auto; padding:16px; }
 .faq-item{ border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:8px; }
-.faq-item.open{ border-color:var(--brand); }
+.faq-item.open{ border-color:var(--emerald); }
 .faq-q{ padding:14px 16px; font-size:14px; font-weight:600; color:var(--ink); cursor:pointer; display:flex; align-items:flex-start; gap:8px; line-height:1.4; }
 .faq-q:active{ background:var(--surface); }
-.faq-cat-tag{ font-size:10px; font-weight:800; text-transform:uppercase; background:var(--brand); color:#fff; padding:2px 7px; border-radius:6px; white-space:nowrap; flex-shrink:0; margin-top:2px; }
+.faq-cat-tag{ font-size:10px; font-weight:800; text-transform:uppercase; background:var(--emerald); color:#fff; padding:2px 7px; border-radius:6px; white-space:nowrap; flex-shrink:0; margin-top:2px; }
 .faq-arrow{ font-size:11px; color:var(--ink-soft); flex-shrink:0; margin-top:2px; }
 .faq-q-text{ flex:1; min-width:0; word-wrap:break-word; }
 .faq-a{ padding:12px 16px 14px; font-size:13.5px; line-height:1.65; color:var(--ink); border-top:1px solid var(--border); animation:stepIn .2s ease; }
@@ -4480,6 +4504,7 @@ let state = {
   avatarImg: null, // small square photo (data URL) chosen from the gallery; overrides the emoji avatar
   avatarPicker: false, // avatar picker open
   avatarErr: false,
+  voiceHelp: null, // {lang, step:'ask'|'guide', os, still} while the missing-voice help is open
   legalDoc: null, // 'privacy' | 'terms' while that page is open
   loginNote: null, // one-time message on the login screen (e.g. after deleting data)
   resumePrompt: false, // true while the "continue where you left off" pop-up is showing
@@ -5101,11 +5126,10 @@ const TTS = {
       // Some phones don't list their voices at all; then just ask for the language and let
       // the device try. Only show "no voice" when the list exists and has none for it.
       const listed = (window.speechSynthesis.getVoices() || []).length > 0;
-      if(!voice && lang !== 'en' && listed){
-        const key = lang === 'ar' ? 'speakNoVoice' : lang === 'he' ? 'speakNoVoiceHe' : 'speakNoVoiceEn';
-        showToast(t(key), 'ℹ️', 'top');
+      if(!voice && listed){
         this.speaking = false;
         this.updateButton();
+        openVoiceHelp(lang);
         return;
       }
       // Wrap words in the DOM and get the exact spoken text built from them,
@@ -6767,6 +6791,94 @@ function linkifyFaq(text, qEn, lang){
   return out;
 }
 
+
+// ===== Missing read-aloud voice: ask, then (if wanted) show how to install one =====
+const VH_VOICE = { he:{ en:'Hebrew', he:'עברית', ar:'العبرية', native:'עברית' }, ar:{ en:'Arabic', he:'ערבית', ar:'العربية', native:'العربية' }, en:{ en:'English', he:'אנגלית', ar:'الإنجليزية', native:'English' } };
+const VH_TEXT = {
+  en:{ askTitle:v=>`No ${v} voice on your phone`, askText:v=>`Lessons can't be read aloud in ${v} yet. Would you like help installing a free ${v} voice?`, yes:'Yes, show me how', no:'No thanks',
+    head:v=>`Your phone needs ${/^[AEIOU]/.test(v)?'an':'a'} ${v} voice`, sub:v=>`To read lessons aloud in ${v}, add a free ${v} voice to your phone. It takes about a minute.`,
+    android:(v,n)=>[`Open <b>Settings</b> and search for <b>Text-to-speech</b>.`,`Tap the <b>⚙️ gear</b> next to the speech engine (usually Google).`,`Tap <b>Install voice data</b>, then <b>${v} (${n})</b>, and download it.`,`Come back to IsraFin and tap <b>Try again</b>.`],
+    ios:(v,n)=>[`Open <b>Settings</b> → <b>Accessibility</b> → <b>Spoken Content</b>.`,`Tap <b>Voices</b>, then <b>${v}</b>.`,`Tap a voice to download it.`,`Come back to IsraFin and tap <b>Try again</b>.`],
+    note:'Menu names can differ a little between phones. If you can\'t find it, search your settings for "voice" or "speech".',
+    close:'Not now', retry:'Try again', still:v=>`Still no ${v} voice. If you just installed it, close IsraFin and open it again.` },
+  he:{ askTitle:v=>`אין קול ב${v} בטלפון שלכם`, askText:v=>`עדיין אי אפשר להקריא שיעורים ב${v}. רוצים עזרה בהתקנת קול ${v} בחינם?`, yes:'כן, תראו לי איך', no:'לא תודה',
+    head:v=>`הטלפון שלכם צריך קול ב${v}`, sub:v=>`כדי להקריא שיעורים ב${v}, הוסיפו לטלפון קול ${v} בחינם. זה לוקח בערך דקה.`,
+    android:(v,n)=>[`פתחו את <b>הגדרות</b> וחפשו <b>המרת טקסט לדיבור</b>.`,`לחצו על <b>⚙️ גלגל השיניים</b> ליד מנוע הדיבור (בדרך כלל Google).`,`לחצו על <b>התקנת נתוני קול</b>, ואז <b>${n}</b>, והורידו אותו.`,`חזרו ל-IsraFin ולחצו <b>לנסות שוב</b>.`],
+    ios:(v,n)=>[`פתחו <b>הגדרות</b> ← <b>נגישות</b> ← <b>תוכן מוקרא</b>.`,`לחצו על <b>קולות</b>, ואז <b>${n}</b>.`,`לחצו על קול כדי להוריד אותו.`,`חזרו ל-IsraFin ולחצו <b>לנסות שוב</b>.`],
+    note:'שמות התפריטים יכולים להיות קצת שונים בין טלפונים. אם לא מוצאים, חפשו בהגדרות "קול" או "דיבור".',
+    close:'לא עכשיו', retry:'לנסות שוב', still:v=>`עדיין אין קול ב${v}. אם הרגע התקנתם אותו, סגרו את IsraFin ופתחו מחדש.` },
+  ar:{ askTitle:v=>`لا يوجد صوت باللغة ${v} على هاتفك`, askText:v=>`لا يمكن قراءة الدروس بصوت عالٍ باللغة ${v} بعد. هل تريد مساعدة في تثبيت صوت مجاني باللغة ${v}؟`, yes:'نعم، أرني كيف', no:'لا، شكراً',
+    head:v=>`هاتفك يحتاج إلى صوت باللغة ${v}`, sub:v=>`لقراءة الدروس بصوت عالٍ باللغة ${v}، أضف صوتاً مجانياً باللغة ${v} إلى هاتفك. يستغرق ذلك دقيقة تقريباً.`,
+    android:(v,n)=>[`افتح <b>الإعدادات</b> وابحث عن <b>تحويل النص إلى كلام</b>.`,`اضغط على <b>⚙️ الترس</b> بجانب محرك الكلام (عادةً Google).`,`اضغط <b>تثبيت البيانات الصوتية</b>، ثم <b>${n}</b>، وقم بتنزيله.`,`عد إلى IsraFin واضغط <b>حاول مرة أخرى</b>.`],
+    ios:(v,n)=>[`افتح <b>الإعدادات</b> ← <b>تسهيلات الاستخدام</b> ← <b>المحتوى المنطوق</b>.`,`اضغط <b>الأصوات</b>، ثم <b>${n}</b>.`,`اضغط على صوت لتنزيله.`,`عد إلى IsraFin واضغط <b>حاول مرة أخرى</b>.`],
+    note:'قد تختلف أسماء القوائم قليلاً بين الهواتف. إذا لم تجده، ابحث في الإعدادات عن "صوت" أو "كلام".',
+    close:'ليس الآن', retry:'حاول مرة أخرى', still:v=>`لا يوجد صوت باللغة ${v} بعد. إذا ثبّتّه للتو، أغلق IsraFin وافتحه من جديد.` }
+};
+function renderVoiceHelp(){
+  const vh = state.voiceHelp;
+  if(!vh) return '';
+  const T = VH_TEXT[state.lang] || VH_TEXT.en, V = VH_VOICE[vh.lang] || VH_VOICE.en;
+  const v = V[state.lang] || V.en, n = V.native, dir = dirFor(state.lang);
+  if(vh.step === 'ask') return `
+  <div class="modal-overlay vh-overlay" id="vhOverlay">
+    <div class="modal-card vh-ask" role="alertdialog" aria-modal="true" aria-labelledby="vhTitle" aria-describedby="vhText" dir="${dir}">
+      <div class="vh-icon" aria-hidden="true">🔇</div>
+      <h3 class="vh-title" id="vhTitle">${T.askTitle(v)}</h3>
+      <p class="vh-text" id="vhText">${T.askText(v)}</p>
+      <div class="vh-ask-actions">
+        <button class="btn-primary" id="vhYes">${T.yes}</button>
+        <button class="vh-no" id="vhNo">${T.no}</button>
+      </div>
+    </div>
+  </div>`;
+  const os = vh.os;
+  return `
+  <div class="modal-overlay vh-overlay vh-sheet-wrap" id="vhOverlay">
+    <div class="vh-sheet" role="dialog" aria-modal="true" aria-labelledby="vhTitle" dir="${dir}">
+      <div class="vh-grab" aria-hidden="true"></div>
+      <div class="vh-head">
+        <div class="vh-icon" aria-hidden="true">🔇</div>
+        <div><h3 class="vh-title" id="vhTitle">${T.head(v)}</h3><p class="vh-text">${T.sub(v)}</p></div>
+      </div>
+      <div class="vh-tabs" role="group">
+        <button class="vh-tab" data-vh-os="android" aria-pressed="${os==='android'}">Android</button>
+        <button class="vh-tab" data-vh-os="ios" aria-pressed="${os==='ios'}">iPhone</button>
+      </div>
+      <ol class="vh-steps">${T[os](v, n).map(x => `<li><span>${x}</span></li>`).join('')}</ol>
+      ${vh.still ? `<div class="vh-still" role="status">${T.still(v)}</div>` : ''}
+      <p class="vh-note">${T.note}</p>
+      <div class="vh-actions">
+        <button class="btn-ghost" id="vhClose">${T.close}</button>
+        <button class="btn-primary" id="vhRetry">${T.retry}</button>
+      </div>
+    </div>
+  </div>`;
+}
+function closeVoiceHelp(){ state.voiceHelp = null; render(); }
+function bindVoiceHelpEvents(){
+  if(!state.voiceHelp) return;
+  const on = (id, fn) => { const el = document.getElementById(id); if(el) el.addEventListener('click', fn); };
+  on('vhYes', () => { state.voiceHelp.step = 'guide'; render(); });
+  on('vhNo', closeVoiceHelp);
+  on('vhClose', closeVoiceHelp);
+  on('vhRetry', () => {
+    const lang = state.voiceHelp.lang;
+    const { voice } = TTS.pickVoiceForLang(lang);
+    if(voice){ state.voiceHelp = null; render(); TTS.speak(lang); }
+    else { state.voiceHelp.still = true; render(); }
+  });
+  document.querySelectorAll('[data-vh-os]').forEach(b => b.addEventListener('click', () => { state.voiceHelp.os = b.dataset.vhOs; render(); }));
+  const ov = document.getElementById('vhOverlay');
+  if(ov) ov.addEventListener('click', e => { if(e.target === ov) closeVoiceHelp(); });
+  const first = document.getElementById(state.voiceHelp.step === 'ask' ? 'vhYes' : 'vhRetry');
+  if(first) setTimeout(() => first.focus(), 30);
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape' && state.voiceHelp) closeVoiceHelp(); });
+function openVoiceHelp(lang){
+  state.voiceHelp = { lang, step:'ask', os: /iPhone|iPad|iPod/.test(navigator.userAgent) ? 'ios' : 'android', still:false };
+  render();
+}
+
 function renderLegalPanel(){
   const doc = state.legalDoc && LEGAL[state.legalDoc];
   if(!doc) return '';
@@ -7456,7 +7568,7 @@ function render(){
   // Stop any active narration — the DOM rebuild would strip the word spans
   // and leave the engine speaking into nothing visible.
   if(typeof TTS !== 'undefined' && TTS.speaking) TTS.stop();
-  document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderLegalPanel() + renderModesModal() + renderResumeModal() + renderAvatarPicker();
+  document.getElementById('app').innerHTML = html + renderConfirmModal() + renderFaqPanel() + renderLegalPanel() + renderVoiceHelp() + renderModesModal() + renderResumeModal() + renderAvatarPicker();
   attachEvents();
   if(typeof TTS !== 'undefined') TTS.updateButton();
   saveCurrentProfile();
@@ -7464,6 +7576,7 @@ function render(){
 
 function attachEvents(){
   bindLegalEvents();
+  bindVoiceHelpEvents();
   bindGoogleEvents();
   bindAvatarEvents();
   const signOutBtn = document.getElementById('signOutBtn');
@@ -7979,7 +8092,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=76').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=77').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
