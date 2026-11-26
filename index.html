@@ -3922,7 +3922,7 @@ const STR = {
     speakNoVoiceHe:'No Hebrew voice found on your device. Install Hebrew TTS in your system settings to use this.',
     speakNoVoiceEn:'No English voice found on your device.',
     prev:'Previous', next:'Next', footnote:'Figures like tax brackets, minimum wage, and interest rates change periodically — always check official sources (Tax Authority, Bank of Israel, National Insurance) for current numbers. This app is for learning, not professional financial advice.',
-    changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? This profile and all its progress will be deleted, from this device and the cloud. This can\'t be undone.',
+    changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch to a different name? Your progress stays with you and moves to the new name.',
     modalCancel:'Cancel', modalConfirm:'OK',
     goalPickerTitle:'What do you want to learn?', goalPickerSub:'We\'ll highlight the best courses for you.',
     goalSaving:'Saving', goalInvesting:'Investing', goalTaxes:'Taxes', goalWorking:'Working & Pay', goalSafety:'Staying Safe', goalReallife:'Real Life in Israel',
@@ -4024,7 +4024,7 @@ const STR = {
     speakNoVoiceHe:'לא נמצא קול בעברית במכשיר שלכם. יש להתקין קול TTS בעברית בהגדרות המערכת.',
     speakNoVoiceEn:'לא נמצא קול באנגלית במכשיר שלכם.',
     prev:'הקודם', next:'הבא', footnote:'נתונים כמו מדרגות מס, שכר מינימום וריביות משתנים מעת לעת — תמיד כדאי לבדוק מקורות רשמיים (רשות המסים, בנק ישראל, הביטוח הלאומי) לנתונים עדכניים. אפליקציה זו נועדה ללמידה בלבד ואינה ייעוץ פיננסי מקצועי.',
-    changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? הפרופיל הזה וכל ההתקדמות שלו יימחקו, מהמכשיר הזה ומהענן. אי אפשר לבטל את זה.',
+    changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'לעבור לשם אחר? ההתקדמות שלכם נשארת איתכם ועוברת לשם החדש.',
     modalCancel:'ביטול', modalConfirm:'אישור',
     goalPickerTitle:'מה אתם רוצים ללמוד?', goalPickerSub:'נדגיש עבורכם את הקורסים המתאימים ביותר.',
     goalSaving:'חיסכון', goalInvesting:'השקעות', goalTaxes:'מיסים', goalWorking:'עבודה ושכר', goalSafety:'בטיחות כספית', goalReallife:'חיים אמיתיים בישראל',
@@ -4126,7 +4126,7 @@ const STR = {
     speakNoVoiceHe:'لم يتم العثور على صوت عبري في جهازك. ثبّت صوت TTS عبري من إعدادات النظام.',
     speakNoVoiceEn:'لم يتم العثور على صوت إنجليزي في جهازك.',
     prev:'السابق', next:'التالي', footnote:'أرقام مثل الشرائح الضريبية والحد الأدنى للأجور وأسعار الفائدة تتغير دورياً — تحقق دائماً من المصادر الرسمية (سلطة الضرائب، بنك إسرائيل، التأمين الوطني) للحصول على أحدث الأرقام. هذا التطبيق مخصص للتعلم فقط وليس استشارة مالية مهنية.',
-    changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ سيُحذف هذا الملف الشخصي وكل تقدّمه من هذا الجهاز ومن السحابة. لا يمكن التراجع عن ذلك.',
+    changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'التبديل إلى اسم آخر؟ يبقى تقدّمك معك وينتقل إلى الاسم الجديد.',
     modalCancel:'إلغاء', modalConfirm:'موافق',
     goalPickerTitle:'ماذا تريد أن تتعلم؟', goalPickerSub:'سنبرز لك أفضل الدورات المناسبة.',
     goalSaving:'الادخار', goalInvesting:'الاستثمار', goalTaxes:'الضرائب', goalWorking:'العمل والأجر', goalSafety:'السلامة المالية', goalReallife:'الحياة الواقعية في إسرائيل',
@@ -6304,6 +6304,8 @@ async function loginWithName(name){
   const btn = document.getElementById('startBtn');
   if(btn){ btn.disabled = true; btn.textContent = '…'; }
   const key = profileKeyFor(name);
+  const from = state.renameFrom; state.renameFrom = null;
+  if(from && from !== key && loadProfiles()[from]){ await finishNameSwitch(from, key, name); _loggingIn = false; retryPendingDeletes(); goto('home'); return; }
   const local = loadProfiles()[key] || null;
   let cloud = null;
   try { cloud = await Cloud.fetchProfile(key); } catch(e){ cloud = null; }
@@ -6318,7 +6320,56 @@ async function loginWithName(name){
   if(Cloud.isGoogle() && googleProfiles().length === 0) state.googleLinked = true;
   state._profileLoaded = true; // saving is allowed only from here on
   _loggingIn = false;
+  retryPendingDeletes();
   goto(pick ? 'home' : 'goals');
+}
+// "Switch user" = change your name. One person (one sign-in) keeps ONE profile:
+// the progress moves to the new name and the old name's copy is removed, here and in the cloud.
+function startNameSwitch(){
+  saveCurrentProfile();
+  const oldName = state.userName, oldAvatar = state.avatar;
+  const from = profileKeyFor(oldName);
+  logoutUser(); // back to the name screen (nothing is deleted yet)
+  state.renameFrom = from;
+  state.userName = oldName; // pre-filled, so it's easy to edit
+  state.avatar = oldAvatar;
+  render();
+}
+async function finishNameSwitch(from, key, name){
+  const profiles = loadProfiles();
+  const cur = Object.assign({}, profiles[from]);
+  cur.avatar = state.avatar; // the avatar picked on the name screen
+  // If the new name already has a copy (older duplicates), fold it in so nothing is lost.
+  let cloudT = null; try { cloudT = await Cloud.fetchProfile(key); } catch(e){}
+  const existing = mergeProfileData(profiles[key] || null, cloudT);
+  const merged = existing ? mergeProfileData(cur, existing) : cur;
+  merged.avatar = cur.avatar;
+  applyProfile(merged, name);
+  delete profiles[from]; saveProfiles(profiles);
+  state._profileLoaded = true;
+  saveCurrentProfile(); // writes the new name, here and to the cloud
+  Cloud.flush();
+  addPendingDelete(from);
+}
+// Old-name copies waiting to be removed from the cloud (kept until it works, e.g. after being offline).
+const PENDING_DEL_KEY = 'israfin2:pendingDeletes';
+function addPendingDelete(key){
+  try{ const l = JSON.parse(localStorage.getItem(PENDING_DEL_KEY) || '[]'); if(!l.includes(key)) l.push(key); localStorage.setItem(PENDING_DEL_KEY, JSON.stringify(l)); }catch(e){}
+}
+let _retryingDeletes = false;
+async function retryPendingDeletes(){
+  if(_retryingDeletes) return;
+  let list = [];
+  try{ list = JSON.parse(localStorage.getItem(PENDING_DEL_KEY) || '[]'); }catch(e){ return; }
+  if(!list.length) return;
+  _retryingDeletes = true;
+  const left = [];
+  for(const k of list){
+    if(k === profileKeyFor(state.userName)) continue; // that name is in use again: keep it
+    try { await Cloud.deleteProfile(k, {keepAccount:true}); } catch(e){ left.push(k); }
+  }
+  try{ if(left.length) localStorage.setItem(PENDING_DEL_KEY, JSON.stringify(left)); else localStorage.removeItem(PENDING_DEL_KEY); }catch(e){}
+  _retryingDeletes = false;
 }
 function getLastUser(){
   if(!storageAvailable()) return '';
@@ -8407,8 +8458,8 @@ function attachEventsRest(){
     switchUserBtn.addEventListener('click', ()=>{
       // Switch user only changes the profile name; Google stays signed in
       // (signing out of Google is its own button on the progress page).
-      // Switching deletes the current profile (cloud + this device), so the next name starts fresh.
-      showConfirm(t('logoutConfirm'), () => deleteMyData(true), { okLabel: t('logout'), danger: true });
+      // Switching only changes the name: the same person keeps one profile, and its progress moves to the new name.
+      showConfirm(t('logoutConfirm'), startNameSwitch, { okLabel: t('logout') });
     });
   }
   const langMenu = document.getElementById('langMenu');
@@ -8797,7 +8848,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=83').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=84').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
