@@ -3922,7 +3922,7 @@ const STR = {
     speakNoVoiceHe:'No Hebrew voice found on your device. Install Hebrew TTS in your system settings to use this.',
     speakNoVoiceEn:'No English voice found on your device.',
     prev:'Previous', next:'Next', footnote:'Figures like tax brackets, minimum wage, and interest rates change periodically — always check official sources (Tax Authority, Bank of Israel, National Insurance) for current numbers. This app is for learning, not professional financial advice.',
-    changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? Your progress is saved — type this name again any time to continue.',
+    changeLang:'Language', logout:'Switch user', logoutConfirm:'Switch user? This profile and all its progress will be deleted, from this device and the cloud. This can\'t be undone.',
     modalCancel:'Cancel', modalConfirm:'OK',
     goalPickerTitle:'What do you want to learn?', goalPickerSub:'We\'ll highlight the best courses for you.',
     goalSaving:'Saving', goalInvesting:'Investing', goalTaxes:'Taxes', goalWorking:'Working & Pay', goalSafety:'Staying Safe', goalReallife:'Real Life in Israel',
@@ -4024,7 +4024,7 @@ const STR = {
     speakNoVoiceHe:'לא נמצא קול בעברית במכשיר שלכם. יש להתקין קול TTS בעברית בהגדרות המערכת.',
     speakNoVoiceEn:'לא נמצא קול באנגלית במכשיר שלכם.',
     prev:'הקודם', next:'הבא', footnote:'נתונים כמו מדרגות מס, שכר מינימום וריביות משתנים מעת לעת — תמיד כדאי לבדוק מקורות רשמיים (רשות המסים, בנק ישראל, הביטוח הלאומי) לנתונים עדכניים. אפליקציה זו נועדה ללמידה בלבד ואינה ייעוץ פיננסי מקצועי.',
-    changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? ההתקדמות שלכם נשמרת — הקלידו את השם הזה שוב בכל זמן כדי להמשיך.',
+    changeLang:'שפה', logout:'החלפת משתמש', logoutConfirm:'להחליף משתמש? הפרופיל הזה וכל ההתקדמות שלו יימחקו, מהמכשיר הזה ומהענן. אי אפשר לבטל את זה.',
     modalCancel:'ביטול', modalConfirm:'אישור',
     goalPickerTitle:'מה אתם רוצים ללמוד?', goalPickerSub:'נדגיש עבורכם את הקורסים המתאימים ביותר.',
     goalSaving:'חיסכון', goalInvesting:'השקעות', goalTaxes:'מיסים', goalWorking:'עבודה ושכר', goalSafety:'בטיחות כספית', goalReallife:'חיים אמיתיים בישראל',
@@ -4126,7 +4126,7 @@ const STR = {
     speakNoVoiceHe:'لم يتم العثور على صوت عبري في جهازك. ثبّت صوت TTS عبري من إعدادات النظام.',
     speakNoVoiceEn:'لم يتم العثور على صوت إنجليزي في جهازك.',
     prev:'السابق', next:'التالي', footnote:'أرقام مثل الشرائح الضريبية والحد الأدنى للأجور وأسعار الفائدة تتغير دورياً — تحقق دائماً من المصادر الرسمية (سلطة الضرائب، بنك إسرائيل، التأمين الوطني) للحصول على أحدث الأرقام. هذا التطبيق مخصص للتعلم فقط وليس استشارة مالية مهنية.',
-    changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ تقدّمك محفوظ — اكتب هذا الاسم مجدداً في أي وقت للمتابعة.',
+    changeLang:'اللغة', logout:'تبديل المستخدم', logoutConfirm:'تبديل المستخدم؟ سيُحذف هذا الملف الشخصي وكل تقدّمه من هذا الجهاز ومن السحابة. لا يمكن التراجع عن ذلك.',
     modalCancel:'إلغاء', modalConfirm:'موافق',
     goalPickerTitle:'ماذا تريد أن تتعلم؟', goalPickerSub:'سنبرز لك أفضل الدورات المناسبة.',
     goalSaving:'الادخار', goalInvesting:'الاستثمار', goalTaxes:'الضرائب', goalWorking:'العمل والأجر', goalSafety:'السلامة المالية', goalReallife:'الحياة الواقعية في إسرائيل',
@@ -6573,7 +6573,7 @@ const Cloud = {
   // Delete one profile from the cloud. If that leaves the account empty, the sign-in record
   // (guest or Google) is deleted too. Throws if the cloud can't be reached, so the caller
   // can keep the local copy. Returns 'authLeft' if the Google sign-in record couldn't be removed.
-  async deleteProfile(profileKey){
+  async deleteProfile(profileKey, opts){
     if(!this._configured) return 'local';
     if(!navigator.onLine) throw new Error('offline');
     if(!(await this.whenReady(4000)) || !this._db || !this._uid) throw new Error('offline');
@@ -6582,6 +6582,7 @@ const Cloud = {
     const col = this._db.collection('users').doc(this._uid).collection('profiles');
     const withTimeout = (pr, ms) => Promise.race([pr, new Promise((_, rej) => setTimeout(() => rej(new Error('offline')), ms))]);
     await withTimeout(col.doc(profileKey).delete(), 10000);
+    if(opts && opts.keepAccount) return 'ok'; // switching users: keep the sign-in, only this profile goes
     const rest = await withTimeout(col.get({source:'server'}), 10000);
     if(!rest.empty) return 'ok';
     const u = firebase.auth().currentUser;
@@ -8311,16 +8312,17 @@ function bindLegalEvents(){
 // "Delete my data": erase this profile from the cloud first, then from this device.
 // If the cloud can't be reached nothing is deleted, so the two never get out of step.
 let _deleting = false;
-async function deleteMyData(){
+async function deleteMyData(switching){
+  switching = switching === true;
   if(_deleting) return;
   _deleting = true;
   const key = profileKeyFor(state.userName);
   render(); // close the confirm box
   const btn = document.getElementById('deleteDataBtn');
   if(btn){ btn.disabled = true; btn.textContent = t('deleting'); }
-  let note = t('deleteDone');
+  let note = switching ? '' : t('deleteDone');
   try {
-    const res = await Cloud.deleteProfile(key);
+    const res = await Cloud.deleteProfile(key, {keepAccount: switching});
     if(res === 'authLeft') note = t('deleteAuthLeft');
   } catch(e){
     _deleting = false;
@@ -8334,7 +8336,7 @@ async function deleteMyData(){
   const profiles = loadProfiles(); delete profiles[key]; saveProfiles(profiles);
   try{ if(profileKeyFor(window.localStorage.getItem(LAST_USER_KEY)) === key) window.localStorage.removeItem(LAST_USER_KEY); }catch(e){}
   logoutUser();
-  state.loginNote = note;
+  if(note) state.loginNote = note;
   _deleting = false;
   render();
 }
@@ -8405,7 +8407,8 @@ function attachEventsRest(){
     switchUserBtn.addEventListener('click', ()=>{
       // Switch user only changes the profile name; Google stays signed in
       // (signing out of Google is its own button on the progress page).
-      showConfirm(t('logoutConfirm'), logoutUser);
+      // Switching deletes the current profile (cloud + this device), so the next name starts fresh.
+      showConfirm(t('logoutConfirm'), () => deleteMyData(true), { okLabel: t('logout'), danger: true });
     });
   }
   const langMenu = document.getElementById('langMenu');
@@ -8794,7 +8797,7 @@ render();
 
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js?v=82').catch(() => {
+    navigator.serviceWorker.register('sw.js?v=83').catch(() => {
       // Registration can fail if not served over https/localhost, or files aren't hosted alongside this one — app still works without it.
     });
   });
